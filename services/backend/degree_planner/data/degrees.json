@@ -1,0 +1,542 @@
+{
+    "specification sets": {
+        "cscore": {
+            "specifications":"(subject.csci & course_id.1200) | (subject.csci & course_id.2200) | (subject.csci & course_id.2500) | (subject.ecse & course_id.2660) | (subject.csci & course_id.2300) | (subject.csci & course_id.2600) | (subject.csci & course_id.4430) | (subject.csci & course_id.4210)"
+        }
+    },
+    "mechanical engineering":{
+        "attributes": ["Single Major.School of Engineering.Mechanical Engineering"],
+        "engr - Introduction to Engineering Analysis": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.engr & course_id.1100"
+        },
+        "chem - Chemistry I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.chem & course_id.1100"
+        },
+        "engr - Engineering Graphics and CAD":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.engr & course_id.1200"
+        },
+        "Math - Calculus 1": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.1010"
+        },
+        "engr - Engineering Processes":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.engr & course_id.1300"
+        },
+        "engr - Introduction to Materials Science":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.engr & course_id.1600"
+        },
+        "math - Calculus II":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.1020"
+        },
+        "phys - Physics I":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.phys & course_id.1100"
+        },
+        "stso - Professional Development II":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.stso & course_id.4100"
+        },
+        "Core - thermodynamics":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.mane & course_id.2710"
+        },
+        "engr - Strength of Materials":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.engr & course_id.2530"
+        },
+        "math - Introduction to Differential Equations":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.2400"
+        },
+        "phys - Physics II":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.phys & course_id.1200"
+        },
+        "engr - Electronic Instrumentation":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.engr & course_id.2300"
+        },
+        "core - Numerical Methods and Programming for Engineers":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.mane & course_id.2110"
+        },
+        "math - Multivariable Calculus and Matrix Algebra":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.2010"
+        },
+        "engr - Engineering Dynamics":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.engr & course_id.2090"
+        },
+        "core - Fluid Mechanics":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.mane & course_id.2720"
+        },
+        "core - Elements of Mechanical Design":{
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.mane & course_id.4030"
+        }
+    },
+    "electrical engineering": {
+        "attributes": ["Single Major.School of Engineering.Electrical Engineering", "Single Major.School of Engineering.$properties.tag=Engineering"],
+        "Core - Intro to ECSE": {
+            "specifications":"subject.ecse & course_id.1010"
+        },
+        "Math - Calculus 1": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.1010"
+        },
+        "csci - cComputer Science I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.csci & course_id.1100"
+        },
+        "engineering - Embedded Control": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.engr & course_id.2350"
+        },
+        "Physics - Physics I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.phys & course_id.1100"
+        },
+        "Physics - Physics II": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.phys & course_id.1200"
+        },
+        "Math - Intro to Differential Equations": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.2400"
+        },
+        "Core - Computer Comp. & Operations ": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.ecse & course_id.2610"
+        },
+        "Core - Electric Circuits ": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.ecse & course_id.2010"
+        },
+        "Core - Engineering Probability": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.ecse & course_id.2500"
+        },
+        "Math - Mutivariable Calac & Matrix Algebra": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.2010"
+        },
+        "Core - Electrical Energy Systems": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.ecse & course_id.2110"
+        },
+        "engr - Introduction to Eng. Design": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.engr & course_id.2050"
+        },
+        "stss - Prof Devt- Tech Issues & Solutions": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.stss & course_id.4100"
+        },
+        "Core - Intro. to Electronics": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.ecse & course_id.2050"
+        },
+        "Core - Fields and Waves": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.ecse & course_id.2100"
+        },
+        "Core - Signals and Systems ": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.ecse & course_id.2410"
+        },
+        "Core - ECSE Enrichment Seminar": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.ecse & course_id.2900"
+        },
+        "Core - Microelectronics Tech": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.ecse & course_id.2210"
+        },
+        "Core - Multidisc. Capstone Design": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.ecse & course_id.4900"
+        },
+        "engr - Prof Development - Leadership": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.ecse & course_id.4010"
+        }
+    },
+    "computer science": {
+        "groups": {
+            "Focus Track": {"credits": 30},
+            "HASS Pathway": {"credits": 12}
+        },
+        "attributes": ["Single Major.School of Science.Computer Science", "Single Major.School of Science.$properties.tag=Science", "Single Major.$properties.color=rgba(61,64,69,0!dot8)", "Single Major.$properties.textColor=rgba(205,200,210,1)"],
+        "Core - Computer Science I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.csci & course_id.1100) | (subject.csci & level.4)"
+        },
+        "Core - Data Structures": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.csci & course_id.1200"
+        },
+        "Core - FOCS": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.csci & course_id.2200"
+        },
+        "Core - Computer Organization": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.csci & course_id.2500) | (subject.ecse & course_id.2660)"
+        },
+        "Core - Algorithms": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.csci & course_id.2300"
+        },
+        "Core - Principles of Software": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.csci & course_id.2600"
+        },
+        "Focus Track -.*track": {},
+        "Math - Calculus 1": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.1010"
+        },
+        "Math - Calculus 2": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.1020"
+        },
+        "Science - Biology": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.biol & course_id.1010"
+        },
+        "Science - Biology Labs": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"subject.biol & (course_id.1015 | course_id.1016)"
+        },
+        "Science - Physics I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.phys & course_id.1100"
+        },
+        "Science - Electives": {
+            "requires": 1,
+            "replacement": true,
+            "specifications":"(subject.phys | subject.biol | subject.chem | subject.erth | subject.astr) & level.4- & ~(subject.erth & course_id.1030)",
+            "display": true
+        },
+        "HASS Pathway -.*hass": {}
+    },
+    "Focus Track -.Systems and Software": {
+        "Focus Track - Math Option I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.math & (course_id.2010 | course_id.4030 | course_id.4100 | course_id.4140)) | (subject.matp & course_id.4600)",
+            "display": true
+        },
+        "Focus Track - Math Option II": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.math | subject.matp) & level.2+",
+            "display": true
+        },
+        "Focus Track - CSCI 4000 Level Requirements": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"subject.csci & (course_id.4210 | course_id.4430)",
+            "display": true
+        },
+        "Focus Track - Depth Electives": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"concentration.systems and software",
+            "display": true
+        },
+        "Focus Track - Breadth Electives": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"subject.csci & level.4",
+            "display": true
+        }
+    },
+    "Focus Track -.Theory and Algorithms": {
+        "Focus Track - Math Option I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.2010",
+            "display": true
+        },
+        "Focus Track - Math Option II": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.math | subject.matp) & level.4",
+            "display": true
+        },
+        "Focus Track - CSCI 4000 Level Requirements 1": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.csci & (course_id.4020 | course_id.4420)",
+            "display": true
+        },
+        "Focus Track - CSCI 4000 Level Requirements 2": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.csci & (course_id.4210 | course_id.4320 | course_id.4430)",
+            "display": true
+        },
+        "Focus Track - Depth Electives": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"concentration.theory and algorithms",
+            "display": true
+        },
+        "Focus Track - Breadth Electives 1": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.math | subject.matp) & level.4",
+            "display": true
+        },
+        "Focus Track - Breadth Electives 2": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.csci & level.4",
+            "display": true
+        }
+    },
+    "Focus Track -.Artifical Intelligence": {
+        "Focus Track - Math Option I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.2010",
+            "display": true
+        },
+        "Focus Track - Math Option II": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.math | subject.matp) & level.4",
+            "display": true
+        },
+        "Focus Track - CSCI 4000 Level Requirements 1": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.csci & (course_id.4100 | course_id.4150 | course_id.4350 | course_id.4390)",
+            "display": true
+        },
+        "Focus Track - CSCI 4000 Level Requirements 2": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.csci & (course_id.4210 | course_id.4320 | course_id.4380)",
+            "display": true
+        },
+        "Focus Track - Depth Electives": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"subject.csci & (course_id.4100 | course_id.4150 | course_id.4270 | course_id.4380 | course_id.4390)",
+            "display": true
+        },
+        "Focus Track - Breadth Electives 1": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"concentration.ai",
+            "display": true
+        },
+        "Focus Track - Breadth Electives 2": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.csci & level.4",
+            "display": true
+        }
+    },
+    "Focus Track -.Vision, Graphics, Robotics, Visualization": {
+        "Focus Track - Math Option I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.math & course_id.2010",
+            "display": true
+        },
+        "Focus Track - Math Option II": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.math | subject.matp) & level.2+",
+            "display": true
+        },
+        "Focus Track - CSCI 4000 Level Requirements": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"subject.csci & (course_id.4020 | course_id.4210 | course_id.4430)",
+            "display": true
+        },
+        "Focus Track - Depth Electives": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"subject.csci & (course_id.4270 | course_id.4320 | course_id.4480 | course_id.4530 | course_id.4550 | course_id.4560)",
+            "display": true
+        },
+        "Focus Track - Breadth Electives": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"subject.csci & level.4",
+            "display": true
+        }
+    },
+    "HASS Pathway -.Creative Design and Innovation": {
+        "HASS Pathway - Creative Design and Innovation I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.ihss & (course_id.1960 | course_id.1170 | course_id.1700 | course_id.1040)) | (subject.arts & (course_id.1020 | course_id.1030 | course_id.1380))"
+        },
+        "HASS Pathway - Creative Design and Innovation II": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"(subject.comm & (course_id.4960 | course_id.2570 | course_id.2660 | course_id.4320 | course_id.4460 | course_id.4960)) | (subject.arts & (course_id.4960 | course_id.2210 | course_id.2220 | course_id.3280 | course_id.2700 | course_id.2960 | course_id.4210)) | (subject.cogs & (course_id.2120 | course_id.4620)) | (subject.psyc & (course_id.2220))"
+        }
+    },
+    "HASS Pathway -.Electronic Arts": {
+        "HASS Pathway - Electronic Arts I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.ihss & (course_id.1960 | course_id.1030 | course_id.1040)) | (subject.arts & (course_id.1020 | course_id.1050))"
+        },
+        "HASS Pathway - Electronic Arts II": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"(subject.arts & (course_id.4960 | course_id.2040 | course_id.2060 | course_id.2070 | course_id.2230 | course_id.2700 | course_id.4060 | course_id.4070 | course_id.4090 | course_id.4860))"
+        }
+    },
+    "HASS Pathway -.Graphic Design": {
+        "HASS Pathway - Graphic Design I": {
+            "requires": 3,
+            "replacement": true,
+            "specifications":"(subject.ihss & (course_id.1560 | course_id.1562)) | (subject.comm & (course_id.2520 | course_id.2570 | course_id.2660 | course_id.4320 | course_id.4460 | course_id.4970 | course_id.4730 | course_id.4690 | course_id.4880)) | (subject.writ & course_id.1110)"
+        },
+        "HASS Pathway - Graphic Design level 4000": {
+            "requires": 1,
+            "replacement": true,
+            "specifications":"(subject.comm & (course_id.2520 | course_id.2570 | course_id.2660 | course_id.4320 | course_id.4460 | course_id.4970 | course_id.4730 | course_id.4690 | course_id.4880)) & level.4"
+        }
+    },
+    "HASS Pathway -.Studio Arts": {
+        "HASS Pathway - Studio Arts I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.arts & (course_id.1050 | course_id.2540))"
+        },
+        "HASS Pathway - Studio Arts II": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"(subject.arts & (course_id.1200 | course_id.2200 | course_id.2210 | course_id.2220 | course_id.4200 | course_id.4210 | course_id.4220 | course_id.4260))"
+        }
+    },
+    "HASS Pathway -.Artificial Intelligence": {
+        "HASS Pathway - Artifical Intelligence I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.cogs & (course_id.2120))"
+        },
+        "HASS Pathway - Artifical Intelligence II": {
+            "requires": 2,
+            "replacement": false,
+            "specifications":"(subject.phil & (course_id.4960 | course_id.4961)) | (subject.cogs & (course_id.4960 | course_id.4210 | course_id.4410 | course_id.4420 | course_id.4640 | course_id.4880)) | (subject.ihss & (course_id.1972 | course_id.1140 | course_id.1235))"
+        }
+    },
+    "HASS Pathway -.Behavioral and Cognitive Neroscience": {
+        "HASS Pathway - Behavioral and Cognitive Neroscience I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"(subject.psyc & (course_id.1200))"
+        },
+        "HASS Pathway - Behavioral and Cognitive Neroscience II": {
+            "requires": 2,
+            "replacement": true,
+            "specifications":"(subject.ihss & course_id.1960) | (subject.cogs & (course_id.4330 | course_id.4360 | course_id.4600 | course_id.4610 | course_id.4700)) | (subject.psyc & (course_id.4330 | course_id.4360 | course_id.4500 | course_id.4600 | course_id.4610 | course_id.4700))"
+        },
+        "HASS Pathway - Behavioral and Cognitive Neroscience 4000 level": {
+            "requires": 1,
+            "replacement": true,
+            "specifications":"(subject.cogs & (course_id.4330 | course_id.4360 | course_id.4600 | course_id.4610 | course_id.4700)) | (subject.psyc & (course_id.4330 | course_id.4360 | course_id.4500 | course_id.4600 | course_id.4610 | course_id.4700))"
+        }
+    },
+    "electronic arts": {
+        "attributes": ["Single Major.School of Humanities and Social Sciences.Electronic Arts", "Single Major.School of Humanities and Social Sciences.$properties.tag=Humanities"],
+        "Science - Physics I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.phys & (course_id.1100 | course_id.1150)"
+        }
+    },
+    "architecture": {
+        "attributes": ["Single Major.School of Architecture.Architecture", "Single Major.School of Architecture.$properties.tag=Architecture"],
+        "Science - Physics I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.phys & (course_id.1100 | course_id.1150)"
+        }
+    },
+    "Business and management": {
+        "attributes": ["Single Major.Lally School of Management.Business and Management", "Single Major.Lally School of Management.$properties.tag=Business"],
+        "HASS - Elective level 4": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"level.4 & (subject.arts | subject.gsas)"
+        }
+    },
+    "computer science + computer engineering": {
+        "attributes": ["Dual Major.School of Science.Computer Science + Computer Engineering", "Dual Major.School of Science.$properties.tag=Science", "Dual Major.$properties.color=rgba(67,60,65,0!dot8)", "Dual Major.$properties.textColor=rgba(205,195,210,1)"],
+        "Science - Physics I": {
+            "requires": 1,
+            "replacement": false,
+            "specifications":"subject.phys & (course_id.1100 | course_id.1150)"
+        }
+    }
+}

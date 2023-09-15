@@ -1,0 +1,137 @@
+// custom dpt format for defining templates for degree planner.
+// multiple templates per file are allowed.
+
+// Note: this document uses a 2 layered group format such that all requirements
+// are nested inside two groups, but this is only a requirement of the current 
+// frontend website, not a requirement of the degree planner itself.
+
+template "Computer Science"
+    attribute = "Single Major.School of Science.Computer Science"
+    attribute = "Single Major.School of Science.$properties.tag=Science"
+    attribute = "Single Major.$properties.color=rgba(61,64,69,0!dot8)"
+    attribute = "Single Major.$properties.textColor=rgba(205,200,210,1)"
+
+    group "CS Core"
+        color = #348933 // example
+        credits = 16 // example
+        group "Core"
+            requirement "Computer Science Introduction"
+                specifications = "$csci1100"
+                replacement = false
+
+            requirement "Data Structures"
+                specifications = "$csci1200"
+                replacement = false
+
+            requirement "Foundations of CS"
+                specifications = "$csci2200"
+                replacement = false
+
+            requirement "Intro to Algorithms"
+                specifications = "$csci2300"
+                replacement = false
+
+            requirement "Computer Organization"
+                specifications = "$csci2500 | $ecse2660"
+                replacement = false
+
+            requirement "Principles of Software"
+                specifications = "$csci2600"
+                replacement = false
+
+        // NEED NEW FORMAT FOR PARSING NAMES  
+        group "focus track.*track"
+            requirement "Focus Track.*track"
+
+        group "Communication Intensive"
+            requirement "Communication Intensive (CS)"
+                specifications = "ci.true"
+                replacement = true
+
+    group "Math and Science"
+        group "Math"
+            requirement "Calculus 1"
+                specifications = "$math1010"
+                replacement = false
+
+            requirement "Calculus 2"
+                specifications = "$math1020"
+                replacement = false
+
+        group "Science"
+            requirement "Biology"
+                specifications = "$biol1010"
+                replacement = false
+
+            requirement "Physics 1"
+                specifications = "$phys1100"
+                replacement = false
+
+            requirement "Science Electives"
+                specifications = "(subject.phys | subject.biol | subject.chem | subject.erth | subject.astr) & ~(subject.erth & course_id.1030)"
+                replacement = false
+
+    group "Humanities"
+        group "hass pathway.*hass"
+            requirement "Hass Pathway.*hass"
+
+        group "Communication Intensive"
+            requirement "Communication Intensive (HASS)"
+                specifications = "(subject.arts | subject.gsas | subject.econ) & ci.true"
+                replacement = true
+
+        group "Breadth"
+            requirement "Humanities"
+                specifications = "subject.arts | subject.comm | subject.lang | subject.litr | subject.gsas | subject.inqr | subject.ihss | subject.phil | subject.stso | subject.writ"
+                replacement = false
+            requirement "Social Sciences"
+                specifications = "subject.cogs | subject.econ | subject.gsas | subject.inqr | subject.ihss | subject.psyc | subject.stso"
+                replacement = false
+
+template "Focus Track.Systems and Software"
+    requirement "Math I"
+        specifications = "$math2010 | $math4030 | $math.4100 | $math.4140 | $matp4600"
+        replacement = false
+
+    requirement "Math II"
+        specifications = "(subject.math | subject.matp) & level.2+"
+        replacement = false
+
+template "Focus Track.Theory and Algorithms"
+    requirement "Math I"
+        specifications = "$math2010"
+        replacement = false
+
+    requirement "Math II"
+        specifications = "(subject.math | subject.matp) & level.4"
+        replacement = false
+
+    requirement "4000 Level CSCI 1"
+        specifications = "subject.csci & (course_id.4020 | course_id.4420)"
+        replacement = false
+
+    requirement "4000 Level CSCI 2"
+        specifications = "subject.csci & (course_id.4210 | course_id.4320 | course_id.4430)"
+        replacement = false
+
+    requirement "Depth Electives"
+        specifications = "concentration.theory and algorithms"
+        replacement = false
+        count = 2
+
+    requirement "Breadth Elective I"
+        specifications = "(subject.math | subject.matp) & level.4"
+        repalcement = false
+    
+    requirement "Breadth Elective II"
+        specifications = "subject.csci & level.4"
+        replacement = false
+
+template "HASS Pathway.Creative Design and Innovation"
+    requirement "Creative Design and Innovation I"
+        specifications = "$ihss1960 | $ihss1170 | $ihss1700 | $ihss1040 | $arts1020 | $arts1030 | $arts1380"
+        replacement = false
+    requirement "Creative Design and Innovation II"
+        specifications = "$comm4960 | $comm2570 | $comm2660 | $comm4320 | $comm4460 | $arts4960 | $arts2210 | $arts2220 | $arts3280 | $arts2700 | $arts2960 | $arts4210 | $cogs2120 | $cogs4620 | $psyc2220"
+        replacement = false
+        count = 2
