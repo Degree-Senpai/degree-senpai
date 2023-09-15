@@ -3,6 +3,7 @@ version: '3.8'
 services:
 
   backend:
+    container_name: backend
     build: ./services/backend
     ports:
       - 5000:5000
@@ -12,7 +13,8 @@ services:
       - ./services/backend:/app
     command: uvicorn src.main:app --reload --host 0.0.0.0 --port 5000
 
-  frontend:
+  web:
+    container_name: web
     build: ./services/frontend
     volumes:
       - './services/frontend:/app'
@@ -20,5 +22,27 @@ services:
     ports:
       - 8080:8080
 
-volumes:
-  postgres_data:
+  redis-celery:
+    image: redis:latest
+    container_name: redis_celery
+    ports:
+      - "6379:6379"
+
+  celery:
+    container_name: celery
+    build:
+      context: ./services/backend/src/worker
+      dockerfile: Dockerfile
+    environment:
+      - CELERY_BROKER=redis://redis-celery:6379/0
+      - CELERY_BACKEND=redis://redis-celery:6379/1
+      - CELERY_ACCEPT_CONTENT=pickle
+      - CELERY_TASK_SERIALIZER=pickle
+      - CELERY_RESULT_SERIALIZER=pickle
+      - CELERY_RESULT_EXPIRES=60
+    command: celery -A src.celery_app worker --loglevel=info
+    volumes:
+      - ./services/backend:/app
+    depends_on:
+      - redis-celery
+

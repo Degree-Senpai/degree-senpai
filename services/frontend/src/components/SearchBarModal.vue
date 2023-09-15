@@ -45,6 +45,7 @@
 
 <script>
 import debounce from 'lodash/debounce';
+import axios from 'axios';
 
 export default {
   data() {
@@ -264,8 +265,8 @@ export default {
     },
 
     async fetchElements() {
-      const response = await fetch('/api/dp/courses/false');
-      let course_list = await response.json();
+      const response = await axios.get('/api/dp/courses/false');
+      let course_list = await response.data;
       for (let i = 0; i < course_list.length; ++i) {
         this.allElements.push({display_name: course_list[i], search_name: course_list[i].toLowerCase()});
         this.elementSearchPool.push({display_name: course_list[i], search_name: course_list[i].toLowerCase()});
@@ -274,8 +275,8 @@ export default {
     },
 
     async fetchSearchFilterGroups() {
-      const response = await fetch('/api/dp/subjectgroups');
-      this.searchFilterGroups = await response.json();
+      const response = await axios.get('/api/dp/subjectgroups');
+      this.searchFilterGroups = await response.data;
     },
 
     computeSearchFilterColors() {

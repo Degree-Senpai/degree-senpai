@@ -38,7 +38,8 @@ class Output():
         JSON = 2
 
 
-    DATA_FOLDER_PATH = os.getcwd() + "/degree_planner/data/"
+    DATA_FOLDER_PATH = os.getcwd() + "/src/degree_planner/data/"
+    print(f'data path: {DATA_FOLDER_PATH}')
     visualizers = dict()
 
     @staticmethod

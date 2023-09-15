@@ -1,125 +1,116 @@
 <template>
-    <b-container fluid>
-        <div class="main-loading" v-if="mainLoading">
-          <h1>&#32; &#32;Degree Planner</h1>
-        </div>
-        <div @dragover.prevent @drop="schedulerRemove">
+  <div>
+    <div class="main-loading" v-if="mainLoading">
+      <h1>&#32; &#32;Degree Planner</h1>
+    </div>
+    <div @dragover.prevent @drop="schedulerRemove">
 
-        <div ref="searchModalContainer" style="position: absolute; z-index: 9999;">
-          <SearchBarModal ref="searchModal" @result="results => modalAdd(activeSemester, results)" @dragover.prevent @elementDragStart="schedulerDragFromModal" @setSubjectColors="setSubjectColors" @setSubjectGroupColors="setSubjectGroupColors"></SearchBarModal>
-        </div>
-        <div class="columns">
+      <div ref="searchModalContainer" style="position: absolute; z-index: 9999;">
+        <SearchBarModal ref="searchModal" @result="results => modalAdd(activeSemester, results)" @dragover.prevent @elementDragStart="schedulerDragFromModal" @setSubjectColors="setSubjectColors" @setSubjectGroupColors="setSubjectGroupColors"></SearchBarModal>
+      </div>
+      <div class="columns">
 
-          <div class="column-left">
-            <div ref="deletionPrompt" class="schedule-deletion-prompt" v-show="scheduleDeletionPrompt">
-              Confirm Deletion of {{ scheduleSelected }}?
-              <div class="schedule-deletion-prompt-options">
-                <span>
-                  <button class="schedule-confirm-delete" @click="commenceDeleteSchedule(scheduleSelected)">
-                    YES
-                  </button>
-                </span>
-                <span>
-                  <button class="schedule-deny-delete" @click="cancelDeleteSchedule">
-                    NO
+        <div class="column-left">
+          <div ref="deletionPrompt" class="schedule-deletion-prompt" v-show="scheduleDeletionPrompt">
+            Confirm Deletion of {{ scheduleSelected }}?
+            <div class="schedule-deletion-prompt-options">
+              <span>
+                <button class="schedule-confirm-delete" @click="commenceDeleteSchedule(scheduleSelected)">
+                  YES
+                </button>
+              </span>
+              <span>
+                <button class="schedule-deny-delete" @click="cancelDeleteSchedule">
+                  NO
+                </button>
+              </span>
+            </div>
+          </div>
+
+          <div class="schedule-selection">
+            <button :ref="'renameSchedule'" v-bind:class="{'schedule-selection-button':schedule != scheduleSelected, 'schedule-selection-button-active':schedule == scheduleSelected}" v-for="(schedule, index) in schedules" :key="index" @click="setSchedule(schedule)">
+              <span class="schedule-button-content">
+                <button class="schedule-selection-delete" @click.stop="promptDeleteSchedule(schedule)">
+                  &#10008;
+                </button>
+                <button class="schedule-selection-edit" @click="renameScheduleButton(schedule, index)">
+                  &#9998;
+                </button>
+                <span v-show="scheduleBeingRenamed != schedule">{{ schedule }}</span>
+                <input :ref="'editScheduleNameInput'" v-show="scheduleBeingRenamed == schedule" class="edit-schedule-input" v-model="renameScheduleInputField" @keyup.enter="renameSchedule(schedule, renameScheduleInputField)"/>
+              </span>
+            </button>
+            <input class="new-schedule-input" placeholder="+ new schedule" v-model="newScheduleInputField" @keyup.enter="addSchedule(newScheduleInputField)"/>
+          </div>
+          <div class="courses-grid">
+            <div v-for="(semester, semester_index) in getSchedule(scheduleSelected)" :key="semester_index" 
+                v-bind:class="{'semester-block':hoverOverSemester!=semester_index, 'semester-block-highlighted':hoverOverSemester==semester_index}" 
+                @dragenter="schedulerDragEnter($event, semester_index)" 
+                @dragleave="schedulerDragLeave()" 
+                @dragover.prevent 
+                @drop="schedulerDrop($event, semester_index)">
+              <div class="semester-title-row">
+                <span style="width: 100%;"><h3>Semester {{ semester_index + 1 }}</h3></span>
+                <span style="color:#a1a7a8; margin-top:-8px; margin-right:-8px;" class="schedule-search">
+                  <button
+                    type="button"
+                    :ref="'addButton${index}'"
+                    class="search-open"
+                    @click="addCourseModal(semester_index)">
+                    &#10010;
                   </button>
                 </span>
               </div>
-            </div>
 
-            <div class="schedule-selection">
-              <button :ref="'renameSchedule'" v-bind:class="{'schedule-selection-button':schedule != scheduleSelected, 'schedule-selection-button-active':schedule == scheduleSelected}" v-for="(schedule, index) in schedules" :key="index" @click="setSchedule(schedule)">
-                <span class="schedule-button-content">
-                  <button class="schedule-selection-delete" @click.stop="promptDeleteSchedule(schedule)">
-                    &#10008;
-                  </button>
-                  <button class="schedule-selection-edit" @click="renameScheduleButton(schedule, index)">
-                    &#9998;
-                  </button>
-                  <span v-show="scheduleBeingRenamed != schedule">{{ schedule }}</span>
-                  <input :ref="'editScheduleNameInput'" v-show="scheduleBeingRenamed == schedule" class="edit-schedule-input" v-model="renameScheduleInputField" @keyup.enter="renameSchedule(schedule, renameScheduleInputField)"/>
-                </span>
-              </button>
-              <input class="new-schedule-input" placeholder="+ new schedule" v-model="newScheduleInputField" @keyup.enter="addSchedule(newScheduleInputField)"/>
-            </div>
-            <div class="courses-grid">
-              <div v-for="(semester, semester_index) in getSchedule(scheduleSelected)" :key="semester_index" 
-                  v-bind:class="{'semester-block':hoverOverSemester!=semester_index, 'semester-block-highlighted':hoverOverSemester==semester_index}" 
-                  @dragenter="schedulerDragEnter($event, semester_index)" 
-                  @dragleave="schedulerDragLeave()" 
-                  @dragover.prevent 
-                  @drop="schedulerDrop($event, semester_index)">
-                <div class="semester-title-row">
-                  <span style="width: 100%;"><h3>Semester {{ semester_index + 1 }}</h3></span>
-                  <span style="color:#a1a7a8; margin-top:-8px; margin-right:-8px;" class="schedule-search">
-                    <button
-                      type="button"
-                      :ref="'addButton${index}'"
-                      class="search-open"
-                      @click="addCourseModal(semester_index)">
-                      &#10010;
-                    </button>
-                  </span>
-                </div>
-
-                <div class="schedule-button-container" v-for="(course, course_index) in semester" :key="`${semester_index}-${course_index}`">
-                  <button class="course-buttons" type="button" @click="goToCoursePage(course)" draggable="true" @dragstart="schedulerDrag($event, course, semester_index)">
-                    <span style="color:#ffc680">{{ course.substring(0, 10) }}</span> <span style="color: #dae0e1;">{{ course.substring(10) }}</span>
-                  </button>
-                  <button class="course-remove-button" type="button" @click="remove(semester_index, course, true, true)">
-                    <span style="color:#b05f6e">&#10008;</span>
-                  </button>
-                </div>
-
+              <div class="schedule-button-container" v-for="(course, course_index) in semester" :key="`${semester_index}-${course_index}`">
+                <button class="course-buttons" type="button" @click="goToCoursePage(course)" draggable="true" @dragstart="schedulerDrag($event, course, semester_index)">
+                  <span style="color:#ffc680">{{ course.substring(0, 10) }}</span> <span style="color: #dae0e1;">{{ course.substring(10) }}</span>
+                </button>
+                <button class="course-remove-button" type="button" @click="remove(semester_index, course, true, true)">
+                  <span style="color:#b05f6e">&#10008;</span>
+                </button>
               </div>
+
             </div>
-            
           </div>
           
-          <div class="column-center" ref="columnCenter">
-            <div v-if="scheduleSelected != ''">
-              <div class="center-top-row">
-                <div ref="degreeSelect" style="width: 180px">
-                  <button class="toggle-degree-selection-button" @click="toggleDegreeSelectionMenu">Degree Selection</button>
-                  <div class="degree-selection-menu" v-if="openedDegreeSelectionMenu">
-                    <CatalogTree style="width: 50vw; margin-top: -10px" :nodes="degrees" :label="''" :depth="0" :subjectColors="subjectColors" :subjectGroupColors="subjectGroupColors" :labelAliases="labelAliases" :selectedDegree="degreeSelected" @setDegree="degree => setDegree(degree)"></CatalogTree>
-                  </div>
-                </div>
-                <div v-if="recommendationsLoading" style="color: #727d80">
-                  ...loading recommendations
+        </div>
+        
+        <div class="column-center" ref="columnCenter">
+          <div v-if="scheduleSelected != ''">
+            <div class="center-top-row">
+              <div ref="degreeSelect" style="width: 180px">
+                <button class="toggle-degree-selection-button" @click="toggleDegreeSelectionMenu">Degree Selection</button>
+                <div class="degree-selection-menu" v-if="openedDegreeSelectionMenu">
+                  <CatalogTree style="width: 50vw; margin-top: -10px" :nodes="degrees" :label="''" :depth="0" :subjectColors="subjectColors" :subjectGroupColors="subjectGroupColors" :labelAliases="labelAliases" :selectedDegree="degreeSelected" @setDegree="degree => setDegree(degree)"></CatalogTree>
                 </div>
               </div>
+              <div v-if="recommendationsLoading" style="color: #727d80">
+                ...loading recommendations
+              </div>
+            </div>
 
-              <div class="requirements-major-groups" v-for="(major_group, group_name) in filterGroups(requirementGroups)" :key="group_name">
-                <h2>{{ group_name }}</h2>
+            <div class="requirements-major-groups" v-for="(major_group, group_name) in filterGroups(requirementGroups)" :key="group_name">
+              <h2>{{ group_name }}</h2>
 
-                <div class="requirements-orggrid">
-                  <div v-bind:class="{'fulfillment-org-block-highlighted':selectedFulfillment(group_name, minor_group_name), 'fulfillment-org-block':!selectedFulfillment(group_name, minor_group_name)}" v-for="(minor_group, minor_group_name) in filterGroups(major_group)" :key="minor_group_name" @click="toggleHighlightFulfillment(group_name, minor_group_name)">
-                    <div class="group-heading">
-                      <span class="group-title"> {{ formatGroupName(minor_group_name) }} </span> 
-                      <span v-if="false && minor_group.minimum_requirements_credits > 0" 
-                        v-bind:class="{'group-credit-stats-fulfilled':getTalliedAmount(minor_group_name, 'credits') >= 0, 'group-credit-stats-unfulfilled':getTalliedAmount(minor_group_name, 'credits') < 0}">
-                        <span style="color:#707a7a"> credits:&nbsp;&nbsp; </span> [insert credit counter] </span>
-                    </div>
-                    <div v-for="(requirement, index) in minor_group.$items" :key="index">
-                      <div v-if="requirements[requirement] != null">
-                        <div v-for="(alternative, alternative_index) in requirements[requirement].wildcard_resolutions" :key="alternative_index">
+              <div class="requirements-orggrid">
+                <div v-bind:class="{'fulfillment-org-block-highlighted':selectedFulfillment(group_name, minor_group_name), 'fulfillment-org-block':!selectedFulfillment(group_name, minor_group_name)}" v-for="(minor_group, minor_group_name) in filterGroups(major_group)" :key="minor_group_name" @click="toggleHighlightFulfillment(group_name, minor_group_name)">
+                  <div class="group-heading">
+                    <span class="group-title"> {{ formatGroupName(minor_group_name) }} </span> 
+                    <span v-if="false && minor_group.minimum_requirements_credits > 0" 
+                      v-bind:class="{'group-credit-stats-fulfilled':getTalliedAmount(minor_group_name, 'credits') >= 0, 'group-credit-stats-unfulfilled':getTalliedAmount(minor_group_name, 'credits') < 0}">
+                      <span style="color:#707a7a"> credits:&nbsp;&nbsp; </span> [insert credit counter] </span>
+                  </div>
+                  <div v-for="(requirement, index) in minor_group.$items" :key="index">
+                    <div v-if="requirements[requirement] != null">
+                      <div v-for="(alternative, alternative_index) in requirements[requirement].wildcard_resolutions" :key="alternative_index">
 
-                          <div :ref="`alternativesMenu${minor_group_name}`" v-show="alternative.alternatives.length > 5">
-                            <button class="alternative-buttons-selected" type="button" @click.stop="toggleAlternativeMenu(group.name)">
-                              View Choices
-                            </button>
-                            
-                            <div v-if="openedAlternativesMenu == minor_group_name" class="alternative-menu">
-                              <div v-for="(alternative_choice, alternative_choice_index) in alternative.alternatives" :key="alternative_choice_index">
-                                <button v-bind:class="{'alternative-buttons':chosenAlternative(alternative.original) != alternative_choice, 'alternative-buttons-selected':chosenAlternative(alternative.original) == alternative_choice}" type="button" @click.stop="toggleWildcardRequirement(alternative.original, alternative_choice)">
-                                  {{ formatAlternativeButtonText(alternative_choice) }}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div v-if="alternative.alternatives.length <= 5">
+                        <div :ref="`alternativesMenu${minor_group_name}`" v-show="alternative.alternatives.length > 5">
+                          <button class="alternative-buttons-selected" type="button" @click.stop="toggleAlternativeMenu(group.name)">
+                            View Choices
+                          </button>
+                          
+                          <div v-if="openedAlternativesMenu == minor_group_name" class="alternative-menu">
                             <div v-for="(alternative_choice, alternative_choice_index) in alternative.alternatives" :key="alternative_choice_index">
                               <button v-bind:class="{'alternative-buttons':chosenAlternative(alternative.original) != alternative_choice, 'alternative-buttons-selected':chosenAlternative(alternative.original) == alternative_choice}" type="button" @click.stop="toggleWildcardRequirement(alternative.original, alternative_choice)">
                                 {{ formatAlternativeButtonText(alternative_choice) }}
@@ -127,79 +118,87 @@
                             </div>
                           </div>
                         </div>
-                      
 
-                        <div v-bind:class="{'minimal-fulfillment':requirements[requirement].actual_count >= requirements[requirement].required_count, 'minimal-unfulfilled-fulfillment':requirements[requirement].actual_count < requirements[requirement].required_count}">
-                          <div v-bind:class="{'req-fulfilled':requirements[requirement].actual_count >= requirements[requirement].required_count, 'req-unfulfilled':requirements[requirement].actual_count < requirements[requirement].required_count}">
-                            <div class="req-fulfillment-text">
-                              <span class="req-fulfillment-name"> {{ formatFulfillmentName(requirements[requirement].name) }} </span> <span class="req-fulfillment-count"> {{ requirements[requirement].actual_count }} / {{ requirements[requirement].required_count }}</span>
-                            </div>
-                          </div>
-
-                          <div v-for="(course, index) in requirements[requirement].fulfillment_set" :key="index">
-                            <button class="course-buttons" type="button" @click="goToCoursePage(course)">
-                              <span style="color:#e4ded5">{{ course.substring(0, 10) }}</span> <span style="color: #e6e8e9;">{{ course.substring(10) }}</span>
+                        <div v-if="alternative.alternatives.length <= 5">
+                          <div v-for="(alternative_choice, alternative_choice_index) in alternative.alternatives" :key="alternative_choice_index">
+                            <button v-bind:class="{'alternative-buttons':chosenAlternative(alternative.original) != alternative_choice, 'alternative-buttons-selected':chosenAlternative(alternative.original) == alternative_choice}" type="button" @click.stop="toggleWildcardRequirement(alternative.original, alternative_choice)">
+                              {{ formatAlternativeButtonText(alternative_choice) }}
                             </button>
                           </div>
                         </div>
+                      </div>
+                    
 
-                        <div class="req-recommendations" v-if="requirement in recommendations && recommendations[requirement].length > 0 && recommendations[requirement][0].fulfillment_set.length > 0">
-                          <div class="minimal-recommendations" v-for="(recommendation, recommendation_index) in recommendations[requirement]" :key="recommendation_index">
-                            <div v-if="recommendations[requirement].length > 1">
-                              <h5>{{ recommendation.specifications }}</h5>
-                            </div>
-                            <div class="minimal-recommendations-courses" v-for="(course, index) in recommendation.fulfillment_set" :key="index">
-                              <button class="minimal-course-buttons" type="button" @click="goToCoursePage(course)" draggable="true" @dragstart="schedulerDrag($event, course, -1)">
-                                <span style="color:#a9a9a9"> {{ course }} </span>
-                              </button>
-                            </div>
+                      <div v-bind:class="{'minimal-fulfillment':requirements[requirement].actual_count >= requirements[requirement].required_count, 'minimal-unfulfilled-fulfillment':requirements[requirement].actual_count < requirements[requirement].required_count}">
+                        <div v-bind:class="{'req-fulfilled':requirements[requirement].actual_count >= requirements[requirement].required_count, 'req-unfulfilled':requirements[requirement].actual_count < requirements[requirement].required_count}">
+                          <div class="req-fulfillment-text">
+                            <span class="req-fulfillment-name"> {{ formatFulfillmentName(requirements[requirement].name) }} </span> <span class="req-fulfillment-count"> {{ requirements[requirement].actual_count }} / {{ requirements[requirement].required_count }}</span>
+                          </div>
+                        </div>
+
+                        <div v-for="(course, index) in requirements[requirement].fulfillment_set" :key="index">
+                          <button class="course-buttons" type="button" @click="goToCoursePage(course)">
+                            <span style="color:#e4ded5">{{ course.substring(0, 10) }}</span> <span style="color: #e6e8e9;">{{ course.substring(10) }}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="req-recommendations" v-if="requirement in recommendations && recommendations[requirement].length > 0 && recommendations[requirement][0].fulfillment_set.length > 0">
+                        <div class="minimal-recommendations" v-for="(recommendation, recommendation_index) in recommendations[requirement]" :key="recommendation_index">
+                          <div v-if="recommendations[requirement].length > 1">
+                            <h5>{{ recommendation.specifications }}</h5>
+                          </div>
+                          <div class="minimal-recommendations-courses" v-for="(course, index) in recommendation.fulfillment_set" :key="index">
+                            <button class="minimal-course-buttons" type="button" @click="goToCoursePage(course)" draggable="true" @dragstart="schedulerDrag($event, course, -1)">
+                              <span style="color:#a9a9a9"> {{ course }} </span>
+                            </button>
                           </div>
                         </div>
                       </div>
                     </div>
-
                   </div>
+
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="column-right">
-            <div class="schedule-selection" style="font-size: 16px;">
-              <span style="color:#eb8d75">Schedule:</span> {{ scheduleSelected }} <br>
-              <span style="color:#e6bc8a">Degree:</span> {{ degreeSelected }}
+        <div class="column-right">
+          <div class="schedule-selection" style="font-size: 16px;">
+            <span style="color:#eb8d75">Schedule:</span> {{ scheduleSelected }} <br>
+            <span style="color:#e6bc8a">Degree:</span> {{ degreeSelected }}
+          </div>
+
+          <div v-if="getRequirementGroup(highlightedFulfillment) == null">
+            <div style="margin-top: 100px; color: #545f5f; font-size: 20px; font-weight: 700">
+              Click on a Fulfillment Card to View Details!
             </div>
+          </div>
 
-            <div v-if="getRequirementGroup(highlightedFulfillment) == null">
-              <div style="margin-top: 100px; color: #545f5f; font-size: 20px; font-weight: 700">
-                Click on a Fulfillment Card to View Details!
-              </div>
-            </div>
+          <div v-if="getRequirementGroup(highlightedFulfillment) != null">
 
-            <div v-if="getRequirementGroup(highlightedFulfillment) != null">
+            <div v-for="(requirement_name, index) in getRequirementGroup(highlightedFulfillment).$items" :key="index">
+              <div v-if="detailsAllPossibleCourses[requirement_name] && detailsAllPossibleCourses[requirement_name].length != 0" class="details-panel">
+                <div v-if="detailsLoading" style="color: #859393; font-size: 14px; font-weight: 600">
+                  loading details...
+                </div>
+                <h5>{{ requirement_name }}:</h5>
+                <div class="details-wildcard-title" v-for="(fulfillment, fulfillment_index) in detailsAllPossibleCourses[requirement_name]" :key="fulfillment_index">
+                  {{ fulfillment[0] }}
+                  <div class="details-info" v-for="(course, index) in fulfillment[1]" :key="index">
 
-              <div v-for="(requirement_name, index) in getRequirementGroup(highlightedFulfillment).$items" :key="index">
-                <div v-if="detailsAllPossibleCourses[requirement_name] && detailsAllPossibleCourses[requirement_name].length != 0" class="details-panel">
-                  <div v-if="detailsLoading" style="color: #859393; font-size: 14px; font-weight: 600">
-                    loading details...
-                  </div>
-                  <h5>{{ requirement_name }}:</h5>
-                  <div class="details-wildcard-title" v-for="(fulfillment, fulfillment_index) in detailsAllPossibleCourses[requirement_name]" :key="fulfillment_index">
-                    {{ fulfillment[0] }}
-                    <div class="details-info" v-for="(course, index) in fulfillment[1]" :key="index">
+                    <button v-if="coursePresentIn(course).includes(requirement_name)" class="course-buttons" type="button" @click="goToCoursePage(course)">
+                      <span style="color: #ffc680; font-weight: 600;">{{ course.substring(0, 10) }}</span> <span style="color: #85c07d; font-weight: 600;">{{ course.substring(10) }}</span> <span style="color: #9db09b; font-weight: 600;">(applied)</span>
+                    </button>
 
-                      <button v-if="coursePresentIn(course).includes(requirement_name)" class="course-buttons" type="button" @click="goToCoursePage(course)">
-                        <span style="color: #ffc680; font-weight: 600;">{{ course.substring(0, 10) }}</span> <span style="color: #85c07d; font-weight: 600;">{{ course.substring(10) }}</span> <span style="color: #9db09b; font-weight: 600;">(applied)</span>
-                      </button>
+                    <button v-if="coursePresentIn(course).length > 0 && !coursePresentIn(course).includes(requirement_name)" class="course-buttons" type="button" @click="goToCoursePage(course)">
+                      <span style="color: #c0a17c; font-weight: 600;">{{ course.substring(0, 10) }}</span> <span style="color: #ded190; font-style: italic; font-weight: 600;">{{ course.substring(10) }}</span> <span style="color: #b0a59b; font-weight: 600;">applied to: ({{ coursePresentIn(course).join(', ') }})</span>
+                    </button>
 
-                      <button v-if="coursePresentIn(course).length > 0 && !coursePresentIn(course).includes(requirement_name)" class="course-buttons" type="button" @click="goToCoursePage(course)">
-                        <span style="color: #c0a17c; font-weight: 600;">{{ course.substring(0, 10) }}</span> <span style="color: #ded190; font-style: italic; font-weight: 600;">{{ course.substring(10) }}</span> <span style="color: #b0a59b; font-weight: 600;">applied to: ({{ coursePresentIn(course).join(', ') }})</span>
-                      </button>
-
-                      <button v-if="coursePresentIn(course).length == 0" class="course-buttons" type="button" @click="goToCoursePage(course)" draggable="true" @dragstart="schedulerDrag($event, course, -1)">
-                        <span style="color:#c0a17c">{{ course.substring(0, 10) }}</span> {{ course.substring(10) }}
-                      </button>
-                    </div>
+                    <button v-if="coursePresentIn(course).length == 0" class="course-buttons" type="button" @click="goToCoursePage(course)" draggable="true" @dragstart="schedulerDrag($event, course, -1)">
+                      <span style="color:#c0a17c">{{ course.substring(0, 10) }}</span> {{ course.substring(10) }}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -207,13 +206,15 @@
           </div>
         </div>
       </div>
-    </b-container>
+    </div>
+  </div>
 </template>
   
 <script>
 
 import SearchBarModal from '../components/SearchBarModal.vue';
 import CatalogTree from '@/components/CatalogTree.vue';
+import axios from 'axios';
 
   export default {
     data() {
@@ -284,8 +285,8 @@ import CatalogTree from '@/components/CatalogTree.vue';
         async beginTemporarySession() {
           console.log('registering new accountless session');
           let start = performance.now();
-          const response = await fetch("/api/dp/newuser");
-          const hashdata = await response.json();
+          const response = await axios.get("/api/dp/newuser");
+          const hashdata = await response.data;
           const hash = hashdata.hashhead;
           const difficulty = hashdata.difficulty;
           let suffix = 1;
@@ -738,8 +739,8 @@ import CatalogTree from '@/components/CatalogTree.vue';
         ////////////////////////////////////////////////
 
         async validateSession() {
-          const response = await fetch('/api/dp/validateid/' + this.userid);
-          const responseJson = await response.json();
+          const response = await axios.get('/api/dp/validateid/' + this.userid);
+          const responseJson = await response.data;
           if (!responseJson.valid) {
             await this.beginTemporarySession();
           }
@@ -772,14 +773,13 @@ import CatalogTree from '@/components/CatalogTree.vue';
             if (attributes_replacement == null) {
               attributes_replacement = {};
             }
-            const response = await fetch('/api/dp/fulfillment', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userid, degree_name, taken_courses, attributes_replacement }),
+            const response = await axios.post('/api/dp/fulfillment', {
+                userid: userid,
+                degree_name: degree_name,
+                taken_courses: taken_courses,
+                attributes_replacement: attributes_replacement
             });
-            const fulfillment = await response.json();
+            const fulfillment = await response.data;
             if (fulfillment) {
               this.requirements = fulfillment.fulfillments;
               this.requirementGroups = fulfillment.groups;
@@ -793,8 +793,8 @@ import CatalogTree from '@/components/CatalogTree.vue';
         async getFulfillmentDetails() {
           let userid = this.userid;
           this.detailsLoading = true;
-          const response = await fetch('/api/dp/fulfillmentdetails/' + userid);
-          const results = await response.json();
+          const response = await axios.get('/api/dp/fulfillmentdetails/' + userid);
+          const results = await response.data;
           if (results) {
             this.detailsAllPossibleCourses = results.details_all_possible;
           }
@@ -806,23 +806,22 @@ import CatalogTree from '@/components/CatalogTree.vue';
             let degree_name = this.degreeSelected;
             let attributes_replacement = this.wildcardRequirements;
             let taken_courses = this.getAllCourses(this.scheduleSelected);
-            await fetch('/api/dp/recommend', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userid, degree_name, taken_courses, attributes_replacement }),
+            await axios.post('/api/dp/recommend', {
+                userid: userid,
+                degree_name: degree_name,
+                taken_courses: taken_courses,
+                attributes_replacement: attributes_replacement
             });
-            const response2 = await fetch('/api/dp/recommend/' + userid);
-            const recommendations = await response2.json();
+            const response2 = await axios.get('/api/dp/recommend/' + userid);
+            const recommendations = await response2.data;
             if (recommendations) {
               this.recommendations = recommendations;
             }
             this.recommendationsLoading = false;
         },
         async getInfo() {
-          const response  = await fetch('/api/dp/info');
-          const responseData = await response.json();
+          const response  = await axios.get('/api/dp/info');
+          const responseData = await response.data;
           this.degrees = responseData.degrees;
         },
 
