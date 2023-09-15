@@ -1,0 +1,13 @@
+src/_*
+*.pyc
+**/*__pycache__*
+logs/
+node_modules/
+.pytest_cache
+.vscode
+.DS_Store
+.python-version
+*.ipynb*
+courses20.xml
+.coverage
+*.pyc
