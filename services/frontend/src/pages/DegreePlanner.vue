@@ -971,7 +971,9 @@ import axios from 'axios';
         },
     },
     async created() {
-        console.log('DEGREE PLANNER - PROJECT OVERLORD / YACS.N 2023');
+        console.log('DEGREE PLANNER - DEGREE SENPAI 2023');
+
+        document.title = 'Degree Senpai - Degree Planner';
         
         this.mainLoading = true;
         this.loadUserid();

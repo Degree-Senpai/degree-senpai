@@ -17,6 +17,9 @@
                 data: 'test',
             };
         },
+        async created() {
+            document.title = 'Degree Senpai - Scheduler';
+        },
     }
 </script>
   

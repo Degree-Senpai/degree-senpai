@@ -1,6 +1,9 @@
 <template>
     <div class="dark">
-        <button class="home" @click="goToPage('/')"><h1>Degree Senpai</h1></button>
+        <span v-if="False">
+            <button class="home" @click="goToPage('/')"><img src="../assets/logo.png" style="width: 42px; height: 42px; align-self: center;"></button>
+        </span>
+        <button class="home" @click="goToPage('/')">Degree Senpai</button>
         <span style="width: 50px"></span>
         <button class="nav-bar-item" style="color: #9aa1ba" @click="goToPage('/scheduler')">Scheduler</button>
         <button class="nav-bar-item" style="color: #b08eb0" @click="goToPage('/degreeplanner')">Degree Planner</button>
@@ -97,8 +100,9 @@
     }
 
     .home {
-        margin-left: 20px;
         font-weight: 600;
+        margin-left: 20px;
+        font-size: 28px;
         color:rgb(167, 176, 184);
         background-color: rgba(0,0,0,0);
         border: none;
@@ -109,7 +113,7 @@
         margin-left: 12px;
         margin-right: 12px;
         padding: 4px;
-        font-weight: 500;
+        font-weight: 550;
         font-size: 20px;
         border: none;
         border-radius: 4px;
@@ -130,7 +134,7 @@
     .dropdown {
         display: inline-block;
         width: 200px;
-        height: 30px;
+        height: 20px;
     }
 
     /* Show the dropdown menu on hover */
@@ -140,7 +144,7 @@
     .dropdown-button {
         background-color: #535556;
         color: white;
-        padding: 8px;
+        padding: 4px;
         font-size: 1em;
         border: none;
         border-radius: 4px;
