@@ -90,6 +90,12 @@ async def dp_redis_purify():
 async def dp_redis_delete_schedule(scheduleid):
     await delete_schedule(scheduleid)
 
+
+@app.post("/api/setsemester")
+async def set_semester(userid:str = Body(...), semester:str = Body(...)):
+    pass
+
+
 @app.get("/api/dp/newuser")
 async def dp_new_user():
     # Generate a token and userid

@@ -1,4 +1,5 @@
 <template>
+  <Header></Header>
   <div>
     <div class="main-loading" v-if="mainLoading">
       <h1>&#32; &#32;Degree Planner</h1>
@@ -197,7 +198,7 @@
                     </button>
 
                     <button v-if="coursePresentIn(course).length == 0" class="course-buttons" type="button" @click="goToCoursePage(course)" draggable="true" @dragstart="schedulerDrag($event, course, -1)">
-                      <span style="color:#c0a17c">{{ course.substring(0, 10) }}</span> {{ course.substring(10) }}
+                      <span style="color:#c0a17c">{{ course.substring(0, 10) }}</span> <span style="color:#bbbec1">{{ course.substring(10) }}</span>
                     </button>
                   </div>
                 </div>
@@ -212,11 +213,17 @@
   
 <script>
 
-import SearchBarModal from '../components/SearchBarModal.vue';
+import SearchBarModal from '@/components/SearchBarModal.vue';
 import CatalogTree from '@/components/CatalogTree.vue';
+import Header from "@/components/PageHeader";
 import axios from 'axios';
 
   export default {
+    name: 'DegreePlanner',
+    components: { 
+      SearchBarModal, 
+      CatalogTree, 
+      Header },
     data() {
         return {
           /* -------- FLAGS AND MENU TOGGLES -------- */
@@ -982,7 +989,6 @@ import axios from 'axios';
         document.addEventListener('click', this.handleClickOutside);
         this.finishedLoading();
     },
-    components: { SearchBarModal, CatalogTree }
 };
 </script>
   
@@ -1261,6 +1267,7 @@ import axios from 'axios';
     background-color: rgba(8, 26, 32, 0.35);
   }
   .semester-block h3 {
+    text-align: center;
     font-size: 1.5em;
     color: #98bdd4;
   }
@@ -1274,6 +1281,7 @@ import axios from 'axios';
     position: relative;
   }
   .semester-block-highlighted h3 {
+    text-align: center;
     font-size: 1.5em;
     color: #98bdd4;
   }
@@ -1334,6 +1342,7 @@ import axios from 'axios';
     padding-top: 8px;
     font-size: 18px;
     font-weight: 650;
+    text-align: center;
   }
   .group-heading {
     display: flex;
@@ -1344,7 +1353,7 @@ import axios from 'axios';
     font-weight: 550;
     font-size: 16px;
     flex: 0.98;
-    padding-left: 2%;
+    text-align: center;
   }
   .group-heading .group-credit-stats-fulfilled {
     font-size: 1.8em;
@@ -1402,6 +1411,7 @@ import axios from 'axios';
     background-color: #4f433e;
   }
   .req-recommendations {
+    text-align: left;
     margin-bottom: 10px;
   }
   .minimal-course-buttons {

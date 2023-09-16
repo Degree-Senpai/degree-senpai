@@ -15,7 +15,6 @@
         data() {
             return {
                 data: 'test',
-                userid: 'testuser',
             };
         },
     }

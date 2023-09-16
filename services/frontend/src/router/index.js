@@ -1,19 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import Scheduler from '../pages/Scheduler.vue'
 import DegreePlanner from '../pages/DegreePlanner.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: Scheduler
+  },
+  {
+    path: '/scheduler',
+    name: 'scheduler',
+    component: Scheduler
   },
   {
     path: '/degreeplanner',
     name: 'DegreePlanner',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: DegreePlanner
   }
 ]

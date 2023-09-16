@@ -1,17 +1,18 @@
 <template>
-    <b-navbar>
-        <div class="dark">
-            <h1>Degree Senpai</h1>
-            <div class="region-select">
-                <div class="dropdown">
-                    <button class="dropdown-button">{{region}}</button>
-                    <div class="dropdown-content">
-                        <button class="dropdown-items" v-for="option in regions" :key="option" @click="setRegion(option)">{{ option }}</button>
-                    </div>
+    <div class="dark">
+        <button class="home" @click="goToPage('/')"><h1>Degree Senpai</h1></button>
+        <span style="width: 50px"></span>
+        <button class="nav-bar-item" style="color: #9aa1ba" @click="goToPage('/scheduler')">Scheduler</button>
+        <button class="nav-bar-item" style="color: #b08eb0" @click="goToPage('/degreeplanner')">Degree Planner</button>
+        <div class="semester-select">
+            <div class="dropdown">
+                <button class="dropdown-button">{{selectedSemester}}</button>
+                <div class="dropdown-content">
+                    <button class="dropdown-items" v-for="option in semesterOptions" :key="option" @click="setSemester(option)">{{ option }}</button>
                 </div>
             </div>
         </div>
-    </b-navbar>
+    </div>
 </template>
 
 <script>
@@ -19,49 +20,116 @@
     export default {
         data() {
             return {
-                userid: "testuser",
-                regions: ["AP", "BR", "ESPORTS", "KR", "LATAM", "NA", "EU"],
-                region: 'Select Region',
+                userid: "nulluser",
+                semesterOptions: ["2022 Fall", "2023 Spring", "2023 Fall", "2024 Spring"],
+                selectedSemester: 'Select Semester',
                 response: '',
             };
         },
         methods: {
-            async setRegion(region) {
+            saveToLocalStorage(key, value) {
+                try {
+                    localStorage.setItem(key, value);
+                    return true;
+                } catch (error) {
+                    console.error("Failed to save to localStorage:", error);
+                    return false;
+                }
+            },
+            getFromLocalStorage(key) {
+                try {
+                    const value = localStorage.getItem(key);
+                    if (value == "undefined") {
+                        return undefined;
+                    }
+                    return value;
+                } catch (error) {
+                    console.error("Failed to retrieve from localStorage:", error);
+                    return null;
+                }
+            },
+            removeFromLocalStorage(key) {
+                try {
+                    localStorage.removeItem(key);
+                    return true;
+                } catch (error) {
+                    console.error("Failed to remove from localStorage:", error);
+                    return false;
+                }
+            },
+            loadUser() {
+                let userid = this.getFromLocalStorage('userid');
+                if (userid) {
+                    this.userid = userid;
+                }
+                let selectedSemester = this.getFromLocalStorage('selectedSemester');
+                if (selectedSemester) {
+                    this.selectedSemester = selectedSemester;
+                }
+            },
+            goToPage(page) {
+                this.$router.push(page);
+            },
+            async setSemester(semester) {
                 let data = {
                     "userid": this.userid,
-                    "region": region,
+                    "semester": semester,
                 };
-                const response = await axios.post('/api/setregion', data);
+                const response = await axios.post('/api/setsemester', data);
                 this.response = response.data;
-                this.region = region;
+                this.selectedSemester = semester;
+                this.saveToLocalStorage('selectedSemester', this.selectedSemester);
             },
+        },
+        async created() {
+            this.loadUser();
         }
     };
 </script>
 
-<style>
+<style scoped>
     .dark {
+        padding-top: 8px;
+        padding-bottom: 4px;
+        align-items: center;
         background-color: rgb(33, 35, 36);
-        color:rgb(222, 207, 231);
         display: flex;
     }
 
-    .dark h1 {
-        margin-left: 50px;
+    .home {
+        margin-left: 20px;
         font-weight: 600;
+        color:rgb(167, 176, 184);
+        background-color: rgba(0,0,0,0);
+        border: none;
     }
 
-    .region-select {
+    .nav-bar-item {
+        min-width: 130px;
+        margin-left: 12px;
+        margin-right: 12px;
+        padding: 4px;
+        font-weight: 500;
+        font-size: 20px;
+        border: none;
+        border-radius: 4px;
+        background-color: rgba(0,0,0,0);
+    }
+
+    .nav-bar-item:hover {
+        background-color: rgba(184, 174, 174, 0.2);
+    }
+
+    .semester-select {
         margin-left: auto;
-        margin-right: 50px;
-        margin-top: 5px;
+        margin-right: 20px;
         justify-self: right;
         justify-content: right;
     }
 
     .dropdown {
         display: inline-block;
-        width: 120px;
+        width: 200px;
         height: 30px;
     }
 
@@ -75,9 +143,10 @@
         padding: 8px;
         font-size: 1em;
         border: none;
-        border-radius: 8px;
+        border-radius: 4px;
         cursor: pointer;
-        width: 120px;
+        width: 200px;
+        text-align: center;
     }
     .dropdown-button:hover {
         background-color: #6b6c6c;
@@ -92,7 +161,8 @@
         min-width: 160px;
         box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         z-index: 1;
-        border-radius: 8px;
+        border-radius: 4px;
+        text-align: center;
     }
 
     .dropdown-items {
