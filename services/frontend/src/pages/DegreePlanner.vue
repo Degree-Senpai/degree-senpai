@@ -1243,7 +1243,7 @@ import axios from 'axios';
     background-color:#272a2c;
     font-size: 0.8em;
     min-width: 280px;
-    max-width: 450px;
+    max-width: 400px;
   }
   .column-right::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
@@ -1326,10 +1326,10 @@ import axios from 'axios';
     backdrop-filter: blur(4px);
   }
   .fulfillment-org-block h3, .fulfillment-org-block-highlighted h3 {
-    font-size: 1.2em;
+    font-size: 12px;
   }
   .fulfillment-org-block h5, .fulfillment-org-block-highlighted h5 {
-    font-size: 1.1em;
+    font-size: 10px;
     margin: 0px;
     color: #beb8b1;
   }

@@ -7,7 +7,7 @@ from .degree_planner.dp.requirement import Requirement
 from .degree_planner.user.schedule import Schedule
 
 from .redis_manipulations import get_redis_status, purify, get_schedule, save_schedule, delete_schedule
-from .celery_app import dp_recommend, dp_fulfill, dp_fulfill_groups, dp_fulfill_details, dp_groups
+from .celery_app import dp_recommend, dp_fulfill, dp_fulfill_details
 
 import time
 import asyncio
@@ -172,7 +172,6 @@ async def dp_get_fulfillment(userid:str = Body(...), degree_name:str = Body(...)
     if degree is None:
         print(f'NO DEGREE')
         return None
-    print(f"TEMPLATES: {planner.catalog.get_templates()}")
     requirements = degree.requirements
 
     taken_courses_convert_to_elements = []

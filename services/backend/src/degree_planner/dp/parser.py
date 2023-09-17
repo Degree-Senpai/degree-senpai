@@ -48,7 +48,7 @@ class Parser():
                 scope = scope[:tabs]
                 scope_val = scope_val[:tabs]
 
-            print(f'scope: {scope}, val: {scope_val}')
+            #print(f'scope: {scope}, val: {scope_val}')
 
             if line.startswith('template '):
                 scope.append(Scope.template)
@@ -66,7 +66,7 @@ class Parser():
                 begin_quote = line.find('"') + 1
                 end_quote = line.find('"', begin_quote)
                 name = line[begin_quote:end_quote]
-                print(f'NAME :: {name}')
+                #print(f'REQUIREMENT NAME :: {name}')
                 scope_val.append(name)
 
                 requirement = Requirement(name)
@@ -95,7 +95,6 @@ class Parser():
                 prop_key, prop_val = parse_props(line)
                 if prop_key == 'specifications':
                     prop_val = parse_specifications(prop_val)
-                    print(f'parsed {prop_val}')
                     requirement_obj.add_specification(prop_val)
                     continue
                 if prop_key == 'count' and (isinstance(prop_val, int) or (isinstance(prop_val, str) and prop_val.isdigit())):
@@ -104,7 +103,8 @@ class Parser():
                     continue
                 requirement_obj.properties.update({prop_key:prop_val})
 
-        print(f"finished parsing dpt! {list(catalog.get_templates())}")
+        print(f"finished parsing dpt!")
+        #print(f"{list(catalog.get_templates())}")
 
 def stretch_scope(scope:list, scope_val:list, length) -> None:
     if length > len(scope):

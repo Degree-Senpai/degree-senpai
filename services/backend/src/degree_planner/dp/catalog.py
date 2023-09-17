@@ -16,13 +16,11 @@ class Catalog():
 
 
     def compile_template_attributes(self):
-        print(f'compiling attributes for all templates in catalog:')
         attributes = Attributes(False)
         for template in self.get_templates():
             attributes = attributes + template.attributes
 
         directory = attributes.to_directory()
-        #print(f'directory: {directory}')
         return directory
             
 

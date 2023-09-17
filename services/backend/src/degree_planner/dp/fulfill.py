@@ -187,66 +187,31 @@ def get_groups(attributes:Attributes, resolutions:dict, relevant_templates) -> d
     new_attributes = Attributes(casefold=False, delimiter='\\')
     for attribute in attributes.attributes_full_str_to_list.keys():
         attribute:str
-        print(f'ATTRIBUTE:  {attribute}')
         for orig, alt in resolutions.items():
             attribute = attribute.replace(orig, alt)
         new_attributes.add_attribute(attribute)
 
     directory = new_attributes.to_directory(True, False)
-    print(f"groups of requirements: {directory}")
+    #print(f"groups of requirements: {directory}")
     
-    print(f'before replace directory: {directory}')
+    #print(f'before replace directory: {directory}')
     templates = dict()
     for template in relevant_templates:
         templates.update({template.name.casefold():template})
     replace_directory(directory, templates)
-    print(f'replaced directory: {directory}')
+    #print(f'replaced directory: {directory}')
     return directory
 
 
 def replace_directory(directory:dict, relevant_templates:dict):
     for key, value in directory.items():
-        print(f'COMPARING {key.casefold()} AND {relevant_templates.keys()}')
+        #print(f'COMPARING {key.casefold()} AND {relevant_templates.keys()}')
         if key.casefold() in relevant_templates:
             template = relevant_templates.get(key)
-            print(f'DIRECTORY OF INNER RESOLUTION:: {template.group_attributes.to_directory(True, False)}')
+            #print(f'DIRECTORY OF INNER RESOLUTION:: {template.group_attributes.to_directory(True, False)}')
             directory.update({key:template.group_attributes.to_directory(True, False).get("")})
         elif value is not None and isinstance(value, dict):
             replace_directory(directory.get(key), relevant_templates)
-
-        
-        
-
-def get_group_fulfillment(fulfillments:dict, groups:list, forced_groupings:dict=None) -> dict:
-    tallies = dict()
-    new_groups = []
-    for group in groups:
-        group = copy.copy(group)
-        group:Requirement_Group
-        tally = dict()
-        # remake group requirements:
-        group.requirements = []
-        for requirement in fulfillments.keys():
-            if (requirement.name.split('-')[0].strip().casefold() == group.name.casefold()):
-                group.requirements.append(requirement)
-
-        group.requirements = sorted(group.requirements, key=lambda obj: obj.importance, reverse=True)
-        
-        for requirement in group.requirements:
-            requirement:Requirement
-            if fulfillments.get(requirement) is None:
-                continue
-            fulfillment_set = fulfillments.get(requirement).fulfillment_set
-            
-            for element in fulfillment_set:
-                element:Element
-                for minimum in group.minimum_requirements.keys():
-                    tally.update({minimum:int(element.attr('credits')) + tally.get(minimum, 0)})
-
-        tallies.update({group.name:tally})
-        new_groups.append(group)
-
-    return {"groups":new_groups, "tally": tallies}
 
 
 def get_fulfillment_details(elements_selected, catalog, requirements, attributes_replacement:Dict_Array=None) -> dict:
