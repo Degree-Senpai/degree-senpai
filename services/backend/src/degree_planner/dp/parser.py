@@ -82,20 +82,17 @@ class Parser():
                 scope_val.append(name)
 
             elif len(scope) and scope[-1] == Scope.template:
-                props = line.split('=')
-                prop_key, prop_val = parse_props(props)
+                prop_key, prop_val = parse_props(line)
                 if prop_key == 'attribute':
                     template_obj.attributes.add_attribute(prop_val)
                 template_obj.properties.update({prop_key:prop_val})
 
             elif len(scope) and scope[-1] == Scope.group:
-                props = line.split('=')
-                prop_key, prop_val = parse_props(props)
+                prop_key, prop_val = parse_props(line)
                 template_obj.group_attributes.add_attribute(f"{get_group_string(scope, scope_val)}{DIR_DELIMITER}{prop_key}={prop_val}")
             
             elif len(scope) and scope[-1] == Scope.requirement:
-                props = line.split('=')
-                prop_key, prop_val = parse_props(props)
+                prop_key, prop_val = parse_props(line)
                 if prop_key == 'specifications':
                     prop_val = parse_specifications(prop_val)
                     print(f'parsed {prop_val}')
@@ -144,12 +141,12 @@ def line_tabs(line:str):
         count = int(count / 4)
     return count, stripped
 
-def parse_props(props:list):
-    if len(props) < 2:
-        return props[0], ""
-    
-    prop_key = props[0].strip()
-    prop_val = props[1].strip()
+def parse_props(line:str):
+    if '=' in line:
+        prop_key = line[:line.find('=')].strip()
+        prop_val = line[line.find('=') + 1:].strip()
+    else:
+        return line.strip(), ''
     prop_val = parse_item(prop_val)
 
     return prop_key, prop_val
