@@ -10,4 +10,7 @@ COPY package.json .
 COPY package-lock.json .
 RUN npm install
 
+RUN apt-get update && \
+    apt-get -y install gcc
+
 CMD ["npm", "run", "serve"]
