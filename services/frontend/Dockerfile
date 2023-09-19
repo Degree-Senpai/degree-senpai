@@ -1,8 +1,5 @@
 FROM node:lts-alpine
 
-RUN apt-get update && \
-    apt-get -y install gcc
-
 WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
