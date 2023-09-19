@@ -10,4 +10,8 @@ COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+FROM ubuntu:latest
+RUN apt-get update && \
+    apt-get -y install gcc
+
 COPY src/ .
