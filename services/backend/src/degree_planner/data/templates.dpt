@@ -45,7 +45,7 @@ template "Computer Science"
 
         group "Communication Intensive"
             requirement "Communication Intensive (CS)"
-                specifications = "ci.true"
+                specifications = "subject.csci & ci.true"
                 replacement = true
 
     group "Math and Science"
