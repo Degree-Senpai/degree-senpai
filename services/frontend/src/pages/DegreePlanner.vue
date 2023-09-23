@@ -65,7 +65,7 @@
 
               <div class="schedule-button-container" v-for="(course, course_index) in semester" :key="`${semester_index}-${course_index}`">
                 <button class="course-buttons" type="button" @click="goToCoursePage(course)" draggable="true" @dragstart="schedulerDrag($event, course, semester_index)">
-                  <span style="color:#ffc680">{{ course.substring(0, 10) }}</span> <span style="color: #dae0e1;">{{ course.substring(10) }}</span>
+                  <span :style="[arrayToHSLStyle(subjectColors[course.substring(0, 4)], 'color', [0, 15, 1], 100), {fontWeight: 700}]">{{ course.substring(0, 10) }}</span> <span style="color: #c7cfd0;">{{ course.substring(10) }}</span>
                 </button>
                 <button class="course-remove-button" type="button" @click="remove(semester_index, course, true, true)">
                   <span style="color:#b05f6e">&#10008;</span>
@@ -139,7 +139,7 @@
 
                         <div v-for="(course, index) in requirements[requirement].fulfillment_set" :key="index">
                           <button class="course-buttons" type="button" @click="goToCoursePage(course)">
-                            <span style="color:#e4ded5">{{ course.substring(0, 10) }}</span> <span style="color: #e6e8e9;">{{ course.substring(10) }}</span>
+                            <span :style="[arrayToHSLStyle(subjectColors[course.substring(0, 4)], 'color', [0, 12, 1], 100), {fontWeight: 700}]">{{ course.substring(0, 10) }}</span> <span style="color: #e6e8e9;">{{ course.substring(10) }}</span>
                           </button>
                         </div>
                       </div>
@@ -278,6 +278,39 @@ import axios from 'axios';
         };
     },
     methods: {
+        arrayToHSLStyle(array, style, offset=null, attract_hue=null) {
+          if (array == null) {
+            return
+          }
+          if (offset == null) {
+            offset = [0,0,0];
+          }
+          let new_hue = array[0];
+          if (attract_hue != null) {
+            new_hue = (attract_hue + array[0]) / 2;
+            if (Math.abs(attract_hue - array[0]) > 180) {
+              new_hue = (new_hue + 180) % 360;
+            }
+          }
+          if (array.length >= 3) {
+            return {
+              [style]: `hsl(${new_hue + offset[0]}, ${array[1] + offset[1]}%, ${array[2] + offset[2]}%)`
+            };
+          }
+        },
+        arrayToHSLAStyle(array, style) {
+          if (array == null) {
+            return
+          }
+          if (array.length == 4) {
+            return {
+              [style]: `hsla(${array[0]}, ${array[1]}%, ${array[2]}%, ${array[3]})`
+            };
+          }
+          return {
+            [style]: `hsl(${array[0]}, ${array[1]}%, ${array[2]}%)`
+          };
+        },
         async computeHash(inputString) {
           const encoder = new TextEncoder();
           const string = encoder.encode(inputString);
@@ -1033,7 +1066,7 @@ import axios from 'axios';
   }
   .schedule-selection-button {
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     min-width: 120px;
     border: none;
@@ -1051,7 +1084,7 @@ import axios from 'axios';
 
   .schedule-selection-button-active {
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     min-width: 120px;
     border: solid 1px #74808a;
@@ -1067,7 +1100,7 @@ import axios from 'axios';
   }
   .schedule-selection-delete {
     border-radius: 8px;
-    font-size: 10px;
+    font-size: 11px;
     width: 16px;
     border: none;
     margin: 1px;
@@ -1080,7 +1113,7 @@ import axios from 'axios';
   }
   .schedule-selection-edit {
     border-radius: 8px;
-    font-size: 11px;
+    font-size: 12px;
     width: 16px;
     border: none;
     margin: 1px;
@@ -1092,14 +1125,14 @@ import axios from 'axios';
     background-color: rgba(135, 150, 155, 0.8);
   }
   .edit-schedule-input {
-    font-size: 11px;
+    font-size: 12px;
     color:#89949d;
     width: 70px;
     border: none;
     margin: 1px;
   }
   .new-schedule-input {
-    font-size: 12px;
+    font-size: 13px;
     color:#ced8e0;
     background-color:#3f474e;
     width: 130px;
@@ -1212,7 +1245,7 @@ import axios from 'axios';
     width: 100%;
   }
   .column-left {
-    flex: 8;
+    flex: 9;
     overflow-y: auto;
     padding: 4px;
     border: 1px solid #171d1a;
@@ -1225,7 +1258,7 @@ import axios from 'axios';
     display: none; /* Chrome, Safari and Opera */
   }
   .column-center {
-    flex: 11;
+    flex: 12;
     overflow-y: auto;
     padding: 4px;
     background-color:rgb(36, 37, 40);
@@ -1250,7 +1283,7 @@ import axios from 'axios';
   }
   .requirements-orggrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(315px, 1fr));
     justify-content: center;
     gap: 1px;
   }
@@ -1265,12 +1298,12 @@ import axios from 'axios';
     border-radius: 6px;
     padding: 6px;
     margin: 2px;
-    font-size: 0.75em;
+    font-size: 11px;
     background-color: rgba(8, 26, 32, 0.35);
   }
   .semester-block h3 {
     text-align: center;
-    font-size: 1.5em;
+    font-size: 15px;
     color: #98bdd4;
   }
   .semester-block-highlighted {
@@ -1278,13 +1311,13 @@ import axios from 'axios';
     border-radius: 6px;
     padding: 6px;
     margin: 2px;
-    font-size: 0.75em;
+    font-size: 11px;
     background-color: rgba(69, 94, 104, 0.35);
     position: relative;
   }
   .semester-block-highlighted h3 {
     text-align: center;
-    font-size: 1.5em;
+    font-size: 15px;
     color: #98bdd4;
   }
   .schedule-button-container {
@@ -1305,7 +1338,7 @@ import axios from 'axios';
     width: 310px;
     min-height: 60px;
     align-items: center;
-    font-size: 0.65em;
+    font-size: 11px;
     background-color: rgba(8, 26, 32, 0.35);
     transition: background-color 0.2s ease;
     backdrop-filter: blur(4px);
@@ -1321,15 +1354,15 @@ import axios from 'axios';
     width: 310px;
     min-height: 60px;
     align-items: center;
-    font-size: 0.65em;
+    font-size: 11px;
     background-color: rgba(45, 50, 52, 0.35);
     backdrop-filter: blur(4px);
   }
   .fulfillment-org-block h3, .fulfillment-org-block-highlighted h3 {
-    font-size: 12px;
+    font-size: 15px;
   }
   .fulfillment-org-block h5, .fulfillment-org-block-highlighted h5 {
-    font-size: 10px;
+    font-size: 12px;
     margin: 0px;
     color: #beb8b1;
   }
@@ -1358,12 +1391,12 @@ import axios from 'axios';
     text-align: center;
   }
   .group-heading .group-credit-stats-fulfilled {
-    font-size: 1.8em;
+    font-size: 15px;
     font-weight: 700;
     color: #86bea9;
   }
   .group-heading .group-credit-stats-unfulfilled {
-    font-size: 1.8em;
+    font-size: 15px;
     font-weight: 700;
     color: #be8886;
   }
@@ -1374,6 +1407,8 @@ import axios from 'axios';
     padding: 0px;
     width: 99%;
     margin: 1px;
+    margin-left: 3px;
+    padding-left: 3px;
     background-color: rgba(197, 211, 218, 0.01);
     transition: background-color 0.2s ease;
     text-align: left;
@@ -1385,16 +1420,17 @@ import axios from 'axios';
     display:flex;
     margin-left: 4px;
     margin-right: 4px;
-    font-size: 1.3em;
+    font-size: 11px;
     font-weight: 500;
   }
   .req-fulfillment-text .req-fulfillment-name {
     color: rgb(163, 185, 189);
+    font-size: 16px;
     flex: 1;
   }
   .req-fulfillment-text .req-fulfillment-count {
     font-weight: 650;
-    font-size: 1.2em;
+    font-size: 16px;
   }
   .minimal-fulfillment {
     padding-left: 4px;

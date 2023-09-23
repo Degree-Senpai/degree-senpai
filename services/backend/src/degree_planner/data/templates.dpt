@@ -11,6 +11,13 @@ template "Computer Science"
     attribute = "Single Major.$properties.color=rgba(61,64,69,0!dot8)"
     attribute = "Single Major.$properties.textColor=rgba(205,200,210,1)"
 
+    attribute = "Single Major.School of Engineering.Engineering"
+    attribute = "Single Major.School of Engineering.$properties.tag=Engineering"
+    attribute = "Single Major.School of Humanities.Humanities"
+    attribute = "Single Major.School of Humanities.$properties.tag=humanities"
+    attribute = "Single Major.School of Architecture.Architecture"
+    attribute = "Single Major.School of Architecture.$properties.tag=Architecture"
+
     group "CS Core"
         color = #348933 // example
         credits = 16 // example
