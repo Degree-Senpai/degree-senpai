@@ -80,12 +80,6 @@
         <div class="column-center" ref="columnCenter">
           <div v-if="scheduleSelected != ''">
             <div class="center-top-row">
-              <div ref="degreeSelect" style="width: 180px">
-                <button class="toggle-degree-selection-button" @click="toggleDegreeSelectionMenu">Degree Selection</button>
-                <div class="degree-selection-menu" v-if="openedDegreeSelectionMenu">
-                  <CatalogTree style="width: 50vw; margin-top: -10px" :nodes="degrees" :label="''" :depth="0" :subjectColors="subjectColors" :subjectGroupColors="subjectGroupColors" :labelAliases="labelAliases" :selectedDegree="degreeSelected" @setDegree="degree => setDegree(degree)"></CatalogTree>
-                </div>
-              </div>
               <div v-if="recommendationsLoading" style="color: #727d80">
                 ...loading recommendations
               </div>
@@ -95,7 +89,8 @@
               <h2>{{ group_name }}</h2>
 
               <div class="requirements-orggrid">
-                <div v-bind:class="{'fulfillment-org-block-highlighted':selectedFulfillment(group_name, minor_group_name), 'fulfillment-org-block':!selectedFulfillment(group_name, minor_group_name)}" v-for="(minor_group, minor_group_name) in filterGroups(major_group)" :key="minor_group_name" @click="toggleHighlightFulfillment(group_name, minor_group_name)">
+                <div v-bind:class="{'fulfillment-org-block-highlighted':selectedFulfillment(group_name, minor_group_name), 'fulfillment-org-block':!selectedFulfillment(group_name, minor_group_name)}" 
+                    v-for="(minor_group, minor_group_name) in filterGroups(major_group)" :key="minor_group_name" @click="toggleHighlightFulfillment(group_name, minor_group_name)">
                   <div class="group-heading">
                     <span class="group-title"> {{ formatGroupName(minor_group_name) }} </span> 
                     <span v-if="false && minor_group.minimum_requirements_credits > 0" 
@@ -158,14 +153,24 @@
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="column-right">
+        <div class="column-right-small">
+          <h2 style="color:#c6cbcf; font-size: 18px; text-align: center;"> Overview </h2>
+          <div class="overview-major-group" v-for="(major_group, group_name) in filterGroups(requirementGroups)" :key="group_name">
+            <h3>{{ group_name }}</h3>
+            <div class="overview-minor-group" v-for="(minor_group, minor_group_name) in filterGroups(major_group)" :key="minor_group_name">
+              <h5>{{ minor_group_name }}</h5>
+              <div v-bind:class="{'req-fulfilled':sumMinorGroupFulfilled(minor_group) >= sumMinorGroupTotal(minor_group), 'req-unfulfilled':sumMinorGroupFulfilled(minor_group) < sumMinorGroupTotal(minor_group)}">
+                <span style="font-weight: 600"> {{ sumMinorGroupFulfilled(minor_group) }} / {{ sumMinorGroupTotal(minor_group) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="false" class="column-right">
           <div class="schedule-selection" style="font-size: 16px;">
             <span style="color:#eb8d75">Schedule:</span> {{ scheduleSelected }} <br>
             <span style="color:#e6bc8a">Degree:</span> {{ degreeSelected }}
@@ -214,15 +219,13 @@
 <script>
 
 import SearchBarModal from '@/components/SearchBarModal.vue';
-import CatalogTree from '@/components/CatalogTree.vue';
 import Header from "@/components/PageHeader";
 import axios from 'axios';
 
   export default {
     name: 'DegreePlanner',
-    components: { 
+    components: {
       SearchBarModal, 
-      CatalogTree, 
       Header },
     data() {
         return {
@@ -494,6 +497,20 @@ import axios from 'axios';
         selectedFulfillment(group, minorGroup) {
           return group + "\\" + minorGroup == this.highlightedFulfillment
         },
+        sumMinorGroupFulfilled(minorGroup) {
+          let sum = 0;
+          for(let requirement of minorGroup.$items) {
+            sum += Math.min(this.requirements[requirement].actual_count, this.requirements[requirement].required_count);
+          }
+          return sum
+        },
+        sumMinorGroupTotal(minorGroup) {
+          let sum = 0;
+          for(let requirement of minorGroup.$items) {
+            sum += this.requirements[requirement].required_count;
+          }
+          return sum
+        },
         getRequirementGroup(fullstr) {
           if (fullstr == null) {
             return null
@@ -668,8 +685,6 @@ import axios from 'axios';
             this.switchedSchedule = false;
           }
           this.$refs.searchModal.onOpen("SEMESTER " + (semester + 1).toString());
-          document.removeEventListener('click', this.handleClickOutside);
-          document.addEventListener('click', this.handleClickOutside);
           this.$nextTick(() => {
             const targetDiv = this.$refs.columnCenter;
             const targetDivRect = targetDiv.getBoundingClientRect();
@@ -888,8 +903,6 @@ import axios from 'axios';
           return this.scheduleData[this.scheduleSelected].degree
         },
         promptDeleteSchedule(schedule) {
-          document.removeEventListener('click', this.handleClickOutside);
-          document.addEventListener('click', this.handleClickOutside);
           this.scheduleSelected = schedule;
           this.scheduleDeletionPrompt = true;
         },
@@ -904,8 +917,6 @@ import axios from 'axios';
         },
 
         renameScheduleButton(schedule, index) {
-          document.removeEventListener('click', this.handleClickOutside);
-          document.addEventListener('click', this.handleClickOutside);
           this.scheduleBeingRenamed = schedule;
           this.renameScheduleInputField = schedule;
           this.scheduleBeingRenamedIndex = index;
@@ -1245,7 +1256,7 @@ import axios from 'axios';
     width: 100%;
   }
   .column-left {
-    flex: 9;
+    flex: 3;
     overflow-y: auto;
     padding: 4px;
     border: 1px solid #171d1a;
@@ -1258,7 +1269,7 @@ import axios from 'axios';
     display: none; /* Chrome, Safari and Opera */
   }
   .column-center {
-    flex: 12;
+    flex: 4;
     overflow-y: auto;
     padding: 4px;
     background-color:rgb(36, 37, 40);
@@ -1267,6 +1278,45 @@ import axios from 'axios';
   }
   .column-center::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
+  }
+  .column-right-small {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px;
+    border: 1px solid #171d1a;
+    background-color:#272a2c;
+    font-size: 12px;
+    max-width: 150px;
+    min-width: 120px;
+  }
+  .column-right-small h3 {
+    font-size: 14px;
+    color: #d5dbdf;
+    font-weight: 700;
+    background-color: #353d44;
+    border-radius: 4px;
+    padding: 4px;
+    text-align: center;
+  }
+  .column-right-small h5 {
+    font-size: 12px;
+    font-weight: 400;
+    color: #cbcdce;
+  }
+  .column-right-small::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+  .overview-major-group {
+    background-color: rgba(8, 26, 32, 0.35);
+    border-radius: 4px;
+    border: 2px solid #43494f;
+    padding: 4px;
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
+  .overview-minor-group {
+    padding: 2px;
+    margin: 2px;
   }
   .column-right {
     flex: 5;
@@ -1283,7 +1333,7 @@ import axios from 'axios';
   }
   .requirements-orggrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(315px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
     justify-content: center;
     gap: 1px;
   }
@@ -1335,7 +1385,7 @@ import axios from 'axios';
     border-radius: 8px;
     padding: 6px;
     margin: 2px;
-    width: 310px;
+    width: 350px;
     min-height: 60px;
     align-items: center;
     font-size: 11px;
@@ -1351,7 +1401,7 @@ import axios from 'axios';
     border-radius: 8px;
     padding: 6px;
     margin: 2px;
-    width: 310px;
+    width: 350px;
     min-height: 60px;
     align-items: center;
     font-size: 11px;
