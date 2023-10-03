@@ -9,18 +9,19 @@
   </div>
 </template>
 
-<script setup>
+<script>
   export default {
-        data() {
-            return {
-              depts: [{name: "CSCI", courses: ["CS1", "DS", "FOCS", "Comp_Org"]}, {name: "HASS", courses: ["H1", "H2", "H3", "H4"]}],
-              courses: []
-            };
-        },
-        methods: {
+    data() {
+      return {
+        depts: [{name: "CSCI", courses: ["CS1", "DS", "FOCS", "Comp_Org"]}, {name: "HASS", courses: ["H1", "H2", "H3", "H4"]}],
+        courses: []
+      };
+    },
+        
+    methods: {
 
-        }
-  }
+    }
+  };
 </script>
 
 <style scoped>
