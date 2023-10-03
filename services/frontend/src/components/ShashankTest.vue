@@ -1,8 +1,10 @@
 <template>
   <div>
-    <div v-for="dept in depts">
+    <div v-for="(dept,index) in depts"
+    :key="index">
       {{ dept.name }}
-      <ul v-for="course in dept.courses">
+      <ul v-for="(course,index2) in dept.courses"
+      :key="index2">
         <li>{{ course }}</li>
       </ul>
     </div>
