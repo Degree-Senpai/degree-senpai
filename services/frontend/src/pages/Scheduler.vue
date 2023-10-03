@@ -48,7 +48,7 @@
     .full-calendar{
         position: fixed;
         top: 55%;
-        right: 0; 
+        right: 5px; 
         transform: translate(0, -50%);
     }
     .toggle-calendar-button{
@@ -60,7 +60,7 @@
     .mini-calendar{
         position: fixed;
         top: 50%;
-        right: 0; 
+        right: 5px; 
         transform: translate(0, -50%);
     }
     .top {
