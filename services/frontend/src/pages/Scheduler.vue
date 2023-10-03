@@ -1,9 +1,8 @@
 <template>
     <Header></Header>
-    <div class="course-info">
-        <h1>Course Info</h1>
+    <div>
         <div class="toggle-calendar-button">
-            <button @click="toggleComponent">
+            <button @click="toggleComponent" >
                 {{ isEnabled ? 'Disable' : 'Enable' }} Full Calendar
             </button>
         </div>
@@ -56,6 +55,15 @@
         top: 7%;
         right: 15px;
         transform: translate(0, -50%);
+        background-color: #535556;
+        color: white;
+        padding: 4px;
+        font-size: 1em;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 200px;
+        text-align: center;
     }
     .mini-calendar{
         position: fixed;
