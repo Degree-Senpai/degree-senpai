@@ -20,7 +20,7 @@ const routes = [
     component: DegreePlanner
   },
   {
-    path: 'landing',
+    path: '/landing',
     name: 'Landing',
     component: ShashankTest
   }
