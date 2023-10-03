@@ -1,53 +1,45 @@
-<!-- Calendar.vue -->
 <template>
-    <div>
-      <div class="calendar">
-        <calendar-cell
-          v-for="date in calendarDates"
-          :key="date"
-          :date="date"
-          @cell-click="handleCellClick"
-        ></calendar-cell>
-      </div>
-    </div>
-  </template>
-  
-  <script>
-  import CalendarCell from './CalendarCell.vue';
-  
-  export default {
-    components: {
-      CalendarCell,
-    },
+  <div>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Mon</th>
+          <th>Tue</th>
+          <th>Wed</th>
+          <th>Thu</th>
+          <th>Fri</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="hour in hours" :key="hour">
+          <td>{{ hour }}</td>
+          <td v-for="day in days" :key="day">
+            <calendar-cell size="small"> </calendar-cell>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+
+<script>
+import CalendarCell from './CalendarCell.vue';
+
+export default {
     data() {
-      return {
-        startDate: new Date(2023, 8, 1), // September 2023 (months are 0-based)
-        daysInMonth: 30, // Update this to match the number of days in the current month
-      };
+        return {
+            days: ['M', 'T', 'W', 'Th', 'F'],
+            hours: [8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        };
     },
-    computed: {
-      calendarDates() {
-        const dates = [];
-        for (let i = 1; i <= this.daysInMonth; i++) {
-          dates.push(new Date(this.startDate.getFullYear(), this.startDate.getMonth(), i));
-        }
-        return dates;
-      },
-    },
-    methods: {
-      handleCellClick(date) {
-        // Handle cell click here, e.g., emit an event or perform an action.
-        console.log('Clicked on date:', date);
-      },
-    },
-  };
-  </script>
-  
-  <style scoped>
-  .calendar {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 7 columns for days of the week */
-    gap: 0px;
-  }
-  </style>
-  
+    components: { CalendarCell }
+};
+</script>
+
+<style scoped>
+/* Add your CSS styling here for the calendar cells */
+.labelText{
+  size: 12px;
+}
+</style>

@@ -2,8 +2,16 @@
     <Header></Header>
     <div class="course-info">
         <h1>Course Info</h1>
-        <div class="mini-calendar" ref="miniCalContainer">
+        <div class="toggle-calendar-button">
+            <button @click="toggleComponent">
+                {{ isEnabled ? 'Disable' : 'Enable' }} Full Calendar
+            </button>
+        </div>
+        <div class="mini-calendar" ref="miniCalContainer" v-if="!isEnabled">
             <MiniCalendar></MiniCalendar>
+        </div>
+        <div class="full-calendar" v-if="isEnabled">
+            <FullCalendar></FullCalendar>
         </div>
     </div>
 </template>
@@ -11,16 +19,24 @@
 <script>
     import HeaderComponent from "@/components/PageHeader";
     import MiniCalendar from "@/components/MiniCalendar.vue";
+    import FullCalendar from "@/components/FullCalendar.vue";
     export default {
         name: 'HomePage',
         components: {
-            MiniCalendar,
-            Header: HeaderComponent,
-        },
+    MiniCalendar,
+    Header: HeaderComponent,
+    FullCalendar
+},
         data() {
             return {
                 data: 'test',
+                isEnabled: false,
             };
+        },
+        methods: {
+            toggleComponent(){
+                this.isEnabled = !this.isEnabled;
+            },
         },
         async created() {
             document.title = 'Degree Senpai - Scheduler';
@@ -29,10 +45,23 @@
 </script>
   
 <style>
-    .mini-calendar{
-        justify-content: right;
+    .full-calendar{
         position: fixed;
-        left: 85%;
+        top: 55%;
+        right: 0; 
+        transform: translate(0, -50%);
+    }
+    .toggle-calendar-button{
+        position: fixed;
+        top: 7%;
+        right: 15px;
+        transform: translate(0, -50%);
+    }
+    .mini-calendar{
+        position: fixed;
+        top: 50%;
+        right: 0; 
+        transform: translate(0, -50%);
     }
     .top {
         justify-content: left;
