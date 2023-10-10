@@ -1,7 +1,7 @@
 from celery import Celery
 from os import environ
 from .degree_planner.dp.recommend import recommend
-from .degree_planner.dp.fulfill import get_optimized_fulfillment, get_group_fulfillment, get_fulfillment_details, get_groups
+from .degree_planner.dp.fulfill import get_optimized_fulfillment, get_fulfillment_details
 from .degree_planner.dp.requirement import Requirement
 
 celery_broker = environ.get('CELERY_BROKER', 'redis://redis-celery:6379/0')
@@ -25,16 +25,6 @@ def dp_recommend(taken_courses, catalog, requirements, custom_tags=None, specifi
 def dp_fulfill(taken_courses, requirements, forced_wildcard_resolutions=None, groups=None, return_all=False, relevant_templates=None, group_attributes=None) -> dict:
     fulfillment = get_optimized_fulfillment(tuple(taken_courses), tuple(requirements), forced_wildcard_resolutions, tuple(groups), return_all, tuple(relevant_templates), group_attributes)
     return fulfillment
-
-@celery_app.task()
-def dp_groups(attributes, resolutions):
-    return get_groups(attributes, resolutions)
-
-@celery_app.task()
-def dp_fulfill_groups(fulfillments, groups, forced_groupings=None) -> dict:
-    ''' returns {'groups': , 'tally': }'''
-    fulfillment_groups = get_group_fulfillment(fulfillments, groups, forced_groupings)
-    return fulfillment_groups
 
 @celery_app.task()
 def dp_fulfill_details(taken_courses, catalog, requirements, attributes_replacement=None) -> dict:

@@ -65,7 +65,7 @@
 
               <div class="schedule-button-container" v-for="(course, course_index) in semester" :key="`${semester_index}-${course_index}`">
                 <button class="course-buttons" type="button" @click="goToCoursePage(course)" draggable="true" @dragstart="schedulerDrag($event, course, semester_index)">
-                  <span style="color:#ffc680">{{ course.substring(0, 10) }}</span> <span style="color: #dae0e1;">{{ course.substring(10) }}</span>
+                  <span :style="[arrayToHSLStyle(subjectColors[course.substring(0, 4)], 'color', [0, 15, 1], 100), {fontWeight: 700}]">{{ course.substring(0, 10) }}</span> <span style="color: #c7cfd0;">{{ course.substring(10) }}</span>
                 </button>
                 <button class="course-remove-button" type="button" @click="remove(semester_index, course, true, true)">
                   <span style="color:#b05f6e">&#10008;</span>
@@ -80,12 +80,6 @@
         <div class="column-center" ref="columnCenter">
           <div v-if="scheduleSelected != ''">
             <div class="center-top-row">
-              <div ref="degreeSelect" style="width: 180px">
-                <button class="toggle-degree-selection-button" @click="toggleDegreeSelectionMenu">Degree Selection</button>
-                <div class="degree-selection-menu" v-if="openedDegreeSelectionMenu">
-                  <CatalogTree style="width: 50vw; margin-top: -10px" :nodes="degrees" :label="''" :depth="0" :subjectColors="subjectColors" :subjectGroupColors="subjectGroupColors" :labelAliases="labelAliases" :selectedDegree="degreeSelected" @setDegree="degree => setDegree(degree)"></CatalogTree>
-                </div>
-              </div>
               <div v-if="recommendationsLoading" style="color: #727d80">
                 ...loading recommendations
               </div>
@@ -95,7 +89,8 @@
               <h2>{{ group_name }}</h2>
 
               <div class="requirements-orggrid">
-                <div v-bind:class="{'fulfillment-org-block-highlighted':selectedFulfillment(group_name, minor_group_name), 'fulfillment-org-block':!selectedFulfillment(group_name, minor_group_name)}" v-for="(minor_group, minor_group_name) in filterGroups(major_group)" :key="minor_group_name" @click="toggleHighlightFulfillment(group_name, minor_group_name)">
+                <div v-bind:class="{'fulfillment-org-block-highlighted':selectedFulfillment(group_name, minor_group_name), 'fulfillment-org-block':!selectedFulfillment(group_name, minor_group_name)}" 
+                    v-for="(minor_group, minor_group_name) in filterGroups(major_group)" :key="minor_group_name" @click="toggleHighlightFulfillment(group_name, minor_group_name)">
                   <div class="group-heading">
                     <span class="group-title"> {{ formatGroupName(minor_group_name) }} </span> 
                     <span v-if="false && minor_group.minimum_requirements_credits > 0" 
@@ -139,7 +134,7 @@
 
                         <div v-for="(course, index) in requirements[requirement].fulfillment_set" :key="index">
                           <button class="course-buttons" type="button" @click="goToCoursePage(course)">
-                            <span style="color:#e4ded5">{{ course.substring(0, 10) }}</span> <span style="color: #e6e8e9;">{{ course.substring(10) }}</span>
+                            <span :style="[arrayToHSLStyle(subjectColors[course.substring(0, 4)], 'color', [0, 12, 1], 100), {fontWeight: 700}]">{{ course.substring(0, 10) }}</span> <span style="color: #e6e8e9;">{{ course.substring(10) }}</span>
                           </button>
                         </div>
                       </div>
@@ -158,14 +153,24 @@
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="column-right">
+        <div class="column-right-small">
+          <h2 style="color:#c6cbcf; font-size: 18px; text-align: center;"> Overview </h2>
+          <div class="overview-major-group" v-for="(major_group, group_name) in filterGroups(requirementGroups)" :key="group_name">
+            <h3>{{ group_name }}</h3>
+            <div class="overview-minor-group" v-for="(minor_group, minor_group_name) in filterGroups(major_group)" :key="minor_group_name">
+              <h5>{{ minor_group_name }}</h5>
+              <div v-bind:class="{'req-fulfilled':sumMinorGroupFulfilled(minor_group) >= sumMinorGroupTotal(minor_group), 'req-unfulfilled':sumMinorGroupFulfilled(minor_group) < sumMinorGroupTotal(minor_group)}">
+                <span style="font-weight: 600"> {{ sumMinorGroupFulfilled(minor_group) }} / {{ sumMinorGroupTotal(minor_group) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="false" class="column-right">
           <div class="schedule-selection" style="font-size: 16px;">
             <span style="color:#eb8d75">Schedule:</span> {{ scheduleSelected }} <br>
             <span style="color:#e6bc8a">Degree:</span> {{ degreeSelected }}
@@ -214,15 +219,13 @@
 <script>
 
 import SearchBarModal from '@/components/SearchBarModal.vue';
-import CatalogTree from '@/components/CatalogTree.vue';
 import Header from "@/components/PageHeader";
 import axios from 'axios';
 
   export default {
     name: 'DegreePlanner',
-    components: { 
+    components: {
       SearchBarModal, 
-      CatalogTree, 
       Header },
     data() {
         return {
@@ -278,6 +281,39 @@ import axios from 'axios';
         };
     },
     methods: {
+        arrayToHSLStyle(array, style, offset=null, attract_hue=null) {
+          if (array == null) {
+            return
+          }
+          if (offset == null) {
+            offset = [0,0,0];
+          }
+          let new_hue = array[0];
+          if (attract_hue != null) {
+            new_hue = (attract_hue + array[0]) / 2;
+            if (Math.abs(attract_hue - array[0]) > 180) {
+              new_hue = (new_hue + 180) % 360;
+            }
+          }
+          if (array.length >= 3) {
+            return {
+              [style]: `hsl(${new_hue + offset[0]}, ${array[1] + offset[1]}%, ${array[2] + offset[2]}%)`
+            };
+          }
+        },
+        arrayToHSLAStyle(array, style) {
+          if (array == null) {
+            return
+          }
+          if (array.length == 4) {
+            return {
+              [style]: `hsla(${array[0]}, ${array[1]}%, ${array[2]}%, ${array[3]})`
+            };
+          }
+          return {
+            [style]: `hsl(${array[0]}, ${array[1]}%, ${array[2]}%)`
+          };
+        },
         async computeHash(inputString) {
           const encoder = new TextEncoder();
           const string = encoder.encode(inputString);
@@ -461,6 +497,20 @@ import axios from 'axios';
         selectedFulfillment(group, minorGroup) {
           return group + "\\" + minorGroup == this.highlightedFulfillment
         },
+        sumMinorGroupFulfilled(minorGroup) {
+          let sum = 0;
+          for(let requirement of minorGroup.$items) {
+            sum += Math.min(this.requirements[requirement].actual_count, this.requirements[requirement].required_count);
+          }
+          return sum
+        },
+        sumMinorGroupTotal(minorGroup) {
+          let sum = 0;
+          for(let requirement of minorGroup.$items) {
+            sum += this.requirements[requirement].required_count;
+          }
+          return sum
+        },
         getRequirementGroup(fullstr) {
           if (fullstr == null) {
             return null
@@ -635,8 +685,6 @@ import axios from 'axios';
             this.switchedSchedule = false;
           }
           this.$refs.searchModal.onOpen("SEMESTER " + (semester + 1).toString());
-          document.removeEventListener('click', this.handleClickOutside);
-          document.addEventListener('click', this.handleClickOutside);
           this.$nextTick(() => {
             const targetDiv = this.$refs.columnCenter;
             const targetDivRect = targetDiv.getBoundingClientRect();
@@ -855,8 +903,6 @@ import axios from 'axios';
           return this.scheduleData[this.scheduleSelected].degree
         },
         promptDeleteSchedule(schedule) {
-          document.removeEventListener('click', this.handleClickOutside);
-          document.addEventListener('click', this.handleClickOutside);
           this.scheduleSelected = schedule;
           this.scheduleDeletionPrompt = true;
         },
@@ -871,8 +917,6 @@ import axios from 'axios';
         },
 
         renameScheduleButton(schedule, index) {
-          document.removeEventListener('click', this.handleClickOutside);
-          document.addEventListener('click', this.handleClickOutside);
           this.scheduleBeingRenamed = schedule;
           this.renameScheduleInputField = schedule;
           this.scheduleBeingRenamedIndex = index;
@@ -1033,7 +1077,7 @@ import axios from 'axios';
   }
   .schedule-selection-button {
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     min-width: 120px;
     border: none;
@@ -1051,7 +1095,7 @@ import axios from 'axios';
 
   .schedule-selection-button-active {
     border-radius: 4px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     min-width: 120px;
     border: solid 1px #74808a;
@@ -1067,7 +1111,7 @@ import axios from 'axios';
   }
   .schedule-selection-delete {
     border-radius: 8px;
-    font-size: 10px;
+    font-size: 11px;
     width: 16px;
     border: none;
     margin: 1px;
@@ -1080,7 +1124,7 @@ import axios from 'axios';
   }
   .schedule-selection-edit {
     border-radius: 8px;
-    font-size: 11px;
+    font-size: 12px;
     width: 16px;
     border: none;
     margin: 1px;
@@ -1092,14 +1136,14 @@ import axios from 'axios';
     background-color: rgba(135, 150, 155, 0.8);
   }
   .edit-schedule-input {
-    font-size: 11px;
+    font-size: 12px;
     color:#89949d;
     width: 70px;
     border: none;
     margin: 1px;
   }
   .new-schedule-input {
-    font-size: 12px;
+    font-size: 13px;
     color:#ced8e0;
     background-color:#3f474e;
     width: 130px;
@@ -1212,7 +1256,7 @@ import axios from 'axios';
     width: 100%;
   }
   .column-left {
-    flex: 8;
+    flex: 3;
     overflow-y: auto;
     padding: 4px;
     border: 1px solid #171d1a;
@@ -1225,7 +1269,7 @@ import axios from 'axios';
     display: none; /* Chrome, Safari and Opera */
   }
   .column-center {
-    flex: 11;
+    flex: 4;
     overflow-y: auto;
     padding: 4px;
     background-color:rgb(36, 37, 40);
@@ -1235,6 +1279,45 @@ import axios from 'axios';
   .column-center::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
   }
+  .column-right-small {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px;
+    border: 1px solid #171d1a;
+    background-color:#272a2c;
+    font-size: 12px;
+    max-width: 150px;
+    min-width: 120px;
+  }
+  .column-right-small h3 {
+    font-size: 14px;
+    color: #d5dbdf;
+    font-weight: 700;
+    background-color: #353d44;
+    border-radius: 4px;
+    padding: 4px;
+    text-align: center;
+  }
+  .column-right-small h5 {
+    font-size: 12px;
+    font-weight: 400;
+    color: #cbcdce;
+  }
+  .column-right-small::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+  .overview-major-group {
+    background-color: rgba(8, 26, 32, 0.35);
+    border-radius: 4px;
+    border: 2px solid #43494f;
+    padding: 4px;
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
+  .overview-minor-group {
+    padding: 2px;
+    margin: 2px;
+  }
   .column-right {
     flex: 5;
     overflow-y: auto;
@@ -1243,14 +1326,14 @@ import axios from 'axios';
     background-color:#272a2c;
     font-size: 0.8em;
     min-width: 280px;
-    max-width: 450px;
+    max-width: 400px;
   }
   .column-right::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
   }
   .requirements-orggrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
     justify-content: center;
     gap: 1px;
   }
@@ -1265,12 +1348,12 @@ import axios from 'axios';
     border-radius: 6px;
     padding: 6px;
     margin: 2px;
-    font-size: 0.75em;
+    font-size: 11px;
     background-color: rgba(8, 26, 32, 0.35);
   }
   .semester-block h3 {
     text-align: center;
-    font-size: 1.5em;
+    font-size: 15px;
     color: #98bdd4;
   }
   .semester-block-highlighted {
@@ -1278,13 +1361,13 @@ import axios from 'axios';
     border-radius: 6px;
     padding: 6px;
     margin: 2px;
-    font-size: 0.75em;
+    font-size: 11px;
     background-color: rgba(69, 94, 104, 0.35);
     position: relative;
   }
   .semester-block-highlighted h3 {
     text-align: center;
-    font-size: 1.5em;
+    font-size: 15px;
     color: #98bdd4;
   }
   .schedule-button-container {
@@ -1302,10 +1385,10 @@ import axios from 'axios';
     border-radius: 8px;
     padding: 6px;
     margin: 2px;
-    width: 310px;
+    width: 350px;
     min-height: 60px;
     align-items: center;
-    font-size: 0.65em;
+    font-size: 11px;
     background-color: rgba(8, 26, 32, 0.35);
     transition: background-color 0.2s ease;
     backdrop-filter: blur(4px);
@@ -1318,18 +1401,18 @@ import axios from 'axios';
     border-radius: 8px;
     padding: 6px;
     margin: 2px;
-    width: 310px;
+    width: 350px;
     min-height: 60px;
     align-items: center;
-    font-size: 0.65em;
+    font-size: 11px;
     background-color: rgba(45, 50, 52, 0.35);
     backdrop-filter: blur(4px);
   }
   .fulfillment-org-block h3, .fulfillment-org-block-highlighted h3 {
-    font-size: 1.2em;
+    font-size: 15px;
   }
   .fulfillment-org-block h5, .fulfillment-org-block-highlighted h5 {
-    font-size: 1.1em;
+    font-size: 12px;
     margin: 0px;
     color: #beb8b1;
   }
@@ -1358,12 +1441,12 @@ import axios from 'axios';
     text-align: center;
   }
   .group-heading .group-credit-stats-fulfilled {
-    font-size: 1.8em;
+    font-size: 15px;
     font-weight: 700;
     color: #86bea9;
   }
   .group-heading .group-credit-stats-unfulfilled {
-    font-size: 1.8em;
+    font-size: 15px;
     font-weight: 700;
     color: #be8886;
   }
@@ -1374,6 +1457,8 @@ import axios from 'axios';
     padding: 0px;
     width: 99%;
     margin: 1px;
+    margin-left: 3px;
+    padding-left: 3px;
     background-color: rgba(197, 211, 218, 0.01);
     transition: background-color 0.2s ease;
     text-align: left;
@@ -1385,16 +1470,17 @@ import axios from 'axios';
     display:flex;
     margin-left: 4px;
     margin-right: 4px;
-    font-size: 1.3em;
+    font-size: 11px;
     font-weight: 500;
   }
   .req-fulfillment-text .req-fulfillment-name {
     color: rgb(163, 185, 189);
+    font-size: 16px;
     flex: 1;
   }
   .req-fulfillment-text .req-fulfillment-count {
     font-weight: 650;
-    font-size: 1.2em;
+    font-size: 16px;
   }
   .minimal-fulfillment {
     padding-left: 4px;
