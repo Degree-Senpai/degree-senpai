@@ -12,6 +12,9 @@
         <div class="full-calendar" v-if="isEnabled">
             <FullCalendar></FullCalendar>
         </div>
+        <div v-if="showSidebar">
+            <SideBar></SideBar>
+        </div>
     </div>
 </template>
   
@@ -19,22 +22,28 @@
     import HeaderComponent from "@/components/PageHeader";
     import MiniCalendar from "@/components/MiniCalendar.vue";
     import FullCalendar from "@/components/FullCalendar.vue";
+    import SideBar from "@/components/SideBar.vue";
     export default {
         name: 'HomePage',
         components: {
     MiniCalendar,
     Header: HeaderComponent,
-    FullCalendar
+    FullCalendar,
+    SideBar,
 },
         data() {
             return {
                 data: 'test',
                 isEnabled: false,
+                showSidebar: false,
             };
         },
         methods: {
             toggleComponent(){
                 this.isEnabled = !this.isEnabled;
+            },
+            toggleSidebar() {
+                this.showSidebar = !this.showSidebar;
             },
         },
         async created() {

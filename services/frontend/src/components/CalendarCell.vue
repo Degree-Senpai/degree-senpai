@@ -6,19 +6,29 @@
   </template>
   
   <script>
+import Scheduler from '@/pages/Scheduler.vue';
+
   export default {
     props: {
-      size: {
-        type: String,
-        default: "default",
-      }
+        size: {
+            type: String,
+            default: "default",
+        }
+    },
+    data() {
+        return {
+            
+        };
     },
     methods: {
-      handleCellClick() {
-        this.$emit('cell-click', this.date);
-      },
+        handleCellClick() {
+            this.$emit('cell-click', this.date);
+            this.$root.$emit(Scheduler.toggleSidebar())
+        },
+
     },
-  };
+    components: {  }
+};
   </script>
   
   <style scoped>
