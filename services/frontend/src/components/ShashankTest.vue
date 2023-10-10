@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div v-for="(dept,index) in depts"
+  <div class="grid">
+    <div class="dept" v-for="(dept,index) in depts"
     :key="index">
       {{ dept.name }}
       <ul v-for="(course,index2) in dept.courses"
@@ -15,7 +15,8 @@
   export default {
     data() {
       return {
-        depts: [{name: "CSCI", courses: ["CS1", "DS", "FOCS", "Comp_Org"]}, {name: "HASS", courses: ["H1", "H2", "H3", "H4"]}],
+        depts: [{name: "CSCI", courses: ["CS1", "DS", "FOCS", "Comp_Org", "r", "r2", "34"]}, {name: "HASS", courses: ["H1", "H2", "H3", "H4"]},
+        {name: "PHYS", courses: ["Physics 1", "Physics 2", "Physics 3", "Physics 4"]}, {name: "ECON", courses: ["E1", "E2", "E3", "E4"]}],
         courses: []
       };
     },
@@ -27,5 +28,12 @@
 </script>
 
 <style scoped>
-
+  .dept {
+    grid-column: span 1;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 200px);
+    justify-content: space-around;
+  }
 </style>
