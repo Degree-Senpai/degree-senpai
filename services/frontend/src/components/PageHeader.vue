@@ -7,6 +7,12 @@
         <span style="width: 50px"></span>
         <button class="nav-bar-item" style="color: #9aa1ba" @click="goToPage('/scheduler')">Scheduler</button>
         <button class="nav-bar-item" style="color: #b08eb0" @click="goToPage('/degreeplanner')">Degree Planner</button>
+        <div class="degree-select" ref="degreeSelect" style="width: 180px">
+            <button class="toggle-degree-selection-button" @click="toggleDegreeSelectionMenu"><span class="degree-selected"> {{ degreeSelectedDisplay() }} </span></button>
+            <div class="degree-selection-menu" v-if="openedDegreeSelectionMenu">
+                <CatalogTree style="width: 500px; margin-top: -10px; margin-left: -450px;" :nodes="degrees" :label="''" :depth="0" :subjectColors="subjectColors" :subjectGroupColors="subjectGroupColors" :labelAliases="labelAliases" :selectedDegree="degreeSelected" @setDegree="degree => setDegree(degree)"></CatalogTree>
+            </div>
+        </div>
         <div class="semester-select">
             <div class="dropdown">
                 <button class="dropdown-button">{{selectedSemester}}</button>
@@ -20,16 +26,59 @@
 
 <script>
     import axios from 'axios';
+    import CatalogTree from '@/components/CatalogTree.vue';
     export default {
+        components: { 
+            CatalogTree,
+        },
         data() {
             return {
                 userid: "nulluser",
                 semesterOptions: ["2022 Fall", "2023 Spring", "2023 Fall", "2024 Spring"],
                 selectedSemester: 'Select Semester',
                 response: '',
+
+                subjectColors: {},
+                subjectGroupColors: {},
+
+                labelAliases: {},
+
+                degrees: {}, // follow a folder structure
+                degreeSelected: '',
+
+                openedDegreeSelectionMenu: false,
             };
         },
         methods: {
+            async getInfo() {
+                const response  = await axios.get('/api/dp/info');
+                const responseData = await response.data;
+                this.degrees = responseData.degrees;
+            },
+            degreeSelectedDisplay() {
+                if (this.degreeSelected == '') {
+                    return 'Select Degree'
+                }
+                return this.degreeSelected
+            },
+            handleClickOutside(event) {
+                if (this.$refs.degreeSelect && !this.$refs.degreeSelect.contains(event.target)) {
+                    this.openedDegreeSelectionMenu = false;
+                }
+            },
+            toggleDegreeSelectionMenu() {
+                this.openedDegreeSelectionMenu = (!this.openedDegreeSelectionMenu);
+            },
+            setDegree(degreeName) {
+                if (degreeName.toLowerCase() == this.degreeSelected.toLowerCase()) {
+                    return
+                }
+                this.degreeSelected = degreeName;
+                if (this.openedDegreeSelectionMenu) {
+                    this.openedDegreeSelectionMenu = false;
+                }
+                console.log('setting degree to ' + degreeName)
+            },
             saveToLocalStorage(key, value) {
                 try {
                     localStorage.setItem(key, value);
@@ -83,14 +132,63 @@
                 this.selectedSemester = semester;
                 this.saveToLocalStorage('selectedSemester', this.selectedSemester);
             },
+            setLabelAliases() {
+                this.labelAliases = {
+                    "computer science": "CSCI",
+                    "electrical engineering": "ECSE",
+                    "mechanical engineering": "MANE",
+                    "electronic arts": "ARTS",
+                    "architecture": "ARCH",
+                    "business and management": "MGMT",
+
+                    "computer science + computer engineering": "CSCI",
+
+                    "school of engineering": "engineering",
+                    "school of science": "science",
+                    "school of humanities": "humanities",
+                    "school of architecture": "architecture",
+                    "lally school of management": "business"
+                };
+            },
         },
         async created() {
             this.loadUser();
+            this.setLabelAliases();
+            this.getInfo();
+            document.addEventListener('click', this.handleClickOutside);
         }
     };
 </script>
 
 <style scoped>
+    .degree-select {
+        width: 200px;
+        justify-self: right;
+        justify-content: right;
+    }
+    .degree-selection-menu {
+        position: absolute;
+        z-index: 99999;
+    }
+    .toggle-degree-selection-button {
+        padding: 6px;
+        padding-left: 12px;
+        padding-right: 12px;
+        border-radius: 4px;
+        border: none;
+        font-size: 16px;
+        color:#9faab2;
+        background-color: #323434;
+    }
+    .toggle-degree-selection-button:hover {
+        color:#a7aeb5;
+        background-color: #56585e;
+    }
+    .degree-selected {
+        color: #b2ab9f;
+        font-size: 18;
+        font-weight: 600;
+    }
     .dark {
         padding-top: 8px;
         padding-bottom: 4px;
@@ -125,6 +223,7 @@
     }
 
     .semester-select {
+        width: 200px;
         margin-left: auto;
         margin-right: 20px;
         justify-self: right;
