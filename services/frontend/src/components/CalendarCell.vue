@@ -23,8 +23,8 @@
   
   <style scoped>
   .small {
-    width: 40px;
-    height: 30px;
+    width: 2vw;
+    height: 4vh;
     border: 2px solid #ccc;
     display: flex;
     justify-content: center;
@@ -33,8 +33,10 @@
   }
 
   .large{
-    width: 230px;
-    height: 60px;
+    width: 8vw;
+    min-width: 80px;
+    height: 6vh;
+    min-height: 40px;
     border: 2px solid #ccc;
     display: flex;
     justify-content: center;

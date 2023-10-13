@@ -4,11 +4,11 @@
       <thead>
         <tr>
           <th></th>
-          <th>Mon</th>
-          <th>Tue</th>
-          <th>Wed</th>
-          <th>Thu</th>
-          <th>Fri</th>
+          <th>M</th>
+          <th>T</th>
+          <th>W</th>
+          <th>R</th>
+          <th>F</th>
         </tr>
       </thead>
       <tbody>
