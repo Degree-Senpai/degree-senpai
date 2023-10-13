@@ -33,7 +33,8 @@
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 200px);
-    justify-content: space-around;
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
+    grid-auto-rows: 200px;
   }
 </style>
