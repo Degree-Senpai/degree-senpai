@@ -1,6 +1,6 @@
 <template>
     <Header></Header>
-    <div>
+    <div ref="SchedulerRef">
         <div class="toggle-calendar-button">
             <button @click="toggleComponent" >
                 {{ isEnabled ? 'Disable' : 'Enable' }} Full Calendar
@@ -12,9 +12,7 @@
         <div class="full-calendar" v-if="isEnabled">
             <FullCalendar></FullCalendar>
         </div>
-        <div v-if="showSidebar">
-            <SideBar></SideBar>
-        </div>
+        <SideBar v-if="showSidebar"></SideBar>
     </div>
 </template>
   

@@ -1,12 +1,13 @@
-<!-- CalendarCell.vue -->
 <template>
-    <div :class="['cell', size]" @click="handleCellClick">
+    <div :class="['cell', size]" @click="handleCellClick" ref="CalendarCell">
       {{ date }}
     </div>
   </template>
   
   <script>
 import Scheduler from '@/pages/Scheduler.vue';
+
+
 
   export default {
     props: {
@@ -17,17 +18,17 @@ import Scheduler from '@/pages/Scheduler.vue';
     },
     data() {
         return {
-            
+          showSidebar: false,
         };
     },
     methods: {
         handleCellClick() {
             this.$emit('cell-click', this.date);
-            this.$root.$emit(Scheduler.toggleSidebar())
+            Scheduler.$refs.SchedulerRef.toggleSidebar();
+            //this.toggleSidebar();
         },
-
     },
-    components: {  }
+    components: { }
 };
   </script>
   
@@ -35,7 +36,7 @@ import Scheduler from '@/pages/Scheduler.vue';
   .small {
     width: 40px;
     height: 30px;
-    border: 2px solid #ccc;
+    border: 1px solid #ccc;
     display: flex;
     justify-content: center;
     align-items: center;
