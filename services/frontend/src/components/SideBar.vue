@@ -1,6 +1,6 @@
 <template>
     <aside class="sidebar">
-      <!-- Sidebar content goes here -->
+      
     </aside>
   </template>
   
@@ -33,7 +33,6 @@
     text-decoration: none;
   }
   
-  /* Add styles for active link, e.g., using Vue Router's "exact" prop */
   .sidebar .router-link-active {
     background-color: #555;
   }

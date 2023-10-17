@@ -15,7 +15,7 @@
           <tr v-for="hour in hours" :key="hour">
             <td>{{ hour }}</td>
             <td v-for="day in days" :key="day">
-              <calendar-cell size="large"></calendar-cell>
+              <CalendarCell @custom-event="toggleSidebar" size="large" @click="$emit('custom-event')"></CalendarCell>
             </td>
           </tr>
         </tbody>

@@ -1,19 +1,16 @@
 <template>
     <Header></Header>
-    <div ref="SchedulerRef">
-        <div class="toggle-calendar-button">
-            <button @click="toggleComponent" >
+        <button class="toggle-calendar-button" @click="toggleComponent">
                 {{ isEnabled ? 'Disable' : 'Enable' }} Full Calendar
-            </button>
-        </div>
+        </button>
         <div class="mini-calendar" ref="miniCalContainer" v-if="!isEnabled">
-            <MiniCalendar></MiniCalendar>
+            <MiniCalendar @custom-event="toggleSidebar"></MiniCalendar>
         </div>
         <div class="full-calendar" v-if="isEnabled">
-            <FullCalendar></FullCalendar>
+            <FullCalendar @custom-event="toggleSidebar" ></FullCalendar>
         </div>
         <SideBar v-if="showSidebar"></SideBar>
-    </div>
+        
 </template>
   
 <script>
@@ -58,19 +55,14 @@
         transform: translate(0, -50%);
     }
     .toggle-calendar-button{
-        position: fixed;
-        top: 7%;
-        right: 15px;
-        transform: translate(0, -50%);
-        background-color: #535556;
-        color: white;
-        padding: 4px;
-        font-size: 1em;
-        border: none;
+        padding: 6px;
+        padding-left: 12px;
+        padding-right: 12px;
         border-radius: 4px;
-        cursor: pointer;
-        width: 200px;
-        text-align: center;
+        border: none;
+        font-size: 16px;
+        color:#b6bec4;
+        background-color: #1b1d1d;
     }
     .mini-calendar{
         position: fixed;

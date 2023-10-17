@@ -1,11 +1,10 @@
 <template>
-    <div :class="['cell', size]" @click="handleCellClick" ref="CalendarCell">
+    <div :class="['cell', size]" @click="$emit('custom-event')" ref="CalendarCell">
       {{ date }}
     </div>
   </template>
   
   <script>
-import Scheduler from '@/pages/Scheduler.vue';
 
 
 
@@ -23,8 +22,9 @@ import Scheduler from '@/pages/Scheduler.vue';
     },
     methods: {
         handleCellClick() {
+            this.$emit('custom-event');
             this.$emit('cell-click', this.date);
-            Scheduler.$refs.SchedulerRef.toggleSidebar();
+            
             //this.toggleSidebar();
         },
     },
