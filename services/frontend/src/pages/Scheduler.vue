@@ -1,31 +1,32 @@
 <template>
     <Header></Header>
     <div>
-        <div class="toggle-calendar-button">
-            <button @click="toggleComponent" >
-                {{ isEnabled ? 'Disable' : 'Enable' }} Full Calendar
-            </button>
-        </div>
+        <button class="toggle-calendar-button" @click="toggleComponent" >
+            {{ isEnabled ? 'Disable' : 'Enable' }} Full Calendar
+        </button>
         <div class="mini-calendar" ref="miniCalContainer" v-if="!isEnabled">
-            <MiniCalendar></MiniCalendar>
+            miniCalendar
+            {{ "<MiniCalendar></MiniCalendar>" }}
         </div>
-        <div class="full-calendar" v-if="isEnabled">
-            <FullCalendar></FullCalendar>
+        <div class="full-calendar-container" v-show="isEnabled">
+            <div class="full-calendar">
+                <FullCalendar/>
+            </div>
         </div>
     </div>
 </template>
   
 <script>
     import HeaderComponent from "@/components/PageHeader";
-    import MiniCalendar from "@/components/MiniCalendar.vue";
+    //import MiniCalendar from "@/components/MiniCalendar.vue";
     import FullCalendar from "@/components/FullCalendar.vue";
     export default {
         name: 'HomePage',
         components: {
-    MiniCalendar,
-    Header: HeaderComponent,
-    FullCalendar
-},
+            //MiniCalendar,
+            Header: HeaderComponent,
+            FullCalendar
+        },
         data() {
             return {
                 data: 'test',
@@ -43,18 +44,33 @@
     }
 </script>
   
-<style>
+<style scoped>
+    .full-calendar-container{
+        position: absolute;
+        width: 55vw;
+        height:90vh;
+        margin: 4px;
+        padding: 4px;
+        margin-top: 10px;
+        right: 10px;
+        background-color:#3e3f41;
+        border: #262628 2px;
+        border-radius: 2px;
+    }
     .full-calendar{
-        position: fixed;
-        top: 55%;
-        right: 5px; 
-        transform: translate(0, -50%);
+        position: absolute;
+        background-color: #434548;
+        border-radius: 2px;
+        left: 28px;
+        right: 4px;
+        top: 4px;
+        bottom: 24px;
     }
     .toggle-calendar-button{
         position: fixed;
-        top: 7%;
+        z-index: 9999;
+        top: 6%;
         right: 15px;
-        transform: translate(0, -50%);
         background-color: #535556;
         color: white;
         padding: 4px;
