@@ -9,6 +9,7 @@
         </button>
         Displaying schedule {{ this.selectedSchedule + 1 }} / {{ this.generatedSchedules.length }}
       </div>
+      <div :style="writeBackground()"></div>
       <div class="block" v-for="(block, block_index) in blocks" :key="block_index" :style="writeStyle(block)">
         <div class="block-head" :style="writeInnerStyle(block)"> {{ allCourses[block.crn].name }}</div>
         <div class="block-details">
@@ -162,7 +163,7 @@
         },
 
         writeStyle(calendarBlockElement) {
-          let borderColor = this.modifyHSLA(calendarBlockElement.color, 0, 5, -10, 0);
+          let borderColor = this.modifyHSLA(calendarBlockElement.color, 0, 10, -30, 0);
           let backgroundColor = calendarBlockElement.color;
           return {
             backgroundColor: backgroundColor,
@@ -181,6 +182,35 @@
             backgroundColor: backgroundColor,
             color: textColor
           };
+        },
+
+        writeBackground() {
+          return {
+            zIndex: 999,
+            height: '100%',
+            width: '100%',
+            border: '4px solid #000000',
+            position: 'absolute',
+            background: `
+              linear-gradient(-90deg, rgba(0,0,0,.05) 1px, transparent 1px),
+              linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px), 
+              linear-gradient(-90deg, rgba(0, 0, 0, .04) 1px, transparent 1px),
+              linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
+              linear-gradient(transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
+              linear-gradient(-90deg, #aaa 1px, transparent 1px),
+              linear-gradient(-90deg, transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
+              linear-gradient(#aaa 1px, transparent 1px),
+              #f2f2f2`,
+            backgroundSize: `
+              4px 4px,
+              4px 4px,
+              80px 80px,
+              80px 80px,
+              80px 80px,
+              80px 80px,
+              80px 80px,
+              80px 80px`
+          }
         },
 
         testData() {
@@ -215,17 +245,19 @@
     }
     .block {
       color: #000001;
+      z-index: 9999;
       border-radius: 2px;
       position: absolute;
     }
     .block-head {
       font-size: 11px;
       font-weight: 700;
+      min-height: 24px;
       position: relative;
       border-radius: 2px;
       padding: 2px;
       width: 100%;
-      line-height: 1.3;
+      line-height: 1.2;
     }
     .block-details {
       font-size: 10px;
@@ -234,4 +266,31 @@
       position: relative;
       line-height: 1.2;
     }
+
+    .calendar-background {
+      z-index: 999;
+      height: 100%;
+      width: 100%;
+      border: 4px solid #000000;
+      position: absolute;
+      background:
+        linear-gradient(-90deg, rgba(0,0,0,.05) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px), 
+        linear-gradient(-90deg, rgba(0, 0, 0, .04) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
+        linear-gradient(transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
+        linear-gradient(-90deg, #aaa 1px, transparent 1px),
+        linear-gradient(-90deg, transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
+        linear-gradient(#aaa 1px, transparent 1px),
+        #f2f2f2;
+      background-size:
+        4px 4px,
+        4px 4px,
+        80px 80px,
+        80px 80px,
+        80px 80px,
+        80px 80px,
+        80px 80px,
+        80px 80px;
+      }
   </style>
