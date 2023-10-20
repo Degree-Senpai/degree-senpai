@@ -32,6 +32,8 @@
     grid-column: span 1;
   }
   .grid {
+    max-width: 60rem;
+    margin: 0 auto;
     display: grid;
     grid-gap: 10px;
     grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
