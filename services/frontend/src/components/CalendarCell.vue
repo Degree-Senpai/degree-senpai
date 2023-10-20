@@ -1,5 +1,5 @@
 <template>
-    <div :class="['cell', size]" @click="$emit('custom-event')" ref="CalendarCell">
+    <div :class="['cell', size]" @click="$emit('custom-event', 'custom-event2')" ref="CalendarCell">
       {{ date }}
     </div>
   </template>
@@ -13,16 +13,27 @@
         size: {
             type: String,
             default: "default",
+        },
+        cellDay: {
+            type: String,
+            default: "Default",
+        },
+        cellHour: {
+            type: String,
+            default: "Default"
         }
     },
     data() {
         return {
           showSidebar: false,
+          day: "Default",
+          hour: "Default",
         };
     },
     methods: {
         handleCellClick() {
             this.$emit('custom-event');
+            this.$emit('custom-event2', this.day, this.hour)
             this.$emit('cell-click', this.date);
             
             //this.toggleSidebar();

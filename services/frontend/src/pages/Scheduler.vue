@@ -4,12 +4,12 @@
                 {{ isEnabled ? 'Disable' : 'Enable' }} Full Calendar
         </button>
         <div class="mini-calendar" ref="miniCalContainer" v-if="!isEnabled">
-            <MiniCalendar @custom-event="toggleSidebar"></MiniCalendar>
+            <MiniCalendar @custom-event="toggleSidebar" @custom-event2="changeDayandHour(day, hour)"></MiniCalendar>
         </div>
         <div class="full-calendar" v-if="isEnabled">
-            <FullCalendar @custom-event="toggleSidebar" ></FullCalendar>
+            <FullCalendar @custom-event="toggleSidebar" @custom-event2="changeDayandHour(day, hour)" ></FullCalendar>
         </div>
-        <SideBar v-if="showSidebar"></SideBar>
+        <SideBar v-if="showSidebar" day=dayInput hour=hourInput></SideBar>
         
 </template>
   
@@ -31,6 +31,8 @@
                 data: 'test',
                 isEnabled: false,
                 showSidebar: false,
+                dayInput: 'test',
+                hourInput: 'test',
             };
         },
         methods: {
@@ -40,6 +42,10 @@
             toggleSidebar() {
                 this.showSidebar = !this.showSidebar;
             },
+            changeDayandHour(day, hour){
+                this.dayInput = day;
+                this.hourInput = hour;
+            }
         },
         async created() {
             document.title = 'Degree Senpai - Scheduler';
@@ -50,7 +56,7 @@
 <style>
     .full-calendar{
         position: fixed;
-        top: 55%;
+        top: 52%;
         right: 5px; 
         transform: translate(0, -50%);
     }

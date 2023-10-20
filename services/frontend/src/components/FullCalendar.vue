@@ -15,7 +15,7 @@
           <tr v-for="hour in hours" :key="hour">
             <td>{{ hour }}</td>
             <td v-for="day in days" :key="day">
-              <CalendarCell @custom-event="toggleSidebar" size="large" @click="$emit('custom-event')"></CalendarCell>
+              <CalendarCell @custom-event="toggleSidebar" @custom-event2="changeDayandHour(day, hour)" @click="$emit('custom-event', 'custom-event2')" size="large" cellDay=day.name cellHour=hour.name></CalendarCell>
             </td>
           </tr>
         </tbody>
@@ -30,7 +30,7 @@
       data() {
           return {
               days: ['M', 'T', 'W', 'Th', 'F'],
-              hours: ["8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM"],
+              hours: ["8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM", "6PM", "7PM", "8PM", "9PM", "10PM"],
           };
       },
       components: { CalendarCell }

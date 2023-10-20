@@ -1,9 +1,26 @@
 <template>
     <aside class="sidebar">
-      
+      <div>
+        Available Classes at {{ hour }} on a {{ day }}:
+      </div>
     </aside>
   </template>
   
+  <script>
+  export default{
+    props: {
+      day : {
+        type:String,
+        default: "DefaultDay",
+      },
+      hour : {
+        type: String,
+        default: "DefaultHour"
+      }
+    }
+  }
+
+  </script>
   <style scoped>
   .sidebar {
     width: 550px;
@@ -18,20 +35,7 @@
     overflow-y: auto;
     z-index: 100;
   }
-  
-  .sidebar ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .sidebar li {
-    padding: 10px;
-  }
-  
-  .sidebar a {
-    color: white;
-    text-decoration: none;
-  }
+
   
   .sidebar .router-link-active {
     background-color: #555;
