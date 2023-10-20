@@ -34,10 +34,13 @@
   .grid {
     max-width: 60rem;
     margin: 0 auto;
-    display: grid;
+    display: column;
+    columns: 2;
     grid-gap: 10px;
-    grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
-    grid-auto-rows: 200px;
-    grid-template-rows: masonry;
+  }
+
+  .grid > * {
+    break-inside: avoid;
+    margin-bottom: 1em;
   }
 </style>
