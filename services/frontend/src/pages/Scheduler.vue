@@ -53,18 +53,16 @@
         padding: 4px;
         margin-top: 10px;
         right: 10px;
-        background-color:#3e3f41;
-        border: #262628 2px;
+        border: 2px solid #262628;
         border-radius: 2px;
     }
     .full-calendar{
         position: absolute;
-        background-color: #434548;
         border-radius: 2px;
-        left: 28px;
+        left: 48px;
         right: 4px;
         top: 4px;
-        bottom: 24px;
+        bottom: 4px;
     }
     .toggle-calendar-button{
         position: fixed;

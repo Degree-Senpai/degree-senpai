@@ -9,13 +9,15 @@
         </button>
         Displaying schedule {{ this.selectedSchedule + 1 }} / {{ this.generatedSchedules.length }}
       </div>
-      <div :style="writeBackground()"></div>
-      <div class="block" v-for="(block, block_index) in blocks" :key="block_index" :style="writeStyle(block)">
-        <div class="block-head" :style="writeInnerStyle(block)"> {{ allCourses[block.crn].name }}</div>
-        <div class="block-details">
-          {{ allCourses[block.crn].room }} <br>
-          {{ allCourses[block.crn].professor }}
+      <div style="width: 100%; top: 32px; bottom: 0px; position:absolute">
+        <div :style="writeBackground(hours, days)"></div>
+        <div class="block" v-for="(block, block_index) in blocks" :key="block_index" :style="writeStyle(block)">
+          <div class="block-head" :style="writeTitleStyle(block)"> {{ allCourses[block.crn].name }}</div>
+          <div class="block-details">
+            {{ allCourses[block.crn].room }} <br>
+            {{ allCourses[block.crn].professor }}
 
+          </div>
         </div>
       </div>
     </div>
@@ -46,8 +48,8 @@
     }
     getLocation(day, time) {
       let x = ((day - 1) / this.days) * 100;
-      let y = (time - (this.beginHour * 60)); // begin at 8am
-      y = y * (100 / ((this.endHour - this.beginHour) * 60)); // end at 10pm
+      let y = (time - (this.beginHour * 60));
+      y = y * (100 / ((this.endHour - this.beginHour) * 60));
       //console.log("day: " + day + " x: " + x + " y: " + y);
       return [x, y];
     }
@@ -98,6 +100,7 @@
           return {
             beginHour: 8,
             endHour: 20,
+            hours: 12,
             days: 5,
 
             // NOTE: SAMPLE DATA INPUTTED
@@ -130,7 +133,7 @@
                   if (timeblock.day != day + 1) {
                     continue;
                   }
-                  let color = `hsla(${(course.crn / 3.8) % 360}, 10%, 55%, 0.8)`;
+                  let color = `hsla(${(course.crn / 3.8) % 360}, 10%, 67%, 0.7)`;
                   this.blocks.push(new CalendarBlockElement(course.crn, timeblock.day, timeblock.begin, timeblock.length, column, columns, color, 0.02, 0, 0.1));
                 }
               }
@@ -175,49 +178,47 @@
           };
         },
 
-        writeInnerStyle(calendarBlockElement) {
-          let backgroundColor = this.modifyHSLA(calendarBlockElement.color, 0, -5, 10, 0);
-          let textColor = this.modifyHSLA(calendarBlockElement.color, 0, -10, -40, 0.2);
+        writeTitleStyle(calendarBlockElement) {
+          let backgroundColor = this.modifyHSLA(calendarBlockElement.color, 10, -8, 8, -0.1);
           return {
             backgroundColor: backgroundColor,
-            color: textColor
+            color: '#000000'
           };
         },
 
-        writeBackground() {
+        writeBodyStyle(calendarBlockElement) {
+          let borderColor = this.modifyHSLA(calendarBlockElement.color, 0, 10, -30, 0);
+          let backgroundColor = calendarBlockElement.color;
+          return {
+            backgroundColor: backgroundColor,
+            border: `1px solid ${borderColor}`,
+          };
+        },
+
+        writeBackground(hours, days) {
           return {
             zIndex: 999,
             height: '100%',
             width: '100%',
-            border: '4px solid #000000',
+            border: 'none',
             position: 'absolute',
             background: `
-              linear-gradient(-90deg, rgba(0,0,0,.05) 1px, transparent 1px),
-              linear-gradient(rgba(0,0,0,.05) 1px, transparent 1px), 
-              linear-gradient(-90deg, rgba(0, 0, 0, .04) 1px, transparent 1px),
-              linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
-              linear-gradient(transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
-              linear-gradient(-90deg, #aaa 1px, transparent 1px),
-              linear-gradient(-90deg, transparent 3px, #f2f2f2 3px, #f2f2f2 78px, transparent 78px),
-              linear-gradient(#aaa 1px, transparent 1px),
-              #f2f2f2`,
+              linear-gradient(hsla(230,10%,70%,.3) 1px, transparent 1px),
+              linear-gradient(hsla(260,10%,90%,.4) 1px, transparent 1px), 
+              linear-gradient(-90deg, hsla(260,10%,70%,.4) 1px, transparent 1px),
+              hsla(250, 5%, 30%, 0.4)`,
             backgroundSize: `
-              4px 4px,
-              4px 4px,
-              80px 80px,
-              80px 80px,
-              80px 80px,
-              80px 80px,
-              80px 80px,
-              80px 80px`
+              20% ${100 / hours}%,
+              20% ${200 / hours}%,
+              20% ${100 / days}%`
           }
         },
 
         testData() {
-          let course1 = new CourseInstance(10000, 'Computer Science I', 'Jon', 'DCC 308', [new TimeBlock(1, 720, 830), new TimeBlock(4, 720, 830)]);
-          let course2 = new CourseInstance(20000, 'Data Structures', 'Dorian', 'DCC 308', [new TimeBlock(2, 840, 950), new TimeBlock(5, 840, 950)]);
-          let course3 = new CourseInstance(45000, '3D Animation', 'Alan', 'Sage 3330', [new TimeBlock(1, 720, 830), new TimeBlock(4, 720, 830)]);
-          let course4 = new CourseInstance(47000, 'Visual Effects', 'Alan', 'Sage 3150', [new TimeBlock(1, 720, 890), new TimeBlock(4, 720, 890)]);
+          let course1 = new CourseInstance(10000, 'COMPUTER SCIENCE I', 'Akeyl', 'DCC 308', [new TimeBlock(1, 720, 830), new TimeBlock(4, 720, 830)]);
+          let course2 = new CourseInstance(20000, 'DATA STRUCTURES', 'Shashank', 'DCC 308', [new TimeBlock(2, 840, 950), new TimeBlock(5, 840, 950)]);
+          let course3 = new CourseInstance(45000, '3D ANIMATION', 'Alan', 'Sage 3330', [new TimeBlock(1, 720, 830), new TimeBlock(4, 720, 830)]);
+          let course4 = new CourseInstance(47000, 'ANIMATION PRODUCTION AND VISUAL EFFECTS', 'Alan', 'Sage 3150', [new TimeBlock(1, 720, 890), new TimeBlock(4, 720, 890)]);
           this.allCourses[course1.crn] = course1;
           this.allCourses[course2.crn] = course2;
           this.allCourses[course3.crn] = course3;
@@ -240,7 +241,7 @@
     }
     .top-row {
       border-radius: 4px;
-      background-color: rgba(46, 47, 49, 0.829);
+      background-color: rgba(46, 47, 49, 0.8);
       justify-items: center;
     }
     .block {
@@ -248,30 +249,36 @@
       z-index: 9999;
       border-radius: 2px;
       position: absolute;
+      backdrop-filter: blur(1px);
+      overflow-x: auto;
+      overflow-y: auto;
     }
     .block-head {
-      font-size: 11px;
+      font-size: 0.8vw;
       font-weight: 700;
-      min-height: 24px;
       position: relative;
       border-radius: 2px;
       padding: 2px;
-      width: 100%;
+      width: auto;
+      height: auto;
+      overflow: visible;
       line-height: 1.2;
     }
     .block-details {
-      font-size: 10px;
+      font-size: 0.7vw;
       font-weight: 600;
       padding: 2px;
+      border-radius: 20px;
       position: relative;
       line-height: 1.2;
+      max-height: 100%;
     }
 
     .calendar-background {
       z-index: 999;
       height: 100%;
-      width: 100%;
-      border: 4px solid #000000;
+      width: 90%;
+      border: none;
       position: absolute;
       background:
         linear-gradient(-90deg, rgba(0,0,0,.05) 1px, transparent 1px),
