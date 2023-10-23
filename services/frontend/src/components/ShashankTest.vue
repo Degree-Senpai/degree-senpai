@@ -16,7 +16,8 @@
     data() {
       return {
         depts: [{name: "CSCI", courses: ["CS1", "DS", "FOCS", "Comp_Org", "r", "r2", "34"]}, {name: "HASS", courses: ["H1", "H2", "H3", "H4"]},
-        {name: "PHYS", courses: ["Physics 1", "Physics 2", "Physics 3", "Physics 4"]}, {name: "ECON", courses: ["E1", "E2", "E3", "E4"]}],
+        {name: "PHYS", courses: ["Physics 1", "Physics 2", "Physics 3", "Physics 4"]}, {name: "ECON", courses: ["E1", "E2", "E3", "E4"]},
+        {name: "MGMT", courses: ["Intro to MGMT", "Financial Accting", "Managerial Finance", "ML Apps"]}],
         courses: []
       };
     },
