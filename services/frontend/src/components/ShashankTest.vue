@@ -32,11 +32,15 @@
   .dept {
     grid-column: span 1;
   }
+  div {
+    border: 2px solid blue;
+    padding: .5em;
+  }
   .grid {
     max-width: 60rem;
     margin: 0 auto;
     display: column;
-    columns: 4;
+    columns: 2;
     grid-gap: 10px;
   }
 
