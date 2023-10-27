@@ -158,7 +158,7 @@
             </div>
           </div>
         </div>
-        <div class="column-right-small">
+        <div class="column-right-small" v-if="false">
           <h2 style="color:#c6cbcf; font-size: 18px; text-align: center;"> Overview </h2>
           <div class="overview-major-group" v-for="(major_group, group_name) in filterGroups(requirementGroups)" :key="group_name">
             <h3>{{ group_name }}</h3>
