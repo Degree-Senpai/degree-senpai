@@ -36,7 +36,7 @@
     max-width: 60rem;
     margin: 0 auto;
     display: column;
-    columns: 2;
+    columns: 4;
     grid-gap: 10px;
   }
 
