@@ -28,7 +28,7 @@
   </template>
   
   <script>
-  import {Schedule} from '@/scheduler/scheduler.js';
+  import {formatSelectedCourses, scheduleFill} from '@/scheduler/scheduler.js';
   import {CalendarBlockElement, CourseInstance, TimeBlock} from '@/scheduler/coursedata.js';
   export default {
       data() {
@@ -162,11 +162,20 @@
           this.allCourses[course4.crn] = course4;
           this.allCourses[course5.crn] = course5;
           this.allCourses[course6.crn] = course6;
-          let schedule1 = new Schedule([[[10000, 51000], [45000]], [[20000, 52000]], [[]], [[10000, 51000], [45000]], [[20000, 52000]]]);
-          let schedule2 = new Schedule([[[10000], [47000]], [[20000]], [[]], [[10000], [47000]], [[20000]]]);
-          let schedule3 = new Schedule([[[10000]], [[20000]], [[]], [[10000]], [[]]]);
-          this.generatedSchedules = [schedule1.data, schedule2.data, schedule3.data];  // shape: (schedule, days of week, columns of day, CRNs)
+          this.selectedCourses.push(course1);
+          this.selectedCourses.push(course2);
+          this.selectedCourses.push(course3);
+          let formattedSelectedCourses = formatSelectedCourses(this.selectedCourses);
+          this.generatedSchedules = scheduleFill(formattedSelectedCourses, 3);
+
+          //let schedule1 = new Schedule([[[10000, 51000], [45000]], [[20000, 52000]], [[]], [[10000, 51000], [45000]], [[20000, 52000]]]);
+          //let schedule2 = new Schedule([[[10000], [47000]], [[20000]], [[]], [[10000], [47000]], [[20000]]]);
+          //let schedule3 = new Schedule([[[10000]], [[20000]], [[]], [[10000]], [[]]]);
+          //this.generatedSchedules = [schedule1.data, schedule2.data, schedule3.data];  // shape: (schedule, days of week, columns of day, CRNs)
           this.displaySchedule(this.selectedSchedule);
+
+          console.log('begin consstructing possible schedules');
+
         },
       }
   };

@@ -57,7 +57,7 @@ export class FastCourseInstance {
         this.hours = 12;
         this.blocksPerHour = 2;
         this.bb = Array(this.days * this.hours * this.blocksPerHour).fill(0);
-        for (const timeblock in timeblocks) {
+        for (const timeblock of timeblocks) {
             for (let i = timeblock.bbBegin; i < timeblock.bbEnd; ++i) {
                 this.bb[i + (timeblock.day * this.hours * this.blocksPerHour)] = 1;
             }

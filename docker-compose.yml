@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   backend:
-    container_name: backend
+    container_name: ds-backend
     build: ./services/backend
     ports:
       - 5000:5000
@@ -12,7 +12,7 @@ services:
     command: uvicorn src.main:app --reload --host 0.0.0.0 --port 5000
 
   web:
-    container_name: web
+    container_name: ds-web
     build: ./services/frontend
     volumes:
       - './services/frontend:/app'
@@ -22,12 +22,12 @@ services:
 
   redis-celery:
     image: redis:latest
-    container_name: redis_celery
+    container_name: ds-redis_celery
     ports:
       - "6379:6379"
 
   celery:
-    container_name: celery
+    container_name: ds-celery
     build:
       context: ./services/backend/src/worker
       dockerfile: Dockerfile
