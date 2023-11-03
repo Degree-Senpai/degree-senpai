@@ -48,7 +48,7 @@ while True:
             print("Current URL:", driver.current_url)
 
             # Sleep for 5 seconds before the next iteration
-            time.sleep(5)
+            time.sleep(2)
         except Exception as e:
             print("Exception occurred during execution:", e)
 
@@ -124,16 +124,52 @@ while True:
         print("Exception occurred during execution:", e)
 
 subjectCount = 0
+dictOfSubjects = {}
 while True:
     try:
+        print(subjectCount)
+        #finding subject list then clicking on it based on what index it is on
         subjectList = Select(driver.find_element(By.XPATH,'//*[@id="subj_id"]'))
         subjectList.select_by_index(subjectCount)
+        #finding button used to submit and go to the subject page
         subjectButton = driver.find_element(By.XPATH, '//*[@id="advCourseBtnDiv"]/input[1]')
         subjectButton.click()
-        time.sleep(10)
+        #actually scraping shit from that subject page (WIP)
+        individualSubjectDict = {}
+        table = driver.find_element(By.XPATH, '/html/body/div[3]/form/table/tbody')
+        rows = table.find_elements(By.TAG_NAME, 'tr')
+        for row in rows:
+            classInfo = []
+            cells = row.find_elements(By.TAG_NAME, 'td')  # Find cells within the row
+            for cell in cells:
+                print(cell.text)
+                classInfo.append(cell.text)
+            if len(classInfo) > 0:
+                individualSubjectDict[classInfo[1]] = classInfo
+        dictOfSubjects[subjectCount] = individualSubjectDict
+        print(dictOfSubjects)
+        #driver sends itself back to the page, deselects the index from the subject list
+        #increases value of index, and loops again.
         driver.back()
+        subjectList = Select(driver.find_element(By.XPATH,'//*[@id="subj_id"]'))
+        subjectList.deselect_by_index(subjectCount)
         subjectCount += 1
+        break
     except Exception as e:
         print("Exception occurred during execution:", e)
+        print("!!!YOU FUCKED UP BIG TIME!!!")
+        break
 # Close the WebDriver
 driver.quit()
+
+"""
+Dictionary Structure (WIP)
+
+SubjectDict: 
+{Subject : 
+{CRN: 
+[Select, CRN, Subject, Course, [Sections], Campus, Credits, Title, [Days], [Time], Cap, Act, Rem, WL Act, WL Rem, XL Cap, XL Act, XL Rem, [Instructors], [Dates], [Locations], [Attributes], Description]
+}
+}
+
+"""
