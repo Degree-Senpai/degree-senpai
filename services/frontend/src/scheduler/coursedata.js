@@ -23,7 +23,7 @@ export class CalendarBlockElement {
         this.clashing = (columns > 1);
     }
     getLocation(day, time) {
-        let x = ((day - 1) / this.days) * 100;
+        let x = ((day) / this.days) * 100;
         let y = (time - (this.beginHour * 60));
         y = y * (100 / ((this.endHour - this.beginHour) * 60));
         //console.log("day: " + day + " x: " + x + " y: " + y);
@@ -67,25 +67,12 @@ export class FastCourseInstance {
 
 export class TimeBlock {
     // single time block for course instance, a course instance may have multiple timeblocks
-    constructor(day, begin, end) {
+    constructor(crn, day, begin, end) {
+        this.crn = crn;
         this.day = day;
         this.begin = begin;
         this.end = end;
         this.length = this.end - this.begin;
-
-        this.MAX_END = 720;
-
-        // optimization for matching
-        // THIS IS AN APPROXIMATION. lack of collision guarantees lack of conflict, but collision does not guarantee conflict.
-        this.bbBlockSize = 30; // block size in minutes
-
-        this.bbBegin = this.timeToBB(this.begin);
-        this.bbEnd = this.timeToBB(this.end);
-
-        this.bb = Array(this.timeToBB(this.MAX_END)).fill(0);
-        for (let i = this.bbBegin; i < this.bbEnd; ++i) {
-            this.bb[i] = 1;
-        }
     }
 
     getMinBegin() {
