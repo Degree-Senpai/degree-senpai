@@ -52,8 +52,8 @@ function defaultSchedule() {
 }
 
 function scheduleAddCourse(schedule, course) {
-    schedule.courseInstances.push(course);
     schedule.numCollisions += courseCollisions(schedule, course)
+    schedule.courseInstances.push(course);
     return schedule.numCollisions;
 }
 
@@ -66,8 +66,10 @@ export function courseCollisions(schedule, courseAdding) {
                 if (addingTimeBlock.day != timeblock.day) {
                     continue
                 }
-                let width = Math.max(Math.abs(timeblock.begin - addingTimeBlock.end), Math.abs(timeblock.end - addingTimeBlock.begin));
-                if (width < timeblock.length + addingTimeBlock.length) {
+                let width = Math.max((addingTimeBlock.end - timeblock.begin), (timeblock.end - addingTimeBlock.begin));
+                // console.log(`width: ${width}, total length: ${timeblock.length + addingTimeBlock.length}`)
+                if (width < (timeblock.length + addingTimeBlock.length)) {
+                    // console.log(`appending timeblock ${JSON.stringify(addingTimeBlock)} caused collision with ${JSON.stringify(timeblock)}`)
                     collisions++;
                     breakloop = true;
                     break

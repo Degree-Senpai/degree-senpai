@@ -151,35 +151,47 @@
         },
 
         formatGeneratedSchedules(generatedSchedules) {
+          console.log(`generatedSchedules: ${JSON.stringify(generatedSchedules)}`)
           let formattedSchedules = [];
           for (let schedule of generatedSchedules) {
-            let timeBlockByDay = Array(this.days).fill([]);
+            let timeBlockByDay = Array(this.days);
+            for (let i = 0; i < timeBlockByDay.length; ++i) {
+              timeBlockByDay[i] = Array(0);
+            }
             for (let course of schedule.courseInstances) {
               for (let timeblock of course.timeblocks) {
-                console.log(`$TIMEBLOCKBYDAY: ${timeblock.day}`);
                 timeBlockByDay[timeblock.day].push(timeblock);
+                console.log(`adding timeblock ${JSON.stringify(timeblock)} of course ${course.name}, new array ${JSON.stringify(timeBlockByDay)}`)
               }
             }
+            console.log(`$TIMEBLOCKBYDAY: ${JSON.stringify(timeBlockByDay)}`);
             // add code for separating collisions into different columns
 
             // placeholder that just overlaps them
-            let columns = Array(this.days).fill([[]]);
-            for (let timeblock of timeBlockByDay) {
-              columns[timeblock.day][0].push(timeblock.crn);
+            let columns = Array(this.days);
+            for (let i = 0; i < this.days; ++i) {
+              columns[i] = Array(1);
+              columns[i][0] = Array(0);
+              for (let timeblock of timeBlockByDay[i]) {
+                columns[i][0].push(timeblock.crn);
+              }
             }
             formattedSchedules.push(columns);
           }
+          console.log(`formattedSchedules: ${formattedSchedules}`)
           return formattedSchedules
         },
 
         testData() {
           let course1 = new CourseInstance(10000, 'CSCI 1100 COMPUTER SCIENCE I', 'Akeyl', 'DCC 308', [new TimeBlock(10000, 0, 720, 830), new TimeBlock(10000, 3, 720, 830)]);
+          let course1_2 = new CourseInstance(10001, 'CSCI 1100 COMPUTER SCIENCE I', 'Akeyl', 'DCC 308', [new TimeBlock(10001, 0, 600, 710), new TimeBlock(10001, 3, 600, 710)]);
           let course2 = new CourseInstance(20000, 'CSCI 1200 DATA STRUCTURES', 'Shashank', 'DCC 308', [new TimeBlock(20000, 1, 840, 950), new TimeBlock(20000, 4, 840, 950)]);
-          let course3 = new CourseInstance(45000, 'ARTS 4070 3D ANIMATION', 'Alan', 'Sage 3330', [new TimeBlock(45000, 0, 720, 830), new TimeBlock(45000, 3, 720, 830)]);
+          let course3 = new CourseInstance(45000, 'ARTS 4070 3D ANIMATION', 'Alan', 'Sage 3330', [new TimeBlock(45000, 0, 780, 890), new TimeBlock(45000, 3, 780, 890)]);
           let course4 = new CourseInstance(47000, 'ARTS 4080 ANIMATION PRODUCTION AND VISUAL EFFECTS', 'Alan', 'Sage 3150', [new TimeBlock(47000, 0, 720, 890), new TimeBlock(47000, 3, 720, 890)]);
           let course5 = new CourseInstance(51000, 'ECSE 2010 Circuits', 'Alan', 'Sage 3330', [new TimeBlock(51000, 0, 600, 710), new TimeBlock(51000, 3, 600, 710)]);
           let course6 = new CourseInstance(52000, 'ECSE 2100 Intro to Electronics', 'Alan', 'DCC 318', [new TimeBlock(52000, 1, 600, 710), new TimeBlock(52000, 4, 600, 710)]);
           this.allCourses[course1.crn] = course1;
+          this.allCourses[course1_2.crn] = course1_2;
           this.allCourses[course2.crn] = course2;
           this.allCourses[course3.crn] = course3;
           this.allCourses[course4.crn] = course4;
@@ -188,6 +200,7 @@
           this.selectedCourses.push(course1);
           this.selectedCourses.push(course2);
           this.selectedCourses.push(course3);
+          this.selectedCourses.push(course1_2);
           let formattedSelectedCourses = formatSelectedCourses(this.selectedCourses);
           let generatedSchedules = scheduleFill(formattedSelectedCourses, 10);
           this.generatedSchedules = this.formatGeneratedSchedules(generatedSchedules);
