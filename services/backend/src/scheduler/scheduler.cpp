@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include "Scheduler.h"
 
 Scheduler::Scheduler() {  // Default constructor with initializer list
@@ -6,6 +7,8 @@ Scheduler::Scheduler() {  // Default constructor with initializer list
 
 std::vector<Schedule> Scheduler::populate(std::vector<std::vector<std::shared_ptr<CourseInstance>>> selectedCourses, int max_collisions) {
     // selectedCourses is a 2D vector: 1st dimension organizes course instances by the course such that the same courses are grouped together
+
+    auto start = std::chrono::high_resolution_clock::now();
 
     std::vector<Schedule> schedules;
     schedules.push_back(Schedule());
@@ -37,6 +40,12 @@ std::vector<Schedule> Scheduler::populate(std::vector<std::vector<std::shared_pt
 
         schedules = newSchedules; // Assign the new schedules to the original list
     }
+
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    std::cout << "\nSCHEDULER RUNTIME: " << duration.count() << " microseconds\n" << std::endl;
+
+
     std::cout << "final computed schedules: \n"; 
     for (const auto& schedule : schedules) {
         std::cout << "  " << schedule << "\n";

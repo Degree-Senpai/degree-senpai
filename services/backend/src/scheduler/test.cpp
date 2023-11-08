@@ -77,5 +77,5 @@ int main() {
     courseInstances.push_back(animation);
     courseInstances.push_back(graphic);
 
-    scheduler.populate(courseInstances, 1);
+    scheduler.populate(courseInstances, 5);
 }
