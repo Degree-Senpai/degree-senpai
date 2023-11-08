@@ -2,12 +2,94 @@
 #include <chrono>
 #include "Scheduler.h"
 
+/*
+* HELPER FUNCTIONS
+*/
+
+std::vector<int> splitString(std::string input) {
+    std::vector<int> result;
+    std::string holding = "";
+    for (char c : input) {
+        if (c == ',') {
+            result.push_back(stoi(holding));
+            holding = "";
+        } else if (c != ' ') {
+            holding += c;
+        }
+    }
+    result.push_back(stoi(holding));
+    return result;
+}
+
+std::string vecToString(std::vector<int> input) {
+    std::string s;
+    for (int num : input) {
+        s += std::to_string(num) + " ";
+    }
+    return s;
+}
+
+
+/*
+* SCHEDULER METHODS
+*/
+
 Scheduler::Scheduler() {  // Default constructor with initializer list
 }
 
-std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<std::shared_ptr<CourseInstance>>> selectedCourses, int max_collisions) {
-    // selectedCourses is a 2D vector: 1st dimension organizes course instances by the course the instance it belongs to
 
+// IMPORTING AND CREATION OF COURSE INSTANCES
+
+std::shared_ptr<CourseInstance> Scheduler::makeCourseInstance(std::unordered_map<std::string, std::string> courseInstanceData) {
+    std::string name = this->getName(courseInstanceData);
+    int crn = this->getCRN(courseInstanceData);
+    std::vector<int> linearTimeBlocks = this->getLinearTimeBlocks(courseInstanceData);
+    std::cout << "made new course instance " << name << " (" << crn << ") " << vecToString(linearTimeBlocks) << std::endl;
+    return std::make_shared<CourseInstance>(name, crn, linearTimeBlocks);
+}
+
+void Scheduler::importCourseInstances(std::vector<std::unordered_map<std::string, std::string>> courseInstances) {
+    for (auto& courseInstanceData : courseInstances) {
+        if (this->allCourseInstances.find(this->getCRN(courseInstanceData)) == this->allCourseInstances.end()) {
+            std::shared_ptr<CourseInstance> courseInstance = this->makeCourseInstance(courseInstanceData);
+            this->allCourseInstances.insert({courseInstance->crn, courseInstance});
+            std::cout << "added course instance " << courseInstance->name << " to scheduler" << std::endl;
+        }
+    }
+}
+
+
+// IMPORTING HELPER FUNCTIONS
+
+int Scheduler::getCRN(std::unordered_map<std::string, std::string> courseInstanceData) {
+    return stoi(courseInstanceData["crn"]);
+}
+
+std::string Scheduler::getName(std::unordered_map<std::string, std::string> courseInstanceData) {
+    return courseInstanceData["name"];
+}
+
+std::vector<int> Scheduler::getLinearTimeBlocks(std::unordered_map<std::string, std::string> courseInstanceData) {
+    return splitString(courseInstanceData["timeBlocks"]);
+}
+
+
+// POPULATE FUNCTIONS
+
+std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<std::unordered_map<std::string, std::string>>> selectedCourses, int max_collisions) {
+    // this is a wrapper around populate that first imports non-existing course instances, and then calls populate with a newly built selectedCourses with just CRNs
+    std::vector<std::vector<int>> selectedCoursesCRN(selectedCourses.size());
+    for (long unsigned int i = 0; i < selectedCourses.size(); ++i) {
+        this->importCourseInstances(selectedCourses[i]);
+        for (long unsigned int j = 0; j < selectedCourses[i].size(); ++j) {
+            selectedCoursesCRN[i].push_back(this->getCRN(selectedCourses[i][j]));
+        }
+    }
+    return this->populate(selectedCoursesCRN, max_collisions);
+}
+
+std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<int>> selectedCourses, int max_collisions) {
+    // selectedCourses is a 2D vector: 1st dimension organizes the CRN of course instances by the course the instance it belongs to
     auto start = std::chrono::high_resolution_clock::now();
 
     std::vector<std::vector<Schedule>> schedules; // binned by number of collisions
@@ -16,21 +98,22 @@ std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<s
     for (const auto& courseGroup : selectedCourses) {
         // interates through each "course" the user has selected, with each course being a vector of sections selected for that course
         // (note that I put course in quotations since it is not technically a course object - just a list of sections!)
-        std::vector<std::vector<Schedule>> newSchedules(max_collisions);
-        std::cout << "looking at coursegroup " << courseGroup[0]->name << std::endl;
+        std::vector<std::vector<Schedule>> newSchedules(max_collisions + 1);
 
         for (auto& scheduleBin : schedules) {
             for (auto& schedule : scheduleBin) {
                 // iterate through all schedules - it doesn't matter which bin it is in, we just go through all of them!
 
-                for (const auto& courseInstance : courseGroup) {
+                for (const auto& courseInstanceCRN : courseGroup) {
+                    std::shared_ptr<CourseInstance> courseInstance = this->allCourseInstances[courseInstanceCRN];
                     // this loop expands the size of schedule exponentially by multiplying its size by the # of sections of each course!
                     bool collides = collidesWithSchedule(schedule, courseInstance);
+
+                    // decide if to keep going with this schedule
                     if (schedule.collisions == max_collisions && collides) {
                         continue;
                     }
 
-                    // check collision and decide if to keep going with this schedule
                     Schedule scheduleCopy = schedule;
                     if (collides) {
                         ++scheduleCopy.collisions;
@@ -57,6 +140,9 @@ std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<s
     std::cout << std::endl;
     return schedules;
 }
+
+
+// HELPERS FOR POPULATE
 
 bool Scheduler::collidesWithSchedule(Schedule schedule, std::shared_ptr<CourseInstance> courseInstance) {
     for (const auto& existingCourseInstance : schedule.getCourseInstances()) {

@@ -38,11 +38,17 @@ class CourseInstance {
 
 class TimeBlock {
     public:
-        TimeBlock(int, int, int);
+        TimeBlock(int beginSinceEpoch, int endSinceEpoch);
+        TimeBlock(int day, int begin, int end);
 
         int day;
         int begin;
         int end;
+
+        int computedBeginHour;
+        int computedBeginMinute;
+        int computedEndHour;
+        int computedEndMinute;
 
         friend std::ostream& operator<<(std::ostream&, const TimeBlock&);
 };
