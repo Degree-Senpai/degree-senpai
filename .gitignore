@@ -12,3 +12,4 @@ node_modules/
 *.ipynb*
 courses20.xml
 .coverage
+.out
