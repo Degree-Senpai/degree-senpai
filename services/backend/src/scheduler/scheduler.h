@@ -7,7 +7,7 @@
 class Scheduler {
     public:
         Scheduler();
-        std::vector<Schedule> populate(std::vector<std::vector<std::shared_ptr<CourseInstance>>>, int);
+        std::vector<std::vector<Schedule>> populate(std::vector<std::vector<std::shared_ptr<CourseInstance>>>, int);
         bool collidesWithSchedule(Schedule, std::shared_ptr<CourseInstance>);
         bool collides(std::shared_ptr<CourseInstance>, std::shared_ptr<CourseInstance>);
 };

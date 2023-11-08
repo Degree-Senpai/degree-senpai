@@ -5,36 +5,39 @@
 Scheduler::Scheduler() {  // Default constructor with initializer list
 }
 
-std::vector<Schedule> Scheduler::populate(std::vector<std::vector<std::shared_ptr<CourseInstance>>> selectedCourses, int max_collisions) {
-    // selectedCourses is a 2D vector: 1st dimension organizes course instances by the course such that the same courses are grouped together
+std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<std::shared_ptr<CourseInstance>>> selectedCourses, int max_collisions) {
+    // selectedCourses is a 2D vector: 1st dimension organizes course instances by the course the instance it belongs to
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    std::vector<Schedule> schedules;
-    schedules.push_back(Schedule());
+    std::vector<std::vector<Schedule>> schedules; // binned by number of collisions
+    schedules.push_back({Schedule()});
 
     for (const auto& courseGroup : selectedCourses) {
-        // interates through each "course" the user has selected, with each course being a vector of sections selected of that course
+        // interates through each "course" the user has selected, with each course being a vector of sections selected for that course
         // (note that I put course in quotations since it is not technically a course object - just a list of sections!)
-        std::vector<Schedule> newSchedules;
+        std::vector<std::vector<Schedule>> newSchedules(max_collisions);
         std::cout << "looking at coursegroup " << courseGroup[0]->name << std::endl;
 
-        for (auto& schedule : schedules) {
-            for (const auto& courseInstance : courseGroup) {
-                // this loop is what expands the size of schedule exponentially by multiplying its size by the number of sections
-                // of each course!
-                bool collides = collidesWithSchedule(schedule, courseInstance);
-                if (schedule.collisions == max_collisions && collides) {
-                    continue;
-                }
+        for (auto& scheduleBin : schedules) {
+            for (auto& schedule : scheduleBin) {
+                // iterate through all schedules - it doesn't matter which bin it is in, we just go through all of them!
 
-                // check collision and decide if to keep going with this schedule
-                Schedule scheduleCopy = schedule;
-                if (collides) {
-                    ++scheduleCopy.collisions;
+                for (const auto& courseInstance : courseGroup) {
+                    // this loop expands the size of schedule exponentially by multiplying its size by the # of sections of each course!
+                    bool collides = collidesWithSchedule(schedule, courseInstance);
+                    if (schedule.collisions == max_collisions && collides) {
+                        continue;
+                    }
+
+                    // check collision and decide if to keep going with this schedule
+                    Schedule scheduleCopy = schedule;
+                    if (collides) {
+                        ++scheduleCopy.collisions;
+                    }
+                    scheduleCopy.addCourseInstance(courseInstance); // Add the course instance to the schedule
+                    newSchedules[scheduleCopy.collisions].push_back(scheduleCopy);
                 }
-                scheduleCopy.addCourseInstance(courseInstance); // Add section to the schedule
-                newSchedules.push_back(scheduleCopy); // Append new schedule to the list if it fulfills previous criteria
             }
         }
 
@@ -45,10 +48,11 @@ std::vector<Schedule> Scheduler::populate(std::vector<std::vector<std::shared_pt
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     std::cout << "\nSCHEDULER RUNTIME: " << duration.count() << " microseconds\n" << std::endl;
 
-
     std::cout << "final computed schedules: \n"; 
-    for (const auto& schedule : schedules) {
-        std::cout << "  " << schedule << "\n";
+    for (const auto& scheduleBin : schedules) {
+        for (const auto& schedule : scheduleBin) {
+            std::cout << "  " << schedule << "\n";
+        }
     }
     std::cout << std::endl;
     return schedules;
