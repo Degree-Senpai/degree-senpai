@@ -4,6 +4,10 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <iostream>
+
+class CourseInstance;
+class TimeBlock;
 
 class Course {
     public:
@@ -17,32 +21,43 @@ class Course {
 
 class CourseInstance {
     public:
-        CourseInstance();     
+        CourseInstance(std::string name, int crn, std::vector<std::shared_ptr<TimeBlock>> timeBlocks);
+        CourseInstance(std::string name, int crn, std::vector<int> linearTimeBlocks);
+
+        std::vector<std::shared_ptr<TimeBlock>> timeBlocks;
+        std::vector<int> linearTimeBlocks;
+
+        std::string name;
+        std::string id;
+        std::string professor;
+        std::string location;
+        int crn;
+
+        friend std::ostream& operator<<(std::ostream&, const CourseInstance&);
 };
 
 class TimeBlock {
     public:
-        TimeBlock();
+        TimeBlock(int, int, int);
 
         int day;
         int begin;
         int end;
 
-        // computed for sake of performance
-        int length;
-        int absoluteBegin;
-        int absoluteEnd;
+        friend std::ostream& operator<<(std::ostream&, const TimeBlock&);
 };
 
 class Schedule {
     private:
-        std::vector<CourseInstance> courseInstances;
+        std::vector<std::shared_ptr<CourseInstance>> courseInstances;
 
     public:
         Schedule();
 
-        void addCourseInstance(CourseInstance);
-        std::vector<CourseInstance> getCourseInstances(void);
+        void addCourseInstance(std::shared_ptr<CourseInstance>);
+        std::vector<std::shared_ptr<CourseInstance>> getCourseInstances(void);
+
+        friend std::ostream& operator<<(std::ostream&, const Schedule&);
 
         int collisions;
 };
