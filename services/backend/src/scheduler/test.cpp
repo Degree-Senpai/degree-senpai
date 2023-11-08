@@ -30,6 +30,26 @@ int main() {
     // make course instance
     std::shared_ptr<CourseInstance> cs2 = std::make_shared<CourseInstance>("computer science", 10002, cs2timeblocksnew);
 
+    std::vector<int> animation1tb = {840, 950, 5160, 5270};
+    std::shared_ptr<CourseInstance> animation1 = std::make_shared<CourseInstance>("3D animation", 41001, animation1tb);
+    std::vector<int> animation2tb = {960, 1070, 5280, 5390};
+    std::shared_ptr<CourseInstance> animation2 = std::make_shared<CourseInstance>("3D animation", 41002, animation2tb);
+    std::vector<int> animation3tb = {2280, 2390, 6600, 6710};
+    std::shared_ptr<CourseInstance> animation3 = std::make_shared<CourseInstance>("3D animation", 41003, animation3tb);
+    std::vector<int> animation4tb = {2340, 2390, 6660, 6710};
+    std::shared_ptr<CourseInstance> animation4 = std::make_shared<CourseInstance>("3D animation", 41004, animation4tb);
+
+    std::vector<int> graphic0tb = {480, 590, 4800, 4910};
+    std::shared_ptr<CourseInstance> graphic0 = std::make_shared<CourseInstance>("Graphics Storytelling", 42000, graphic0tb);
+    std::vector<int> graphic1tb = {840, 950, 5160, 5270};
+    std::shared_ptr<CourseInstance> graphic1 = std::make_shared<CourseInstance>("Graphics Storytelling", 42001, graphic1tb);
+    std::vector<int> graphic2tb = {960, 1070, 5280, 5390};
+    std::shared_ptr<CourseInstance> graphic2 = std::make_shared<CourseInstance>("Graphics Storytelling", 42002, graphic2tb);
+    std::vector<int> graphic3tb = {2280, 2390, 6600, 6710};
+    std::shared_ptr<CourseInstance> graphic3 = std::make_shared<CourseInstance>("Graphics Storytelling", 42003, graphic3tb);
+    std::vector<int> graphic4tb = {2340, 2390, 6660, 6710};
+    std::shared_ptr<CourseInstance> graphic4 = std::make_shared<CourseInstance>("Graphics Storytelling", 42004, graphic4tb);
+
     std::vector<std::vector<std::shared_ptr<CourseInstance>>> courseInstances;
 
     std::vector<std::shared_ptr<CourseInstance>> datastructures;
@@ -39,8 +59,23 @@ int main() {
     cs.push_back(cs1);
     cs.push_back(cs2);
 
+    std::vector<std::shared_ptr<CourseInstance>> animation;
+    animation.push_back(animation1);
+    animation.push_back(animation2);
+    animation.push_back(animation3);
+    animation.push_back(animation4);
+
+    std::vector<std::shared_ptr<CourseInstance>> graphic;
+    graphic.push_back(graphic0);
+    graphic.push_back(graphic1);
+    graphic.push_back(graphic2);
+    graphic.push_back(graphic3);
+    graphic.push_back(graphic4);
+
     courseInstances.push_back(datastructures);
     courseInstances.push_back(cs);
+    courseInstances.push_back(animation);
+    courseInstances.push_back(graphic);
 
-    scheduler.populate(courseInstances, 5);
+    scheduler.populate(courseInstances, 1);
 }
