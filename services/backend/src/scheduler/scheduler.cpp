@@ -1,33 +1,7 @@
 #include <iostream>
 #include <chrono>
-#include "Scheduler.h"
-
-/*
-* HELPER FUNCTIONS
-*/
-
-std::vector<int> splitString(std::string input) {
-    std::vector<int> result;
-    std::string holding = "";
-    for (char c : input) {
-        if (c == ',') {
-            result.push_back(stoi(holding));
-            holding = "";
-        } else if (c != ' ') {
-            holding += c;
-        }
-    }
-    result.push_back(stoi(holding));
-    return result;
-}
-
-std::string vecToString(std::vector<int> input) {
-    std::string s;
-    for (int num : input) {
-        s += std::to_string(num) + " ";
-    }
-    return s;
-}
+#include "scheduler.h"
+#include "utilities.h"
 
 
 /*
@@ -70,7 +44,7 @@ std::string Scheduler::getName(std::unordered_map<std::string, std::string> cour
 }
 
 std::vector<int> Scheduler::getLinearTimeBlocks(std::unordered_map<std::string, std::string> courseInstanceData) {
-    return splitString(courseInstanceData["timeBlocks"]);
+    return stringToIntVec(courseInstanceData["timeBlocks"]);
 }
 
 
@@ -126,18 +100,10 @@ std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<i
 
         schedules = newSchedules; // Assign the new schedules to the original list
     }
-
+    
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     std::cout << "\nSCHEDULER RUNTIME: " << duration.count() << " microseconds\n" << std::endl;
-
-    std::cout << "final computed schedules: \n"; 
-    for (const auto& scheduleBin : schedules) {
-        for (const auto& schedule : scheduleBin) {
-            std::cout << "  " << schedule << "\n";
-        }
-    }
-    std::cout << std::endl;
     return schedules;
 }
 

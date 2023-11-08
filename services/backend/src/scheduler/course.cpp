@@ -1,4 +1,4 @@
-#include "Course.h"
+#include "course.h"
 
 Schedule::Schedule() {
     this->collisions = 0;
