@@ -10,12 +10,14 @@ class Scheduler {
     public:
         Scheduler();
 
-        std::shared_ptr<CourseInstance> makeCourseInstance(std::unordered_map<std::string, std::string> courseInstanceData);
-        void importCourseInstances(const std::vector<std::unordered_map<std::string, std::string>>);
+        std::shared_ptr<CourseInstance> makeCourseInstanceFromDictionary(std::unordered_map<std::string, std::string> courseInstanceData);
+        void importCourseInstanceDictionaries(const std::vector<std::unordered_map<std::string, std::string>> courseInstances);
+        std::vector<std::vector<std::vector<int>>> exportSchedulesAsDictionaries(std::vector<std::vector<Schedule>> schedules);
 
         // main function to compute schedules!
-        std::vector<std::vector<Schedule>> populate(std::vector<std::unordered_map<std::string, std::string>>, int);
-        std::vector<std::vector<Schedule>> populate(std::vector<int>, int);
+        std::vector<std::vector<std::vector<int>>> populateAndExport(std::vector<std::vector<std::unordered_map<std::string, std::string>>> selectedCourses, int max_collisions);
+
+        //std::vector<std::vector<Schedule>> populate(std::vector<std::unordered_map<std::string, std::string>>, int);
         std::vector<std::vector<Schedule>> populate(std::vector<std::vector<std::unordered_map<std::string, std::string>>>, int);
 
         std::vector<std::vector<Schedule>> populate(std::vector<std::vector<int>>, int);

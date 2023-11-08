@@ -61,7 +61,8 @@ class Schedule {
         Schedule();
 
         void addCourseInstance(std::shared_ptr<CourseInstance>);
-        std::vector<std::shared_ptr<CourseInstance>> getCourseInstances(void);
+        std::vector<std::shared_ptr<CourseInstance>> getCourseInstances();
+        std::vector<int> getCourseCRNs();
 
         friend std::ostream& operator<<(std::ostream&, const Schedule&);
 

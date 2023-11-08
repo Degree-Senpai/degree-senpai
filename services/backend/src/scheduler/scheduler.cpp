@@ -14,22 +14,33 @@ Scheduler::Scheduler() {  // Default constructor with initializer list
 
 // IMPORTING AND CREATION OF COURSE INSTANCES
 
-std::shared_ptr<CourseInstance> Scheduler::makeCourseInstance(std::unordered_map<std::string, std::string> courseInstanceData) {
+std::shared_ptr<CourseInstance> Scheduler::makeCourseInstanceFromDictionary(std::unordered_map<std::string, std::string> courseInstanceData) {
     std::string name = this->getName(courseInstanceData);
     int crn = this->getCRN(courseInstanceData);
     std::vector<int> linearTimeBlocks = this->getLinearTimeBlocks(courseInstanceData);
-    std::cout << "made new course instance " << name << " (" << crn << ") " << vecToString(linearTimeBlocks) << std::endl;
+    std::cout << "made new course instance " << name << " (" << crn << ") " << recursiveVecToString(linearTimeBlocks) << std::endl;
     return std::make_shared<CourseInstance>(name, crn, linearTimeBlocks);
 }
 
-void Scheduler::importCourseInstances(std::vector<std::unordered_map<std::string, std::string>> courseInstances) {
+void Scheduler::importCourseInstanceDictionaries(std::vector<std::unordered_map<std::string, std::string>> courseInstances) {
     for (auto& courseInstanceData : courseInstances) {
         if (this->allCourseInstances.find(this->getCRN(courseInstanceData)) == this->allCourseInstances.end()) {
-            std::shared_ptr<CourseInstance> courseInstance = this->makeCourseInstance(courseInstanceData);
+            std::shared_ptr<CourseInstance> courseInstance = this->makeCourseInstanceFromDictionary(courseInstanceData);
             this->allCourseInstances.insert({courseInstance->crn, courseInstance});
             std::cout << "added course instance " << courseInstance->name << " to scheduler" << std::endl;
         }
     }
+}
+
+std::vector<std::vector<std::vector<int>>> Scheduler::exportSchedulesAsDictionaries(std::vector<std::vector<Schedule>> schedules) {
+    // replaces schedule objects with just the CRN
+    std::vector<std::vector<std::vector<int>>> schedulesCRN(schedules.size());
+    for (long unsigned int i = 0; i < schedules.size(); ++i) {
+        for (long unsigned int j = 0; j < schedules[i].size(); ++j) {
+            schedulesCRN[i].push_back(schedules[i][j].getCourseCRNs());
+        }
+    }
+    return schedulesCRN;
 }
 
 
@@ -50,11 +61,15 @@ std::vector<int> Scheduler::getLinearTimeBlocks(std::unordered_map<std::string, 
 
 // POPULATE FUNCTIONS
 
+std::vector<std::vector<std::vector<int>>> Scheduler::populateAndExport(std::vector<std::vector<std::unordered_map<std::string, std::string>>> selectedCourses, int max_collisions) {
+    return this->exportSchedulesAsDictionaries(this->populate(selectedCourses, max_collisions));
+}
+
 std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<std::unordered_map<std::string, std::string>>> selectedCourses, int max_collisions) {
     // this is a wrapper around populate that first imports non-existing course instances, and then calls populate with a newly built selectedCourses with just CRNs
     std::vector<std::vector<int>> selectedCoursesCRN(selectedCourses.size());
     for (long unsigned int i = 0; i < selectedCourses.size(); ++i) {
-        this->importCourseInstances(selectedCourses[i]);
+        this->importCourseInstanceDictionaries(selectedCourses[i]);
         for (long unsigned int j = 0; j < selectedCourses[i].size(); ++j) {
             selectedCoursesCRN[i].push_back(this->getCRN(selectedCourses[i][j]));
         }

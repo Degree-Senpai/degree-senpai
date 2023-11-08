@@ -1,4 +1,5 @@
 #include "scheduler.h"
+#include "utilities.h"
 
 void printSchedules(std::vector<std::vector<Schedule>> schedules) {
     int size = 0;
@@ -16,7 +17,7 @@ void printSchedules(std::vector<std::vector<Schedule>> schedules) {
 
 int main() {
     Scheduler scheduler;
-    scheduler.importCourseInstances({
+    scheduler.importCourseInstanceDictionaries({
         {{"name", "data structures"}, {"crn", "20001"}, {"timeBlocks", "2280, 2390, 6600, 6710"}},
         {{"name", "computer science I"}, {"crn", "10001"}, {"timeBlocks", "840, 950, 5160, 5270"}},
         {{"name", "computer science I"}, {"crn", "10002"}, {"timeBlocks", "2280, 2390, 6600, 6710"}},
@@ -50,7 +51,7 @@ int main() {
     }, 4);
     printSchedules(schedules);
 
-    schedules = scheduler2.populate({
+    std::vector<std::vector<std::vector<int>>> schedulesCRN = scheduler2.populateAndExport({
         {{{"name", "data structures"}, {"crn", "20001"}, {"timeBlocks", "2280, 2390, 6600, 6710"}}},
         {{{"name", "computer science I"}, {"crn", "10001"}, {"timeBlocks", "840, 950, 5160, 5270"}},
         {{"name", "computer science I"}, {"crn", "10002"}, {"timeBlocks", "2280, 2390, 6600, 6710"}}},
@@ -64,5 +65,5 @@ int main() {
         {{"name", "graphics storytelling"}, {"crn", "42003"}, {"timeBlocks", "2280, 2390, 6600, 6710"}},
         {{"name", "graphics storytelling"}, {"crn", "42004"}, {"timeBlocks", "2340, 2390, 6660, 6770"}}}
     }, 4);
-    printSchedules(schedules);
+    std::cout << "schedulesCRN using populateAndExport: \n" << recursiveVecToString(schedulesCRN) << std::endl;
 }

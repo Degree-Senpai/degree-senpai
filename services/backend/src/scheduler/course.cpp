@@ -12,6 +12,14 @@ std::vector<std::shared_ptr<CourseInstance>> Schedule::getCourseInstances() {
     return courseInstances;
 }
 
+std::vector<int> Schedule::getCourseCRNs() {
+    std::vector<int> crns;
+    for (auto& courseInstance : this->courseInstances) {
+        crns.push_back(courseInstance->crn);
+    }
+    return crns;
+}
+
 
 
 CourseInstance::CourseInstance(std::string name, int crn, std::vector<std::shared_ptr<TimeBlock>> timeBlocks) {
