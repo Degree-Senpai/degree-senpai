@@ -1,2 +1,0 @@
-import nj from 'numjs';
-

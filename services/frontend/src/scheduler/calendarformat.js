@@ -46,56 +46,40 @@ export class CourseInstance {
         this.name = name; // ex: CSCI 1200 Data Structures
         this.professor = professor; // string
         this.room = room; // string ex: DCC 308
-        this.timeblocks = timeblocks; //TimeBlock object
+        this.timeblocks = timeblocks; // list of numbers
     }
 }
 
-export class FastCourseInstance {
-    constructor(crn, timeblocks) {
-        this.crn = crn;
-        this.days = 5;
-        this.hours = 12;
-        this.blocksPerHour = 2;
-        this.bb = Array(this.days * this.hours * this.blocksPerHour).fill(0);
-        for (const timeblock of timeblocks) {
-            for (let i = timeblock.bbBegin; i < timeblock.bbEnd; ++i) {
-                this.bb[i + (timeblock.day * this.hours * this.blocksPerHour)] = 1;
+
+export function formatGeneratedSchedules(generatedSchedules) {
+    // converts generated schedules (3D array of CRN) into 4D formatted for rendering
+    console.log(`generatedSchedules: ${JSON.stringify(generatedSchedules)}`)
+    let formattedSchedules = [];
+    for (let schedule of generatedSchedules) {
+        let timeBlockByDay = Array(this.days);
+        for (let i = 0; i < timeBlockByDay.length; ++i) {
+            timeBlockByDay[i] = Array(0);
+        }
+        for (let course of schedule.courseInstances) {
+            for (let timeblock of course.timeblocks) {
+                timeBlockByDay[timeblock.day].push(timeblock);
+                console.log(`adding timeblock ${JSON.stringify(timeblock)} of course ${course.name}, new array ${JSON.stringify(timeBlockByDay)}`)
             }
         }
-    }
-}
+        console.log(`$TIMEBLOCKBYDAY: ${JSON.stringify(timeBlockByDay)}`);
+        // add code for separating collisions into different columns
 
-export class TimeBlock {
-    // single time block for course instance, a course instance may have multiple timeblocks
-    constructor(crn, day, begin, end) {
-        this.crn = crn;
-        this.day = day;
-        this.begin = begin;
-        this.end = end;
-        this.length = this.end - this.begin;
-    }
-
-    getMinBegin() {
-        return ((this.day - 1) * 1440) + this.begin
-    }
-  
-    getMinEnd() {
-        return ((this.day - 1) * 1440) + this.end
-    }
-
-    timeToBB(time) {
-        return parseInt(time / this.bbBlockSize);
-    }
-
-    hasCollision(timeBlock) {
-        if (this.day != timeBlock.day) {
-            return false
-        }
-        for (let i = this.bbBegin; i < this.bbEnd; ++i) {
-            if (timeBlock.bb[i] == 1) {
-                return true
+        // placeholder that just overlaps them
+        let columns = Array(this.days);
+        for (let i = 0; i < this.days; ++i) {
+            columns[i] = Array(1);
+            columns[i][0] = Array(0);
+            for (let timeblock of timeBlockByDay[i]) {
+                columns[i][0].push(timeblock.crn);
             }
         }
-        return false
+        formattedSchedules.push(columns);
     }
+    console.log(`formattedSchedules: ${formattedSchedules}`)
+    return formattedSchedules
 }

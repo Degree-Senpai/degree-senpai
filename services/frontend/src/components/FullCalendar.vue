@@ -10,9 +10,9 @@
         Displaying schedule {{ this.selectedSchedule + 1 }} / {{ this.generatedSchedules.length }}
       </div>
       <div style="width: 100%; top: 32px; bottom: 0px; position:absolute">
-        <div :style="writeBackground(hours, days)"></div>
-        <div class="block" v-for="(block, block_index) in blocks" :key="block_index" :style="writeStyle(block)">
-          <div class="block-head" :style="writeTitleStyle(block)">
+        <div :style="getCalendarBlockBackgroundStyle(hours, days)"></div>
+        <div class="block" v-for="(block, block_index) in blocks" :key="block_index" :style="getCalendarBlockStyle(block)">
+          <div class="block-head" :style="getCalendarBlockTitleStyle(block)">
             <span class="block-head-h2" style="font-size: 0.9em">{{ allCourses[block.crn].name.substring(0, 9) }}</span> <br>
             {{ allCourses[block.crn].name.substring(10) }} <br>
             <span class="block-head-h2" style="color:black"> CRN: {{ block.crn }} </span>
@@ -30,7 +30,9 @@
   <script>
   /* global Module */
 
-  import {CalendarBlockElement} from '@/scheduler/coursedata.js';
+  import {CalendarBlockElement, CourseInstance, formatGeneratedSchedules} from '@/scheduler/calendarformat.js';
+  import {formatSelectedCourses} from '@/scheduler/scheduleformat.js';
+  import {modifyHSLA} from '@/utilities/colorutils.js';
   export default {
       data() {
           return {
@@ -43,7 +45,7 @@
 
             allCourses: {},
             selectedCourses: [],
-            generatedSchedules: [], // shape: (schedule, days of week, columns of day, CRNs)
+            generatedSchedules: [[]], // shape: (schedule, days of week, columns of day, CRNs)
             blocks: [], // 2D array: day of week -> calendar blocks
             selectedSchedule: 0,
           };
@@ -58,12 +60,7 @@
           document.body.appendChild(script);
         }
       },
-      async created() {
-        this.generatedSchedules = [[]];
-        //this.testData();
-      },
       methods: {
-        // location specified as percentage of full width/height
         addCourse(crn) {
           this.selectedCourses.push(crn);
         },
@@ -95,7 +92,6 @@
         },
 
         decrementSchedule() {
-          this.testData();
           this.selectedSchedule = this.selectedSchedule - 1;
           if (this.selectedSchedule < 0) {
             this.selectedSchedule = this.generatedSchedules.length - 1;
@@ -103,20 +99,11 @@
           this.displaySchedule(this.selectedSchedule);
         },
 
-        modifyHSLA(hsla, h, s, l, a) {
-          let values = hsla.split('(')[1];
-          values = values.split(')')[0];
-          values = values.split(',');
-          h = h + Number(values[0]);
-          s = s + Number(values[1].split('%')[0]);
-          l = l + Number(values[2].split('%')[0]);
-          a = a + Number(values[3]);
-          return `hsla(${h % 360}, ${s}%, ${l}%, ${a})`;
-        },
 
-        writeStyle(calendarBlockElement) {
-          let borderColor = this.modifyHSLA(calendarBlockElement.color, -25, 10, -30, 0.2);
-          let backgroundColor = this.modifyHSLA(calendarBlockElement.color, 34, 5, 25, 0.09);
+
+        getCalendarBlockStyle(calendarBlockElement) {
+          let borderColor = modifyHSLA(calendarBlockElement.color, -25, 10, -30, 0.2);
+          let backgroundColor = modifyHSLA(calendarBlockElement.color, 34, 5, 25, 0.09);
           return {
             backgroundColor: backgroundColor,
             border: `2px solid ${borderColor}`,
@@ -127,24 +114,24 @@
           };
         },
 
-        writeTitleStyle(calendarBlockElement) {
-          let backgroundColor = this.modifyHSLA(calendarBlockElement.color, 0, 5, -5, 0);
+        getCalendarBlockTitleStyle(calendarBlockElement) {
+          let backgroundColor = modifyHSLA(calendarBlockElement.color, 0, 5, -5, 0);
           return {
             backgroundColor: backgroundColor,
             color: '#000000',
           };
         },
 
-        writeBodyStyle(calendarBlockElement) {
-          let borderColor = this.modifyHSLA(calendarBlockElement.color, 0, 10, -30, 0);
-          let backgroundColor = this.modifyHSLA(calendarBlockElement.color, 10, 20, -90, 1);
+        getCalendarBlockBodyStyle(calendarBlockElement) {
+          let borderColor = modifyHSLA(calendarBlockElement.color, 0, 10, -30, 0);
+          let backgroundColor = modifyHSLA(calendarBlockElement.color, 10, 20, -90, 1);
           return {
             backgroundColor: backgroundColor,
             border: `1px solid ${borderColor}`,
           };
         },
 
-        writeBackground(hours, days) {
+        getCalendarBlockBackgroundStyle(hours, days) {
           return {
             zIndex: 999,
             height: '100%',
@@ -161,38 +148,6 @@
               20% ${200 / hours}%,
               20% ${100 / days}%`
           }
-        },
-
-        formatGeneratedSchedules(generatedSchedules) {
-          console.log(`generatedSchedules: ${JSON.stringify(generatedSchedules)}`)
-          let formattedSchedules = [];
-          for (let schedule of generatedSchedules) {
-            let timeBlockByDay = Array(this.days);
-            for (let i = 0; i < timeBlockByDay.length; ++i) {
-              timeBlockByDay[i] = Array(0);
-            }
-            for (let course of schedule.courseInstances) {
-              for (let timeblock of course.timeblocks) {
-                timeBlockByDay[timeblock.day].push(timeblock);
-                console.log(`adding timeblock ${JSON.stringify(timeblock)} of course ${course.name}, new array ${JSON.stringify(timeBlockByDay)}`)
-              }
-            }
-            console.log(`$TIMEBLOCKBYDAY: ${JSON.stringify(timeBlockByDay)}`);
-            // add code for separating collisions into different columns
-
-            // placeholder that just overlaps them
-            let columns = Array(this.days);
-            for (let i = 0; i < this.days; ++i) {
-              columns[i] = Array(1);
-              columns[i][0] = Array(0);
-              for (let timeblock of timeBlockByDay[i]) {
-                columns[i][0].push(timeblock.crn);
-              }
-            }
-            formattedSchedules.push(columns);
-          }
-          console.log(`formattedSchedules: ${formattedSchedules}`)
-          return formattedSchedules
         },
 
         testData() {
@@ -234,19 +189,6 @@
           } catch (e) {
             console.error(e);
           }
-          /*
-          if (Module && Module.cwrap) {
-            //let schedules = Module._populate(data, 5);
-            console.log(`attempting to call populate on module`);
-            const test = Module.cwrap('test', 'number', ['number']);
-            let result = test(5);
-            console.log(`result: ${result}`);
-            const populate = Module.cwrap('populate', 'string', ['string', 'number']);
-            let schedules = populate(data, 5);
-            console.log(`generated schedules by webassembly C++: ${schedules}`);
-          } else {
-            console.error("emscripten module is not yet loaded!");
-          }*/
         }
       }
   };
@@ -321,7 +263,6 @@
         background: #555; /* Color of the scroll thumb when hovered */
     }
 
-
     .calendar-background {
       z-index: 999;
       height: 100%;
@@ -349,3 +290,4 @@
         80px 80px;
       }
   </style>
+  
