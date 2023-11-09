@@ -28,8 +28,9 @@
   </template>
   
   <script>
-  import {formatSelectedCourses, scheduleFill} from '@/scheduler/scheduler.js';
-  import {CalendarBlockElement, CourseInstance, TimeBlock} from '@/scheduler/coursedata.js';
+  /* global Module */
+
+  import {CalendarBlockElement} from '@/scheduler/coursedata.js';
   export default {
       data() {
           return {
@@ -47,8 +48,21 @@
             selectedSchedule: 0,
           };
       },
+      mounted() {
+        if (typeof Module == 'undefined') {
+          const script = document.createElement('script');
+          script.src = './scheduler.js';
+          script.onload = () => {
+            console.log("emscripten module loaded");
+          }
+          document.body.appendChild(script);
+        } else {
+          this.testData();
+        }
+      },
       async created() {
-        this.testData();
+        this.generatedSchedules = [[]];
+        //this.testData();
       },
       methods: {
         // location specified as percentage of full width/height
@@ -59,6 +73,7 @@
         displaySchedule(schedule_index) {
           let schedule = this.generatedSchedules[schedule_index];
           this.blocks = [];
+          this.testData();
           // something's wrong with what I'm feeding into generated schedules
           for (let day = 0; day < schedule.length; day++) {
             let columns = schedule[day].length;
@@ -83,6 +98,7 @@
         },
 
         decrementSchedule() {
+          this.testData();
           this.selectedSchedule = this.selectedSchedule - 1;
           if (this.selectedSchedule < 0) {
             this.selectedSchedule = this.generatedSchedules.length - 1;
@@ -183,36 +199,41 @@
         },
 
         testData() {
-          let course1 = new CourseInstance(10000, 'CSCI 1100 COMPUTER SCIENCE I', 'Akeyl', 'DCC 308', [new TimeBlock(10000, 0, 720, 830), new TimeBlock(10000, 3, 720, 830)]);
-          let course1_2 = new CourseInstance(10001, 'CSCI 1100 COMPUTER SCIENCE I', 'Akeyl', 'DCC 308', [new TimeBlock(10001, 0, 600, 710), new TimeBlock(10001, 3, 600, 710)]);
-          let course2 = new CourseInstance(20000, 'CSCI 1200 DATA STRUCTURES', 'Shashank', 'DCC 308', [new TimeBlock(20000, 1, 840, 950), new TimeBlock(20000, 4, 840, 950)]);
-          let course3 = new CourseInstance(45000, 'ARTS 4070 3D ANIMATION', 'Alan', 'Sage 3330', [new TimeBlock(45000, 0, 780, 890), new TimeBlock(45000, 3, 780, 890)]);
-          let course4 = new CourseInstance(47000, 'ARTS 4080 ANIMATION PRODUCTION AND VISUAL EFFECTS', 'Alan', 'Sage 3150', [new TimeBlock(47000, 0, 720, 890), new TimeBlock(47000, 3, 720, 890)]);
-          let course5 = new CourseInstance(51000, 'ECSE 2010 Circuits', 'Alan', 'Sage 3330', [new TimeBlock(51000, 0, 600, 710), new TimeBlock(51000, 3, 600, 710)]);
-          let course6 = new CourseInstance(52000, 'ECSE 2100 Intro to Electronics', 'Alan', 'DCC 318', [new TimeBlock(52000, 1, 600, 710), new TimeBlock(52000, 4, 600, 710)]);
-          this.allCourses[course1.crn] = course1;
-          this.allCourses[course1_2.crn] = course1_2;
-          this.allCourses[course2.crn] = course2;
-          this.allCourses[course3.crn] = course3;
-          this.allCourses[course4.crn] = course4;
-          this.allCourses[course5.crn] = course5;
-          this.allCourses[course6.crn] = course6;
-          this.selectedCourses.push(course1);
-          this.selectedCourses.push(course2);
-          this.selectedCourses.push(course3);
-          this.selectedCourses.push(course1_2);
-          let formattedSelectedCourses = formatSelectedCourses(this.selectedCourses);
-          let generatedSchedules = scheduleFill(formattedSelectedCourses, 10);
-          this.generatedSchedules = this.formatGeneratedSchedules(generatedSchedules);
-
-          //let schedule1 = new Schedule([[[10000, 51000], [45000]], [[20000, 52000]], [[]], [[10000, 51000], [45000]], [[20000, 52000]]]);
-          //let schedule2 = new Schedule([[[10000], [47000]], [[20000]], [[]], [[10000], [47000]], [[20000]]]);
-          //let schedule3 = new Schedule([[[10000]], [[20000]], [[]], [[10000]], [[]]]);
-          //this.generatedSchedules = [schedule1.data, schedule2.data, schedule3.data];  // shape: (schedule, days of week, columns of day, CRNs)
-          console.log(`all generated schedules: ${JSON.stringify(this.generatedSchedules)}`)
-          this.displaySchedule(this.selectedSchedule);
-
-        },
+          console.log('BEGIN TESTING OF SCHEDULER WEBASSEMBLY');
+          let data = [[{name: "data structures", crn: "20001", timeBlocks: "2280, 2390, 6600, 6710"}],
+          [{name: "computer science I", crn: "10001", timeBlocks: "840, 950, 5160, 5270"},
+          {name: "computer science I", crn: "10002", timeBlocks: "2280, 2390, 6600, 6710"}],
+          [{name: "3d animation", crn: "41001", timeBlocks: "840, 950, 5160, 5270"},
+          {name: "3d animation", crn: "41002", timeBlocks: "960, 1070, 5280, 5390"},
+          {name: "3d animation", crn: "41003", timeBlocks: "2280, 2390, 6600, 6710"},
+          {name: "3d animation", crn: "41004", timeBlocks: "2340, 2390, 6660, 6770"}],
+          [{name: "graphics storytelling", crn: "42000", timeBlocks: "480, 590, 4800, 4910"},
+          {name: "graphics storytelling", crn: "42001", timeBlocks: "840, 950, 5160, 5270"},
+          {name: "graphics storytelling", crn: "42002", timeBlocks: "960, 1070, 5280, 5390"},
+          {name: "graphics storytelling", crn: "42003", timeBlocks: "2280, 2390, 6600, 6710"},
+          {name: "graphics storytelling", crn: "42004", timeBlocks: "2340, 2390, 6660, 6770"}]];
+          data = JSON.stringify(data);
+          try {
+            console.log('HIIII');
+            let result = Module.populate(data, 5);
+            console.log(result);
+          } catch (e) {
+            console.error(e);
+          }
+          /*
+          if (Module && Module.cwrap) {
+            //let schedules = Module._populate(data, 5);
+            console.log(`attempting to call populate on module`);
+            const test = Module.cwrap('test', 'number', ['number']);
+            let result = test(5);
+            console.log(`result: ${result}`);
+            const populate = Module.cwrap('populate', 'string', ['string', 'number']);
+            let schedules = populate(data, 5);
+            console.log(`generated schedules by webassembly C++: ${schedules}`);
+          } else {
+            console.error("emscripten module is not yet loaded!");
+          }*/
+        }
       }
   };
   </script>

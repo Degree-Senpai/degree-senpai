@@ -8,6 +8,13 @@ std::string populate(std::string selectedCourses, int maxDepth) {
     return scheduler.populateAndExport(selectedCourses, maxDepth);
 }
 
+int test(int num) {
+    return num + num;
+}
+
+EMSCRIPTEN_BINDINGS(scheduler) {
+    emscripten::function("test", &test);
+}
 
 EMSCRIPTEN_BINDINGS(my_module) {
     emscripten::function("populate", &populate);
