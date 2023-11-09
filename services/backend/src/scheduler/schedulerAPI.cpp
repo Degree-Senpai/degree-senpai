@@ -1,6 +1,6 @@
 #include <emscripten/bind.h>
 #include <string>
-#include "scheduler.h"
+#include "scheduler/scheduler.h"
 
 std::string populate(std::string selectedCourses, int maxDepth) {
     Scheduler scheduler;
