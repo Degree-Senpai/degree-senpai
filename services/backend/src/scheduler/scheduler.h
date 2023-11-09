@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <unordered_map>
-//#include <emscripten/val.h>
 #include "course.h"
 
 class Scheduler {

@@ -56,8 +56,6 @@
             console.log("emscripten module loaded");
           }
           document.body.appendChild(script);
-        } else {
-          this.testData();
         }
       },
       async created() {
@@ -73,7 +71,6 @@
         displaySchedule(schedule_index) {
           let schedule = this.generatedSchedules[schedule_index];
           this.blocks = [];
-          this.testData();
           // something's wrong with what I'm feeding into generated schedules
           for (let day = 0; day < schedule.length; day++) {
             let columns = schedule[day].length;
@@ -211,7 +208,24 @@
           {name: "graphics storytelling", crn: "42001", timeBlocks: "840, 950, 5160, 5270"},
           {name: "graphics storytelling", crn: "42002", timeBlocks: "960, 1070, 5280, 5390"},
           {name: "graphics storytelling", crn: "42003", timeBlocks: "2280, 2390, 6600, 6710"},
-          {name: "graphics storytelling", crn: "42004", timeBlocks: "2340, 2390, 6660, 6770"}]];
+          {name: "graphics storytelling", crn: "42004", timeBlocks: "2340, 2390, 6660, 6770"}],
+          [{name: "introduction to ecse", crn: "50000", timeBlocks: "480, 590, 4800, 4910"},
+          {name: "introduction to ecse", crn: "50001", timeBlocks: "840, 950, 5160, 5270"},
+          {name: "introduction to ecse", crn: "50002", timeBlocks: "960, 1070, 5280, 5390"},
+          {name: "introduction to ecse", crn: "50003", timeBlocks: "2280, 2390, 6600, 6710"},
+          {name: "introduction to ecse", crn: "50004", timeBlocks: "2340, 2390, 6660, 6770"}],
+          [{name: "introduction to electronics", crn: "51000", timeBlocks: "540, 590, 4800, 4910"},
+          {name: "introduction to electronics", crn: "51001", timeBlocks: "900, 950, 5220, 5270"},
+          {name: "introduction to electronics", crn: "51002", timeBlocks: "1020, 1070, 5340, 5390"},
+          {name: "introduction to electronics", crn: "51003", timeBlocks: "2340, 2390, 6660, 6710"},
+          {name: "introduction to electronics", crn: "51004", timeBlocks: "2400, 2390, 6720, 6770"}],
+          [{name: "data science", crn: "22000", timeBlocks: "4800, 5030"},
+          {name: "data science", crn: "22001", timeBlocks: "5220, 5390"},
+          {name: "data science", crn: "22002", timeBlocks: "5340, 5510"},
+          {name: "data science", crn: "22003", timeBlocks: "6660, 6830"},
+          {name: "data science", crn: "22004", timeBlocks: "6720, 6890"}],
+          [{name: "data mining", crn: "23001", timeBlocks: "6660, 6830"},
+          {name: "data mining", crn: "23002", timeBlocks: "6720, 6890"}]];
           data = JSON.stringify(data);
           try {
             console.log('HIIII');

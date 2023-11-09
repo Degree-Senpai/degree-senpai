@@ -1,5 +1,36 @@
 compile commands: 
 
 g++ -I/mnt/c/Users/eggyr/ERULN/C/json/include -std=c++17 test.cpp scheduler.cpp course.cpp utilities.cpp  -Wall -o test.out
+emcc --bind -I/mnt/c/Users/eggyr/ERULN/C/json/include -std=c++17 scheduler.cpp course.cpp utilities.cpp schedulerAPI.cpp -Wall -o scheduler.js -s EXPORTED_RUNTIME_METHODS='["cwrap", "getValue", "setValue"]'
 
-emcc --bind -I/mnt/c/Users/eggyr/ERULN/C/json/include -std=c++17 scheduler.cpp course.cpp utilities.cpp schedulerAPI.cpp -Wall -o scheduler.js
+
+How I did webassembly:
+
+so I created the C++ files as usual, and inside the cpp file that I want to expose a function, I included this thing:
+
+EMSCRIPTEN_BINDINGS(my_module) {
+    emscripten::function("populate", &populate);
+}
+
+to expose a function (in this case "populate")
+
+I then ran the compile command:
+
+emcc --bind -I/mnt/c/Users/eggyr/ERULN/C/json/include -std=c++17 scheduler.cpp course.cpp utilities.cpp schedulerAPI.cpp -Wall -o scheduler.js -s EXPORTED_RUNTIME_METHODS='["cwrap", "getValue", "setValue"]'
+
+which gives me scheduler.js and scheduler.wasm. I dragged these into the public folder of the frontend, and inside the vue file that I want to use wasm, I wrote the following inside mounted:
+
+if (typeof Module == 'undefined') {
+    const script = document.createElement('script');
+    script.src = './scheduler.js';
+    script.onload = () => {
+    console.log("emscripten module loaded");
+    }
+    document.body.appendChild(script);
+}
+
+and when I want to access the C++ function, I do the following:
+
+let result = Module.populate(data, 5);
+
+basically just treating the C++ function as if it was a member of the Module.

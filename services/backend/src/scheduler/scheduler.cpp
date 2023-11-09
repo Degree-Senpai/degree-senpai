@@ -20,7 +20,7 @@ std::shared_ptr<CourseInstance> Scheduler::makeCourseInstanceFromDictionary(std:
     std::string name = this->getName(courseInstanceData);
     int crn = this->getCRN(courseInstanceData);
     std::vector<int> linearTimeBlocks = this->getLinearTimeBlocks(courseInstanceData);
-    std::cout << "made new course instance " << name << " (" << crn << ") " << recursiveVecToString(linearTimeBlocks) << std::endl;
+    //std::cout << "made new course instance " << name << " (" << crn << ") " << recursiveVecToString(linearTimeBlocks) << std::endl;
     return std::make_shared<CourseInstance>(name, crn, linearTimeBlocks);
 }
 
@@ -29,7 +29,7 @@ void Scheduler::importCourseInstanceDictionaries(std::vector<std::unordered_map<
         if (this->allCourseInstances.find(this->getCRN(courseInstanceData)) == this->allCourseInstances.end()) {
             std::shared_ptr<CourseInstance> courseInstance = this->makeCourseInstanceFromDictionary(courseInstanceData);
             this->allCourseInstances.insert({courseInstance->crn, courseInstance});
-            std::cout << "added course instance " << courseInstance->name << " to scheduler" << std::endl;
+            //std::cout << "added course instance " << courseInstance->name << " to scheduler" << std::endl;
         }
     }
 }
