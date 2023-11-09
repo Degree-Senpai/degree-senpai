@@ -1,0 +1,1 @@
+compile command: g++ -I/mnt/c/Users/eggyr/ERULN/C/json/include -std=c++17 test.cpp scheduler.cpp course.cpp utilities.cpp  -Wall -o test.out

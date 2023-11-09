@@ -15,6 +15,7 @@ class Scheduler {
         std::vector<std::vector<std::vector<int>>> exportSchedulesAsDictionaries(std::vector<std::vector<Schedule>> schedules);
 
         // main function to compute schedules!
+        std::string populateAndExport(std::string, int max_collisions);
         std::vector<std::vector<std::vector<int>>> populateAndExport(std::vector<std::vector<std::unordered_map<std::string, std::string>>> selectedCourses, int max_collisions);
 
         //std::vector<std::vector<Schedule>> populate(std::vector<std::unordered_map<std::string, std::string>>, int);

@@ -1,8 +1,10 @@
 #include <iostream>
 #include <chrono>
+#include <nlohmann/json.hpp>
 #include "scheduler.h"
 #include "utilities.h"
 
+using json = nlohmann::json;
 
 /*
 * SCHEDULER METHODS
@@ -60,6 +62,13 @@ std::vector<int> Scheduler::getLinearTimeBlocks(std::unordered_map<std::string, 
 
 
 // POPULATE FUNCTIONS
+
+std::string Scheduler::populateAndExport(std::string selectedCoursesJson, int max_collisions) {
+    std::vector<std::vector<std::unordered_map<std::string, std::string>>> data = json::parse(selectedCoursesJson);
+    std::vector<std::vector<std::vector<int>>> schedulesCRN = this->exportSchedulesAsDictionaries(this->populate(data, max_collisions));
+    std::string schedulesCRNJson = json(schedulesCRN).dump();
+    return schedulesCRNJson;
+}
 
 std::vector<std::vector<std::vector<int>>> Scheduler::populateAndExport(std::vector<std::vector<std::unordered_map<std::string, std::string>>> selectedCourses, int max_collisions) {
     return this->exportSchedulesAsDictionaries(this->populate(selectedCourses, max_collisions));
