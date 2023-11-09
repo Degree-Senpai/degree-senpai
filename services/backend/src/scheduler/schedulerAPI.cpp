@@ -1,11 +1,14 @@
-//#include <emscripten/bind.h>
-#include <nlohmann/json.hpp>
 #include <emscripten/bind.h>
-#include <vector>
-#include <unordered_map>
+#include <emscripten/emscripten.h>
 #include <string>
 #include "scheduler.h"
 
-using json = nlohmann::json;
+std::string populate(std::string selectedCourses, int maxDepth) {
+    Scheduler scheduler;
+    return scheduler.populateAndExport(selectedCourses, maxDepth);
+}
 
 
+EMSCRIPTEN_BINDINGS(my_module) {
+    emscripten::function("populate", &populate);
+}
