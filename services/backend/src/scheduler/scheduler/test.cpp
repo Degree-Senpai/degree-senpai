@@ -1,6 +1,6 @@
 #include <nlohmann/json.hpp>
 #include "scheduler.h"
-#include "utilities.h"
+#include "../utilities/utilities.h"
 
 using json = nlohmann::json;
 

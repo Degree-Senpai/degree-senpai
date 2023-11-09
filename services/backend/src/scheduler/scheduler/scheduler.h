@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <unordered_map>
-#include "course.h"
+#include "schedule.h"
 
 class Scheduler {
     public:

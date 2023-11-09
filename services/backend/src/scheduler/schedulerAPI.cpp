@@ -1,5 +1,4 @@
 #include <emscripten/bind.h>
-#include <emscripten/emscripten.h>
 #include <string>
 #include "scheduler.h"
 
