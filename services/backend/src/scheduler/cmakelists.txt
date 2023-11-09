@@ -14,6 +14,7 @@ include_directories("/mnt/c/Users/eggyr/ERULN/C/json/include")
 # If you have many source files, consider using file(GLOB ...) to automatically include them
 set(SOURCE_FILES
     scheduler/scheduler.cpp
+    scheduler/schedule.cpp
     scheduler/course.cpp
     utilities/utilities.cpp
     schedulerAPI.cpp
