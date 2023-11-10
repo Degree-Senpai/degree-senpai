@@ -7,20 +7,28 @@
 using json = nlohmann::json;
 
 /*
-* SCHEDULER METHODS
+* The scheduler object will create CourseInstance objects when populate is called and there are new courses it previously hasn't stored.
+* The scheduler will delete all CourseInstance objects it created upon destruction.
 */
 
 Scheduler::Scheduler() {}
+
+Scheduler::~Scheduler() {
+    for (auto& courseInstance: this->allCourseInstances) {
+        delete courseInstance.second;
+    }
+}
 
 
 // IMPORTING AND CREATION OF COURSE INSTANCES
 
 /* Generates and returns CourseInstance from an ordered_map with strings as elements */
-std::shared_ptr<CourseInstance> Scheduler::makeCourseInstanceFromDictionary(std::unordered_map<std::string, std::string> courseInstanceData) {
+CourseInstance* Scheduler::makeCourseInstanceFromDictionary(std::unordered_map<std::string, std::string> courseInstanceData) {
     std::string name = this->getName(courseInstanceData);
     int crn = this->getCRN(courseInstanceData);
     std::vector<int> linearTimeBlocks = this->getLinearTimeBlocks(courseInstanceData);
-    return std::make_shared<CourseInstance>(name, crn, linearTimeBlocks);
+    CourseInstance* courseInstance = new CourseInstance(name, crn, linearTimeBlocks);
+    return courseInstance;
 }
 
 /* Wrapper for importCourseInstanceDictionary to import multiple CourseInstances at once */
@@ -33,7 +41,7 @@ void Scheduler::importCourseInstanceDictionaries(std::vector<std::unordered_map<
 /* If a CourseInstance with this CRN has not been added, a new CourseInstance will be created and added to Scheduler */
 void Scheduler::importCourseInstanceDictionary(std::unordered_map<std::string, std::string> courseInstanceData) {
     if (this->allCourseInstances.find(this->getCRN(courseInstanceData)) == this->allCourseInstances.end()) {
-        std::shared_ptr<CourseInstance> courseInstance = this->makeCourseInstanceFromDictionary(courseInstanceData);
+        CourseInstance* courseInstance = this->makeCourseInstanceFromDictionary(courseInstanceData);
         this->allCourseInstances.insert({courseInstance->crn, courseInstance});
         //std::cout << "added course instance " << courseInstance->name << " to scheduler" << std::endl;
     }
@@ -71,7 +79,7 @@ std::vector<int> Scheduler::getLinearTimeBlocks(std::unordered_map<std::string, 
 /* Wrapper for populate that takes in JSON string of 2D vector of course dictionaries and returns JSON string of 3D vector of CRNs */
 std::string Scheduler::populateAndExport(std::string selectedCoursesJson, int max_collisions) {
     std::vector<std::vector<std::unordered_map<std::string, std::string>>> data = json::parse(selectedCoursesJson);
-    std::vector<std::vector<std::vector<int>>> schedulesCRN = this->exportSchedulesAsVectors(this->populate(data, max_collisions));
+    std::vector<std::vector<std::vector<int>>> schedulesCRN = this->populateAndExport(data, max_collisions);
     std::string schedulesCRNJson = json(schedulesCRN).dump();
     return schedulesCRNJson;
 }
@@ -116,7 +124,7 @@ std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<i
 
                 for (const auto& courseInstanceCRN : courseGroup) {
                     // this loop expands the size of schedule exponentially by multiplying its size by the # of sections of each course!
-                    std::shared_ptr<CourseInstance> courseInstance = this->allCourseInstances[courseInstanceCRN];
+                    CourseInstance* courseInstance = this->allCourseInstances[courseInstanceCRN];
                     bool collides = collidesWithSchedule(schedule, courseInstance);
 
                     // decide if to keep going with this schedule
@@ -147,7 +155,7 @@ std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<i
 // HELPERS FOR POPULATE
 
 /* returns true if the course has any collision with any of the courses with the schedule */
-bool Scheduler::collidesWithSchedule(Schedule schedule, std::shared_ptr<CourseInstance> courseInstance) {
+bool Scheduler::collidesWithSchedule(Schedule schedule, CourseInstance* courseInstance) {
     for (const auto& existingCourseInstance : schedule.courseInstances) {
         if (collides(existingCourseInstance, courseInstance)) {
             return true;
@@ -156,15 +164,20 @@ bool Scheduler::collidesWithSchedule(Schedule schedule, std::shared_ptr<CourseIn
     return false;
 }
 
-/* returns whether two courses have any conflict. Touching timeblocks count as a conflict, this is to improve performance
-by a noticeable amount. Runs in O(N + M) time where N and M are the number of timeblocks for each course, respectively */
-bool Scheduler::collides(std::shared_ptr<CourseInstance> courseInstance1, std::shared_ptr<CourseInstance> courseInstance2) {
+/* returns whether two courses have any conflict. Runs in O(N + M) time where N and M are the number of timeblocks for each course, respectively */
+bool Scheduler::collides(CourseInstance* courseInstance1, CourseInstance* courseInstance2) {
     long unsigned int i = 0;
     long unsigned int j = 0;
     while (i != courseInstance1->linearTimeBlocks.size() && j != courseInstance2->linearTimeBlocks.size()) {
         if (courseInstance1->linearTimeBlocks[i] < courseInstance2->linearTimeBlocks[j]) {
             ++i;
             if (j & 1) {
+                return true;
+            }
+        } else if (courseInstance1->linearTimeBlocks[i] == courseInstance2->linearTimeBlocks[j]) {
+            ++i;
+            ++j;
+            if ((i & 1) == (j & 1)) {
                 return true;
             }
         } else {

@@ -54,6 +54,15 @@ int main() {
     }, 4);
     printSchedules(schedules);
 
+    Scheduler scheduler3;
+    schedules = scheduler3.populate({
+        {{{"name", "data structures"}, {"crn", "20001"}, {"timeBlocks", "2280, 2390, 6600, 6710"}}},
+        {{{"name", "computer science I"}, {"crn", "10001"}, {"timeBlocks", "2390, 2500, 6710, 6820"}},
+        {{"name", "computer science I"}, {"crn", "10002"}, {"timeBlocks", "2280, 2390, 6600, 6710"}}}
+    }, 4);
+    std::cout << "edge cases (20001 + 10001 have touching timeblocks, 20001 and 10002 have same exact timeblocks) " << std::endl;
+    printSchedules(schedules);
+
     std::vector<std::vector<std::vector<int>>> schedulesCRN = scheduler2.populateAndExport({
         {{{"name", "data structures"}, {"crn", "20001"}, {"timeBlocks", "2280, 2390, 6600, 6710"}}},
         {{{"name", "computer science I"}, {"crn", "10001"}, {"timeBlocks", "840, 950, 5160, 5270"}},

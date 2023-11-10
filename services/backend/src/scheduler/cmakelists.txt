@@ -29,5 +29,5 @@ set(CMAKE_TOOLCHAIN_FILE "/mnt/c/Users/eggyr/ERULN/C/emsdk/upstream/emscripten/c
 
 # Use emscripten's linking flags
 set_target_properties(scheduler PROPERTIES
-    LINK_FLAGS "--bind -Wall -s EXPORTED_RUNTIME_METHODS='[\"cwrap\", \"getValue\", \"setValue\"]'"
+    LINK_FLAGS "--bind -O3 -Wall -s EXPORTED_RUNTIME_METHODS='[\"cwrap\", \"getValue\", \"setValue\"]'"
 )

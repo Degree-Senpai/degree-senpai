@@ -13,7 +13,7 @@ class Schedule {
         std::vector<int> getCourseCRNs();
         friend std::ostream& operator<<(std::ostream&, const Schedule&);
 
-        std::vector<std::shared_ptr<CourseInstance>> courseInstances;
+        std::vector<CourseInstance*> courseInstances;
         int collisions;
 };
 
