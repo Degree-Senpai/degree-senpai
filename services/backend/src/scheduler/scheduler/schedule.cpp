@@ -4,14 +4,6 @@ Schedule::Schedule() {
     this->collisions = 0;
 }
 
-void Schedule::addCourseInstance(std::shared_ptr<CourseInstance> courseInstance) {
-    courseInstances.push_back(courseInstance);
-}
-
-std::vector<std::shared_ptr<CourseInstance>> Schedule::getCourseInstances() {
-    return courseInstances;
-}
-
 std::vector<int> Schedule::getCourseCRNs() {
     std::vector<int> crns;
     for (auto& courseInstance : this->courseInstances) {
