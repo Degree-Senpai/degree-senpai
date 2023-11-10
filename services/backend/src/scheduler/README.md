@@ -48,4 +48,4 @@ NOTES FOR SCHEDULER:
 
 I was considering removing the CourseInstance object but then realized it's better this way since otherwise it'll just be a map object, which will have even more overhead probably.
 
-I tested with the 10k schedule test data, the total time for unbounded depth was 60ms native and 240ms in Javascript.
+I tested with the 10k schedule test data, the total time for unbounded depth was 5ms native and 60ms in Webassembly.

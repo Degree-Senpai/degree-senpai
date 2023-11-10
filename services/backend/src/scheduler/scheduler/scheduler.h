@@ -13,15 +13,14 @@ class Scheduler {
 
         CourseInstance* makeCourseInstanceFromDictionary(std::unordered_map<std::string, std::string> courseInstanceData);
         
-        void importCourseInstanceDictionary(const std::unordered_map<std::string, std::string> courseInstanceData);
-        void importCourseInstanceDictionaries(const std::vector<std::unordered_map<std::string, std::string>> courseInstances);
+        void importCourseInstanceDictionary(const std::unordered_map<std::string, std::string> courseInstanceData, bool reimport=false);
+        void importCourseInstanceDictionaries(const std::vector<std::unordered_map<std::string, std::string>> courseInstances, bool reimport=false);
 
         std::vector<std::vector<std::vector<int>>> exportSchedulesAsVectors(std::vector<std::vector<Schedule>> schedules);
 
         // main function to compute schedules!
-        std::string populateAndExport(std::string, int max_collisions);
-        std::vector<std::vector<std::vector<int>>> populateAndExport(std::vector<std::vector<std::unordered_map<std::string, std::string>>> selectedCourses, int max_collisions);
-        std::vector<std::vector<Schedule>> populate(std::vector<std::vector<std::unordered_map<std::string, std::string>>>, int);
+        std::string populateAndExport(std::string, int max_collisions, bool reimport=false);
+        std::vector<std::vector<Schedule>> importAndPopulate(std::vector<std::vector<std::unordered_map<std::string, std::string>>>, int, bool reimport=false);
         std::vector<std::vector<Schedule>> populate(std::vector<std::vector<int>>, int);
 
         // helper functions
