@@ -80,7 +80,8 @@ std::vector<int> Scheduler::getLinearTimeBlocks(std::unordered_map<std::string, 
 
 // POPULATE FUNCTIONS
 
-/* Wrapper for populate that takes in JSON string of 2D vector of course dictionaries ({string, string}) and returns JSON string of 3D vector of CRNs (int) */
+/* unpack JSON string -> import -> populate -> export JSON string
+* Wrapper for populate that takes in JSON string of 2D vector of course dictionaries ({string, string}) and returns JSON string of 3D vector of CRNs (int) */
 std::string Scheduler::populateAndExport(std::string selectedCoursesJson, int max_collisions, bool reimport) {
     std::vector<std::vector<std::unordered_map<std::string, std::string>>> data = json::parse(selectedCoursesJson);
     std::vector<std::vector<std::vector<int>>> schedulesCRN = this->exportSchedulesAsVectors(this->importAndPopulate(data, max_collisions, reimport));
@@ -88,7 +89,8 @@ std::string Scheduler::populateAndExport(std::string selectedCoursesJson, int ma
     return schedulesCRNJson;
 }
 
-/* Wrapper for populate that takes in 2D vector of course dictionaries ({string, string}) and returns 2D vector of Schedules */
+/* import -> populate
+* Wrapper for populate that takes in 2D vector of course dictionaries ({string, string}) and returns 2D vector of Schedules */
 std::vector<std::vector<Schedule>> Scheduler::importAndPopulate(std::vector<std::vector<std::unordered_map<std::string, std::string>>> selectedCourses, int max_collisions, bool reimport) {
     // this is a wrapper around populate that first imports non-existing course instances, and then calls populate with a newly built selectedCourses with just CRNs
     std::vector<std::vector<int>> selectedCoursesCRN(selectedCourses.size());

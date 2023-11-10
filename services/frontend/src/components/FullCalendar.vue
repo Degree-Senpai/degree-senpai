@@ -154,7 +154,7 @@
 
         testData() {
           console.log('BEGIN TESTING OF SCHEDULER WEBASSEMBLY');
-          let data = [[{name: "data structures", crn: "20001", timeBlocks: "2280, 2390, 6600, 6710"}],
+          let data1 = [[{name: "data structures", crn: "20001", timeBlocks: "2280, 2390, 6600, 6710"}],
           [{name: "computer science I", crn: "10001", timeBlocks: "840, 950, 5160, 5270"},
           {name: "computer science I", crn: "10002", timeBlocks: "2280, 2390, 6600, 6710"}],
           [{name: "3d animation", crn: "41001", timeBlocks: "840, 950, 5160, 5270"},
@@ -183,10 +183,53 @@
           {name: "data science", crn: "22004", timeBlocks: "6720, 6890"}],
           [{name: "data mining", crn: "23001", timeBlocks: "6660, 6830"},
           {name: "data mining", crn: "23002", timeBlocks: "6720, 6890"}]];
-          data = JSON.stringify(data);
+
+          let data2 = [[{name: "data structures", crn: "20001", timeBlocks: "2280, 2390, 6600, 6710"}],
+          [{name: "computer science I", crn: "10001", timeBlocks: "2290, 2390, 6610, 6710"},
+          {name: "computer science I", crn: "10002", timeBlocks: "2280, 2390, 6600, 6710"}]];
+
+          let data3 = [[{name: "data structures", crn: "20001", timeBlocks: "2280, 2390, 6600, 6710"}],
+          [{name: "computer science I", crn: "10001", timeBlocks: "2390, 2490, 6710, 6810"},
+          {name: "computer science I", crn: "10002", timeBlocks: "2280, 2390, 6600, 6710"}]];
+
+          data1 = JSON.stringify(data1);
+          data2 = JSON.stringify(data2);
+          data3 = JSON.stringify(data3);
           try {
-            console.log('HIIII');
-            let result = Module.populate(data, 5);
+            console.log('test large 1');
+            let result = Module.populate(data1, 10, false);
+            console.log(result);
+          } catch (e) {
+            console.error(e);
+          }
+
+          try {
+            console.log('test large 2');
+            let result = Module.populate(data1, 10, false);
+            console.log(result);
+          } catch (e) {
+            console.error(e);
+          }
+
+          try {
+            console.log('test large 3');
+            let result = Module.populate(data1, 3, false);
+            console.log(result);
+          } catch (e) {
+            console.error(e);
+          }
+
+          try {
+            console.log('test persistence 1');
+            let result = Module.populate(data2, 10, false);
+            console.log(result);
+          } catch (e) {
+            console.error(e);
+          }
+
+          try {
+            console.log('test persistence 2');
+            let result = Module.populate(data3, 10, false);
             console.log(result);
           } catch (e) {
             console.error(e);

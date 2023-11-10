@@ -2,9 +2,9 @@
 #include <string>
 #include "scheduler/scheduler.h"
 
-std::string populate(std::string selectedCourses, int maxDepth) {
+std::string populate(std::string selectedCourses, int maxDepth, bool reimport) {
     Scheduler scheduler;
-    return scheduler.populateAndExport(selectedCourses, maxDepth);
+    return scheduler.populateAndExport(selectedCourses, maxDepth, reimport);
 }
 
 EMSCRIPTEN_BINDINGS(my_module) {
