@@ -30,8 +30,9 @@
   <script>
   /* global Module */
 
-  import {CalendarBlockElement, CourseInstance, formatGeneratedSchedules} from '@/scheduler/calendarformat.js';
-  import {formatSelectedCourses} from '@/scheduler/scheduleformat.js';
+  import { CalendarBlockElement } from '@/scheduler/calendarformat';
+  //import {CalendarBlockElement, CourseInstance, formatGeneratedSchedules} from '@/scheduler/calendarformat.js';
+  //import {formatSelectedCourses} from '@/scheduler/scheduleformat.js';
   import {modifyHSLA} from '@/utilities/colorutils.js';
   export default {
       data() {
@@ -87,6 +88,7 @@
         },
 
         incrementSchedule() {
+          this.testData();
           this.selectedSchedule = (this.selectedSchedule + 1) % this.generatedSchedules.length;
           this.displaySchedule(this.selectedSchedule);
         },

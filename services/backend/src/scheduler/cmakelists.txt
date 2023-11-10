@@ -21,13 +21,13 @@ set(SOURCE_FILES
 )
 
 # Add the executable to be built from the specified source files
-add_executable(SchedulerJS ${SOURCE_FILES})
+add_executable(scheduler ${SOURCE_FILES})
 
 # Include the Emscripten-specific toolchain file
 # This is necessary for CMake to use emcc/em++ for building
 set(CMAKE_TOOLCHAIN_FILE "/mnt/c/Users/eggyr/ERULN/C/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake")
 
 # Use emscripten's linking flags
-set_target_properties(SchedulerJS PROPERTIES
+set_target_properties(scheduler PROPERTIES
     LINK_FLAGS "--bind -Wall -s EXPORTED_RUNTIME_METHODS='[\"cwrap\", \"getValue\", \"setValue\"]'"
 )

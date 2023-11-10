@@ -39,3 +39,13 @@ and when I want to access the C++ function, I do the following:
     let result = Module.populate(data, 5);
 
 basically just treating the C++ function as if it was a member of the Module.
+
+
+
+NOTES FOR SCHEDULER:
+
+2023/11/9:
+
+I was considering removing the CourseInstance object but then realized it's better this way since otherwise it'll just be a map object, which will have even more overhead probably.
+
+I tested with the 10k schedule test data, the total time for unbounded depth was 60ms native and 240ms in Javascript.
