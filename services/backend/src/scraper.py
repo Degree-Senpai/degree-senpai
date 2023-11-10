@@ -114,7 +114,6 @@ while True:
 
 while True:
     try:
-        print("CLICK THE FUCKING BUTTON")
         submit_button = driver.find_element(By.XPATH, "/html/body/div[3]/form/input[2]")
         submit_button.click()
         #time.sleep(5)
@@ -138,14 +137,35 @@ while True:
         individualSubjectDict = {}
         table = driver.find_element(By.XPATH, '/html/body/div[3]/form/table/tbody')
         rows = table.find_elements(By.TAG_NAME, 'tr')
+        rowindex = 0
         for row in rows:
+            table = driver.find_element(By.XPATH, '/html/body/div[3]/form/table/tbody')
+            rows = table.find_elements(By.TAG_NAME, 'tr')
+            row = rows[rowindex]
+            print("row link index:", rowindex)
             classInfo = []
             cells = row.find_elements(By.TAG_NAME, 'td')  # Find cells within the row
             for cell in cells:
                 print(cell.text)
-                classInfo.append(cell.text)
+                if len(cell.text) != 0:
+                    classInfo.append(cell.text)
             if len(classInfo) > 0:
+                crn_xpath = '/html/body/div[3]/form/table/tbody/tr[{}]/td[2]/a'.format(rowindex + 1)
+                print(crn_xpath)
+                crn_link = row.find_element(By.XPATH, crn_xpath)
+                crn_link.click()
+                view_catalog_entry = driver.find_element(By.XPATH, '/html/body/div[3]/table[1]/tbody/tr[2]/td/a')
+                view_catalog_entry.click()
+                class_desc = driver.find_element(By.XPATH, '/html/body/div[3]/table[1]/tbody/tr[2]/td')
+                class_desc_text = class_desc.text.split('\n')[0]
+                print(class_desc_text)
+                classInfo.append(class_desc_text)
+                driver.back()
+                time.sleep(2)
+                driver.back()
                 individualSubjectDict[classInfo[1]] = classInfo
+            rowindex += 1
+            print("end of iteration")
         dictOfSubjects[subjectCount] = individualSubjectDict
         print(dictOfSubjects)
         #driver sends itself back to the page, deselects the index from the subject list
@@ -154,7 +174,6 @@ while True:
         subjectList = Select(driver.find_element(By.XPATH,'//*[@id="subj_id"]'))
         subjectList.deselect_by_index(subjectCount)
         subjectCount += 1
-        break
     except Exception as e:
         print("Exception occurred during execution:", e)
         print("!!!YOU FUCKED UP BIG TIME!!!")
