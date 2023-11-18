@@ -5,7 +5,7 @@
 #include <string>
 #include <memory>
 #include <iostream>
-#include "course.h"
+#include "../common/course.h"
 
 class Schedule {
     public:

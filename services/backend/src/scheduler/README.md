@@ -1,7 +1,7 @@
 compile commands: 
 
-g++ -I/mnt/c/Users/eggyr/ERULN/C/json/include -std=c++17 test.cpp scheduler.cpp course.cpp utilities.cpp  -Wall -o test.out
-emcc --bind -I/mnt/c/Users/eggyr/ERULN/C/json/include -std=c++17 scheduler.cpp course.cpp utilities.cpp schedulerAPI.cpp -Wall -o scheduler.js -s EXPORTED_RUNTIME_METHODS='["cwrap", "getValue", "setValue"]'
+g++ -I/mnt/c/Users/eggyr/ERULN/C/json/include -std=c++17 scheduler/test.cpp scheduler/schedule.cpp scheduler/scheduler.cpp common/course.cpp utilities/utilities.cpp -O3 -Wall -o test.out
+emcc --bind -I/mnt/c/Users/eggyr/ERULN/C/json/include -std=c++17 scheduler/schedule.cpp scheduler/scheduler.cpp common/course.cpp utilities/utilities.cpp schedulerAPI.cpp -O3 -Wall -o scheduler.js -s EXPORTED_RUNTIME_METHODS='["cwrap", "getValue", "setValue"]'
 
 
 How I did webassembly:

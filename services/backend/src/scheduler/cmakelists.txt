@@ -15,7 +15,7 @@ include_directories("/mnt/c/Users/eggyr/ERULN/C/json/include")
 set(SOURCE_FILES
     scheduler/scheduler.cpp
     scheduler/schedule.cpp
-    scheduler/course.cpp
+    common/course.cpp
     utilities/utilities.cpp
     schedulerAPI.cpp
 )
