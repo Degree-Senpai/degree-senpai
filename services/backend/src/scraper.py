@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+import json
 import time
 
 # Provide the URL of the webpage you want to access
@@ -137,35 +138,67 @@ while True:
         individualSubjectDict = {}
         table = driver.find_element(By.XPATH, '/html/body/div[3]/form/table/tbody')
         rows = table.find_elements(By.TAG_NAME, 'tr')
+        extracted_links = []
+        forbidden_numbers = []
+
+        # Iterate through each tr element in the list
+        rc = 0
+        for row in rows[2:]:
+            # Find the link within the td element
+            td = row.find_elements(By.XPATH, './/td')
+            #print(td[1].text)
+            if len(td[1].text) == 1:
+                #print(td[1].text)
+                forbidden_numbers.append(rc)
+                rc += 1
+                continue
+            td_with_link = td[1]
+            # Find the link inside the <td> element
+            link = td_with_link.find_element(By.XPATH, './/a')
+            
+            # Get the href attribute of the link
+            href = link.get_attribute('href')
+            
+            # Append the link to the list
+            extracted_links.append(href)
+            rc += 1
+        #print(extracted_links)
+        #print(forbidden_numbers)
+    
         rowindex = 0
-        for row in rows:
+        linkindex = -2
+        for row in rows[2:]:
             table = driver.find_element(By.XPATH, '/html/body/div[3]/form/table/tbody')
             rows = table.find_elements(By.TAG_NAME, 'tr')
+            if(rowindex in forbidden_numbers):
+                print("SKIPPED!!")
+                rowindex += 1
+                continue
             row = rows[rowindex]
             print("row link index:", rowindex)
             classInfo = []
             cells = row.find_elements(By.TAG_NAME, 'td')  # Find cells within the row
             for cell in cells:
-                print(cell.text)
+                #print(cell.text)
                 if len(cell.text) != 0:
                     classInfo.append(cell.text)
             if len(classInfo) > 0:
-                crn_xpath = '/html/body/div[3]/form/table/tbody/tr[{}]/td[2]/a'.format(rowindex + 1)
-                print(crn_xpath)
-                crn_link = row.find_element(By.XPATH, crn_xpath)
-                crn_link.click()
+                print(extracted_links[linkindex])
+                driver.get(extracted_links[linkindex])
                 view_catalog_entry = driver.find_element(By.XPATH, '/html/body/div[3]/table[1]/tbody/tr[2]/td/a')
+                #print(view_catalog_entry)
                 view_catalog_entry.click()
                 class_desc = driver.find_element(By.XPATH, '/html/body/div[3]/table[1]/tbody/tr[2]/td')
                 class_desc_text = class_desc.text.split('\n')[0]
-                print(class_desc_text)
+                #print(class_desc_text)
                 classInfo.append(class_desc_text)
                 driver.back()
                 time.sleep(2)
                 driver.back()
                 individualSubjectDict[classInfo[1]] = classInfo
             rowindex += 1
-            print("end of iteration")
+            linkindex += 1
+            #print(classInfo)
         dictOfSubjects[subjectCount] = individualSubjectDict
         print(dictOfSubjects)
         #driver sends itself back to the page, deselects the index from the subject list
