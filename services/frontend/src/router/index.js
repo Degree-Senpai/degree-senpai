@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Scheduler from '../pages/Scheduler.vue'
 import DegreePlanner from '../pages/DegreePlanner.vue'
 import ShashankTest from '../components/ShashankTest.vue'
+import AllCourses3 from '../components/AllCourses3.vue'
 
 const routes = [
   {
@@ -23,6 +24,11 @@ const routes = [
     path: '/landing',
     name: 'Landing',
     component: ShashankTest
+  },
+  {
+    path: '/allcourses',
+    name: 'AllCourses',
+    component: AllCourses3
   }
 ]
 
