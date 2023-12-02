@@ -288,6 +288,14 @@ async def dp_get_courses(lowercase:bool):
     courses.sort()
     return courses
 
+@app.get('/api/dp/coursedetails')
+async def dp_get_courses():
+    courses = list(planner.catalog.get_elements())
+    courses_dict = dict()
+    for course in courses:
+        courses_dict[course.name.casefold()] = course.attributes.to_dict()
+    return courses_dict
+
 @app.get('/api/dp/subjectgroups')
 async def dp_get_subject_groups():
     return planner.subject_groups

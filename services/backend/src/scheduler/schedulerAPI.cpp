@@ -10,3 +10,10 @@ std::string populate(std::string selectedCourses, int maxDepth, bool reimport) {
 EMSCRIPTEN_BINDINGS(my_module) {
     emscripten::function("populate", &populate);
 }
+
+EMSCRIPTEN_BINDINGS(external_constructors) {
+  class_<Scheduler>("Scheduler")
+    .constructor()
+    .function("someFunction", &MyClass::someFunction)
+    ;
+}

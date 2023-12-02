@@ -10,7 +10,7 @@
         Displaying schedule {{ this.selectedSchedule + 1 }} / {{ this.generatedSchedules.length }}
       </div>
       <div style="width: 100%; top: 32px; bottom: 0px; position:absolute">
-        <div :style="getCalendarBlockBackgroundStyle(hours, days)"></div>
+        <div :style="getCalendarBackgroundStyle(hours, days)"></div>
         <div class="block" v-for="(block, block_index) in blocks" :key="block_index" :style="getCalendarBlockStyle(block)">
           <div class="block-head" :style="getCalendarBlockTitleStyle(block)">
             <span class="block-head-h2" style="font-size: 0.9em">{{ allCourses[block.crn].name.substring(0, 9) }}</span> <br>
@@ -30,7 +30,7 @@
   <script>
   /* global Module */
 
-  import { CalendarBlockElement } from '@/scheduler/calendarformat';
+  import { CalendarBlockElement, CourseInstance } from '@/scheduler/calendarformat';
   //import {CalendarBlockElement, CourseInstance, formatGeneratedSchedules} from '@/scheduler/calendarformat.js';
   //import {formatSelectedCourses} from '@/scheduler/scheduleformat.js';
   import {modifyHSLA} from '@/utilities/colorutils.js';
@@ -46,12 +46,14 @@
 
             allCourses: {},
             selectedCourses: [],
-            generatedSchedules: [[]], // shape: (schedule, days of week, columns of day, CRNs)
+            generatedSchedules: [], // shape: (schedule, days of week, columns of day, CRNs)
             blocks: [], // 2D array: day of week -> calendar blocks
             selectedSchedule: 0,
           };
       },
-      mounted() {
+
+
+      async mounted() {
         if (typeof Module == 'undefined') {
           const script = document.createElement('script');
           script.src = './scheduler.js';
@@ -60,26 +62,112 @@
           }
           document.body.appendChild(script);
         }
+        // eslint-disable-next-line no-unused-vars
+        const delay = millis => new Promise((resolve, reject) => {
+          // eslint-disable-next-line no-unused-vars
+          setTimeout(t => resolve(), millis)
+        });
+        await delay(2000);
+        this.testData();
       },
       methods: {
         addCourse(crn) {
           this.selectedCourses.push(crn);
         },
 
+        timeblockDay(time) {
+          return Math.floor(time / 1440);
+        },
+
+        timeblockMinuteOfDay(time) {
+          return time % 1440;
+        },
+
+        genArray(dims) {
+          let array = Array(dims[0]);
+          if (dims.length == 1) {
+            return array;
+          }
+          let new_dims = dims.slice(1);
+          for (let i = 0; i < array.length; ++i) {
+            array[i] = this.genArray(new_dims);
+          }
+          return array;
+        },
+
+        parseSchedule(schedule) {
+          let parsed = this.genArray([5,1,0]);
+          //console.log(`parsing schedule ${JSON.stringify(schedule)}`);
+          for (const crn of schedule) {
+            const course = this.allCourses[crn];
+            for (const timeblock of course.timeblocks) {
+              let i = 0;
+              while (i < parsed[timeblock.day].length && this.overlapsAny(parsed[timeblock.day][i], crn)) {
+                i++;
+              }
+              if (i == parsed[timeblock.day].length) {
+                parsed[timeblock.day].push([crn]);
+              } else {
+                parsed[timeblock.day][i].push(crn);
+              }
+            }
+          }
+          //console.log(`parsed ${JSON.stringify(parsed)}`);
+          return parsed;
+        },
+
+        overlapsAny(coursesCRN, courseCRN) {
+          if (coursesCRN.length == 0) {
+            return false;
+          }
+          for (const courseEntryCRN of coursesCRN) {
+            if (this.overlaps(courseEntryCRN, courseCRN)) {
+              return true;
+            }
+          }
+          return false;
+        },
+
+        overlaps(courseCRN1, courseCRN2) {
+          let i = 0;
+          let j = 0;
+          while (i != this.allCourses[courseCRN1].lineartimeblocks.length && j != this.allCourses[courseCRN2].lineartimeblocks.length) {
+              if (this.allCourses[courseCRN1].lineartimeblocks[i] < this.allCourses[courseCRN2].lineartimeblocks[j]) {
+                  ++i;
+                  if (j & 1) {
+                      return true;
+                  }
+              } else if (this.allCourses[courseCRN1].lineartimeblocks[i] == this.allCourses[courseCRN2].lineartimeblocks[j]) {
+                  ++i;
+                  ++j;
+                  if ((i & 1) == (j & 1)) {
+                      return true;
+                  }
+              } else {
+                  ++j;
+                  if (i & 1) {
+                      return true;
+                  }
+              }
+          }
+          return false;
+        },
+
         displaySchedule(schedule_index) {
-          let schedule = this.generatedSchedules[schedule_index];
+          const schedule_raw = this.generatedSchedules[schedule_index];
+          const schedule = this.parseSchedule(schedule_raw);
           this.blocks = [];
           // something's wrong with what I'm feeding into generated schedules
           for (let day = 0; day < schedule.length; day++) {
-            let columns = schedule[day].length;
+            const columns = schedule[day].length;
             for (let column = 0; column < columns; column++) {
-              for (let crn of schedule[day][column]) {
-                let course = this.allCourses[crn];
+              for (const crn of schedule[day][column]) {
+                const course = this.allCourses[crn];
                 for (let timeblock of course.timeblocks) {
                   if (timeblock.day != day) {
                     continue;
                   }
-                  let color = `hsla(${(course.crn / 3.795) % 360}, 14%, 69%, 0.7)`;
+                  const color = `hsla(${(course.crn / 3.795) % 360}, 14%, 69%, 0.7)`;
                   this.blocks.push(new CalendarBlockElement(course.crn, timeblock.day, timeblock.begin, timeblock.length, column, columns, color, 0.02, 0, 0.1));
                 }
               }
@@ -88,7 +176,6 @@
         },
 
         incrementSchedule() {
-          this.testData();
           this.selectedSchedule = (this.selectedSchedule + 1) % this.generatedSchedules.length;
           this.displaySchedule(this.selectedSchedule);
         },
@@ -112,7 +199,8 @@
             left: `${calendarBlockElement.x}%`,
             top: `${calendarBlockElement.y}%`,
             width: `${calendarBlockElement.width}%`,
-            height: `${calendarBlockElement.height}%`
+            height: `${calendarBlockElement.height}%`,
+            position: 'absolute'
           };
         },
 
@@ -133,7 +221,7 @@
           };
         },
 
-        getCalendarBlockBackgroundStyle(hours, days) {
+        getCalendarBackgroundStyle(hours, days) {
           return {
             zIndex: 999,
             height: '100%',
@@ -152,6 +240,16 @@
           }
         },
 
+        populateGeneratedSchedules(schedules) {
+          for (const scheduleList of schedules) {
+            if (scheduleList.length > 0) {
+              this.generatedSchedules = scheduleList;
+              console.log(`generatedSchedules: ${this.generatedSchedules}`)
+              return;
+            }
+          }
+        },
+
         testData() {
           console.log('BEGIN TESTING OF SCHEDULER WEBASSEMBLY');
           let data1 = [[{name: "data structures", crn: "20001", timeBlocks: "2280, 2390, 6600, 6710"}],
@@ -160,17 +258,18 @@
           [{name: "3d animation", crn: "41001", timeBlocks: "840, 950, 5160, 5270"},
           {name: "3d animation", crn: "41002", timeBlocks: "960, 1070, 5280, 5390"},
           {name: "3d animation", crn: "41003", timeBlocks: "2280, 2390, 6600, 6710"},
-          {name: "3d animation", crn: "41004", timeBlocks: "2340, 2390, 6660, 6770"}],
+          {name: "3d animation", crn: "41004", timeBlocks: "2340, 2450, 6660, 6770"}],
           [{name: "graphics storytelling", crn: "42000", timeBlocks: "480, 590, 4800, 4910"},
           {name: "graphics storytelling", crn: "42001", timeBlocks: "840, 950, 5160, 5270"},
           {name: "graphics storytelling", crn: "42002", timeBlocks: "960, 1070, 5280, 5390"},
           {name: "graphics storytelling", crn: "42003", timeBlocks: "2280, 2390, 6600, 6710"},
-          {name: "graphics storytelling", crn: "42004", timeBlocks: "2340, 2390, 6660, 6770"}],
+          {name: "graphics storytelling", crn: "42004", timeBlocks: "2340, 2450, 6660, 6770"}],
           [{name: "introduction to ecse", crn: "50000", timeBlocks: "480, 590, 4800, 4910"},
           {name: "introduction to ecse", crn: "50001", timeBlocks: "840, 950, 5160, 5270"},
           {name: "introduction to ecse", crn: "50002", timeBlocks: "960, 1070, 5280, 5390"},
           {name: "introduction to ecse", crn: "50003", timeBlocks: "2280, 2390, 6600, 6710"},
-          {name: "introduction to ecse", crn: "50004", timeBlocks: "2340, 2390, 6660, 6770"}],
+          {name: "introduction to ecse", crn: "50004", timeBlocks: "2340, 2450, 6660, 6770"}]];
+          /*
           [{name: "introduction to electronics", crn: "51000", timeBlocks: "540, 590, 4800, 4910"},
           {name: "introduction to electronics", crn: "51001", timeBlocks: "900, 950, 5220, 5270"},
           {name: "introduction to electronics", crn: "51002", timeBlocks: "1020, 1070, 5340, 5390"},
@@ -182,7 +281,7 @@
           {name: "data science", crn: "22003", timeBlocks: "6660, 6830"},
           {name: "data science", crn: "22004", timeBlocks: "6720, 6890"}],
           [{name: "data mining", crn: "23001", timeBlocks: "6660, 6830"},
-          {name: "data mining", crn: "23002", timeBlocks: "6720, 6890"}]];
+          {name: "data mining", crn: "23002", timeBlocks: "6720, 6890"}]];*/
 
           let data2 = [[{name: "data structures", crn: "20001", timeBlocks: "2280, 2390, 6600, 6710"}],
           [{name: "computer science I", crn: "10001", timeBlocks: "2290, 2390, 6610, 6710"},
@@ -192,12 +291,33 @@
           [{name: "computer science I", crn: "10001", timeBlocks: "2390, 2490, 6710, 6810"},
           {name: "computer science I", crn: "10002", timeBlocks: "2280, 2390, 6600, 6710"}]];
 
+          this.allCourses['20001'] = new CourseInstance('20001', 'CSCI 1200 data structures', 'akeyl', 'DCC 308', null, [2280, 2390, 6600, 6710]);
+          this.allCourses['10001'] = new CourseInstance('10001', 'CSCI 1100 computer science I', 'akeyl', 'DCC 308', null, [840, 950, 5160, 5270]);
+          this.allCourses['10002'] = new CourseInstance('10002', 'CSCI 1100 computer science I', 'akeyl', 'DCC 308', null, [2280, 2390, 6600, 6710]);
+          this.allCourses['41001'] = new CourseInstance('41001', 'ARTS 4070 3d animation', 'alan', 'DCC 308', null, [840, 950, 5160, 5270]);
+          this.allCourses['41002'] = new CourseInstance('41002', 'ARTS 4070 3d animation', 'alan', 'DCC 308', null, [960, 1070, 5280, 5390]);
+          this.allCourses['41003'] = new CourseInstance('41003', 'ARTS 4070 3d animation', 'alan', 'DCC 308', null, [2280, 2390, 6600, 6710]);
+          this.allCourses['41004'] = new CourseInstance('41004', 'ARTS 4070 3d animation', 'alan', 'DCC 308', null, [2340, 2450, 6660, 6770]);
+          this.allCourses['42000'] = new CourseInstance('42000', 'ARTS 2070 graphics storytelling', 'shashank', 'DCC 308', null, [480, 590, 4800, 4910]);
+          this.allCourses['42001'] = new CourseInstance('42001', 'ARTS 2070 graphics storytelling', 'shashank', 'DCC 308', null, [840, 950, 5160, 5270]);
+          this.allCourses['42002'] = new CourseInstance('42002', 'ARTS 2070 graphics storytelling', 'shashank', 'DCC 308', null, [960, 1070, 5280, 5390]);
+          this.allCourses['42003'] = new CourseInstance('42003', 'ARTS 2070 graphics storytelling', 'shashank', 'DCC 308', null, [2280, 2390, 6600, 6710]);
+          this.allCourses['42004'] = new CourseInstance('42004', 'ARTS 2070 graphics storytelling', 'shashank', 'DCC 308', null, [2340, 2450, 6660, 6770]);
+          this.allCourses['50000'] = new CourseInstance('50000', 'ECSE 1010 introduction to ecse', 'shashank', 'DCC 308', null, [480, 590, 4800, 4910]);
+          this.allCourses['50001'] = new CourseInstance('50001', 'ECSE 1010 introduction to ecse', 'shashank', 'DCC 308', null, [840, 950, 5160, 5270]);
+          this.allCourses['50002'] = new CourseInstance('50002', 'ECSE 1010 introduction to ecse', 'shashank', 'DCC 308', null, [960, 1070, 5280, 5390]);
+          this.allCourses['50003'] = new CourseInstance('50003', 'ECSE 1010 introduction to ecse', 'shashank', 'DCC 308', null, [2280, 2390, 6600, 6710]);
+          this.allCourses['50004'] = new CourseInstance('50004', 'ECSE 1010 introduction to ecse', 'shashank', 'DCC 308', null, [2340, 2450, 6660, 6770]);
+
           data1 = JSON.stringify(data1);
           data2 = JSON.stringify(data2);
           data3 = JSON.stringify(data3);
           try {
             console.log('test large 1');
             let result = Module.populate(data1, 10, false);
+            result = JSON.parse(result);
+            this.populateGeneratedSchedules(result);
+            console.log(`populated generated schedules ${JSON.stringify(this.generatedSchedules)}`)
             console.log(result);
           } catch (e) {
             console.error(e);

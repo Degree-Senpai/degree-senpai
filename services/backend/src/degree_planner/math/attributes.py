@@ -1,3 +1,5 @@
+from .dictionary_array import Dict_Array
+
 class Attributes():
 
     def __init__(self, casefold=True, delimiter='.'):
@@ -41,6 +43,13 @@ class Attributes():
         for item in self.attributes_order:
             self.to_directory_add_item(directory, self.attributes_full_str_to_list.get(item), ordered, by_tail)
         return directory
+
+    def to_dict(self):
+        dictionary = Dict_Array()
+        for full_str in self.attributes_full_str_to_list.values():
+            dictionary.add(full_str[0], ','.join(full_str[1:]))
+        return dictionary.dictionary
+            
 
     def add_attribute(self, attr:str):
         if self.casefold:

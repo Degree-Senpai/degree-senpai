@@ -1,12 +1,15 @@
 <template>
-    <Header></Header>
     <div>
+        <Header></Header>
+        <div class="landing">
+            <LandingComponent/>
+        </div>
         <button class="toggle-calendar-button" @click="toggleComponent" >
             {{ isEnabled ? 'Disable' : 'Enable' }} Full Calendar
         </button>
-        <div class="mini-calendar" ref="miniCalContainer" v-if="!isEnabled">
+        <div class="mini-calendar" ref="miniCalContainer" v-show="!isEnabled">
             miniCalendar
-            {{ "<MiniCalendar></MiniCalendar>" }}
+            <MiniCalendar/>
         </div>
         <div class="full-calendar-container" v-show="isEnabled">
             <div class="full-calendar">
@@ -18,14 +21,16 @@
   
 <script>
     import HeaderComponent from "@/components/PageHeader";
-    //import MiniCalendar from "@/components/MiniCalendar.vue";
+    import MiniCalendar from "@/components/MiniCalendar.vue";
     import FullCalendar from "@/components/FullCalendar.vue";
+    import LandingComponent from "@/components/LandingComponent.vue";
     export default {
         name: 'HomePage',
         components: {
-            //MiniCalendar,
+            MiniCalendar,
             Header: HeaderComponent,
-            FullCalendar
+            FullCalendar,
+            LandingComponent
         },
         data() {
             return {
@@ -45,6 +50,13 @@
 </script>
   
 <style scoped>
+    .landing {
+        position: absolute;
+        width: 42vw;
+        height: 90vh;
+        margin: 4px;
+        padding: 4px;
+    }
     .full-calendar-container{
         position: absolute;
         width: 55vw;
@@ -67,8 +79,8 @@
     .toggle-calendar-button{
         position: fixed;
         z-index: 9999;
-        top: 6%;
-        right: 15px;
+        top: 16px;
+        right: 255px;
         background-color: #535556;
         color: white;
         padding: 4px;
