@@ -35,7 +35,7 @@
         data() {
             return {
                 data: 'test',
-                isEnabled: false,
+                isEnabled: true,
             };
         },
         methods: {

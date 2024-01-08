@@ -11,7 +11,9 @@ using json = nlohmann::json;
 * The scheduler will delete all CourseInstance objects it created upon destruction.
 */
 
-Scheduler::Scheduler() {}
+Scheduler::Scheduler() {
+    std::cout << "scheduler contructor called" << std::endl;
+}
 
 Scheduler::~Scheduler() {
     for (auto& courseInstance: this->allCourseInstances) {
@@ -21,6 +23,7 @@ Scheduler::~Scheduler() {
 
 
 // IMPORTING AND CREATION OF COURSE INSTANCES
+// Note: dictionary refers to the data we receive from Javascript
 
 /* Generates and returns CourseInstance from an ordered_map with strings as elements */
 CourseInstance* Scheduler::makeCourseInstanceFromDictionary(std::unordered_map<std::string, std::string> courseInstanceData) {
@@ -38,7 +41,8 @@ void Scheduler::importCourseInstanceDictionaries(std::vector<std::unordered_map<
     }
 }
 
-/* If a CourseInstance with this CRN has not been added, a new CourseInstance will be created and added to Scheduler */
+/* If a CourseInstance with this CRN has not been added, a new CourseInstance will be created and added to Scheduler
+* Otherwise, nothing will happen (this is done for performance). If data needs to be updated, set reimport to true */
 void Scheduler::importCourseInstanceDictionary(std::unordered_map<std::string, std::string> courseInstanceData, bool reimport) {
     if (this->allCourseInstances.find(this->getCRN(courseInstanceData)) == this->allCourseInstances.end()) {
         CourseInstance* courseInstance = this->makeCourseInstanceFromDictionary(courseInstanceData);
@@ -81,7 +85,8 @@ std::vector<int> Scheduler::getLinearTimeBlocks(std::unordered_map<std::string, 
 // POPULATE FUNCTIONS
 
 /* unpack JSON string -> import -> populate -> export JSON string
-* Wrapper for populate that takes in JSON string of 2D vector of course dictionaries ({string, string}) and returns JSON string of 3D vector of CRNs (int) */
+* Wrapper for importAndPopulate that takes in JSON string of 2D vector of course dictionaries ({string, string}) 
+* and returns JSON string of 3D vector of CRNs (int) */
 std::string Scheduler::populateAndExport(std::string selectedCoursesJson, int max_collisions, bool reimport) {
     std::vector<std::vector<std::unordered_map<std::string, std::string>>> data = json::parse(selectedCoursesJson);
     std::vector<std::vector<std::vector<int>>> schedulesCRN = this->exportSchedulesAsVectors(this->importAndPopulate(data, max_collisions, reimport));

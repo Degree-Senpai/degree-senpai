@@ -241,9 +241,14 @@
         },
 
         populateGeneratedSchedules(schedules) {
+          // schedules' first dimension are the number of collisions. 
+
+          // the below loop finds the lowest number of collisions possible and renders all combinations.
+          // this is why we terminate upon finding the first non-empty array within schedules.
           for (const scheduleList of schedules) {
             if (scheduleList.length > 0) {
               this.generatedSchedules = scheduleList;
+              this.displaySchedule(this.selectedSchedule);
               console.log(`generatedSchedules: ${this.generatedSchedules}`)
               return;
             }
@@ -284,12 +289,7 @@
           {name: "data mining", crn: "23002", timeBlocks: "6720, 6890"}]];*/
 
           let data2 = [[{name: "data structures", crn: "20001", timeBlocks: "2280, 2390, 6600, 6710"}],
-          [{name: "computer science I", crn: "10001", timeBlocks: "2290, 2390, 6610, 6710"},
-          {name: "computer science I", crn: "10002", timeBlocks: "2280, 2390, 6600, 6710"}]];
-
-          let data3 = [[{name: "data structures", crn: "20001", timeBlocks: "2280, 2390, 6600, 6710"}],
-          [{name: "computer science I", crn: "10001", timeBlocks: "2390, 2490, 6710, 6810"},
-          {name: "computer science I", crn: "10002", timeBlocks: "2280, 2390, 6600, 6710"}]];
+          [{name: "computer science I", crn: "10001", timeBlocks: "2290, 2390, 6610, 6710"}]];
 
           this.allCourses['20001'] = new CourseInstance('20001', 'CSCI 1200 data structures', 'akeyl', 'DCC 308', null, [2280, 2390, 6600, 6710]);
           this.allCourses['10001'] = new CourseInstance('10001', 'CSCI 1100 computer science I', 'akeyl', 'DCC 308', null, [840, 950, 5160, 5270]);
@@ -311,11 +311,11 @@
 
           data1 = JSON.stringify(data1);
           data2 = JSON.stringify(data2);
-          data3 = JSON.stringify(data3);
           try {
             console.log('test large 1');
             let result = Module.populate(data1, 10, false);
             result = JSON.parse(result);
+            console.log(`RESULT LENGTH: ${result.length}`);
             this.populateGeneratedSchedules(result);
             console.log(`populated generated schedules ${JSON.stringify(this.generatedSchedules)}`)
             console.log(result);
@@ -323,7 +323,9 @@
             console.error(e);
           }
 
-          try {
+          console.log(data2.length);
+
+          /*try {
             console.log('test large 2');
             let result = Module.populate(data1, 10, false);
             console.log(result);
@@ -340,7 +342,7 @@
           }
 
           try {
-            console.log('test persistence 1');
+            console.log('test persistence 1: if persistent, we should see CS1 occurring Monday');
             let result = Module.populate(data2, 10, false);
             console.log(result);
           } catch (e) {
@@ -348,12 +350,12 @@
           }
 
           try {
-            console.log('test persistence 2');
-            let result = Module.populate(data3, 10, false);
+            console.log('test persistence 2: we updated original: CS1 occurs Tuesday');
+            let result = Module.populate(data2, 10, true);
             console.log(result);
           } catch (e) {
             console.error(e);
-          }
+          }*/
         }
       }
   };
