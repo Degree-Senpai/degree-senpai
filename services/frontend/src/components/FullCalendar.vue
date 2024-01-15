@@ -34,6 +34,13 @@
   //import {CalendarBlockElement, CourseInstance, formatGeneratedSchedules} from '@/scheduler/calendarformat.js';
   //import {formatSelectedCourses} from '@/scheduler/scheduleformat.js';
   import {modifyHSLA} from '@/utilities/colorutils.js';
+
+  import {colorStore} from '@/utilities/store.js';
+  import {schedulerStore} from '@/utilities/store.js';
+  // eslint-disable-next-line no-unused-vars
+  const colorService = colorStore();
+  // eslint-disable-next-line no-unused-vars
+  const schedulerData = schedulerStore();
   export default {
       data() {
           return {
@@ -54,6 +61,11 @@
 
 
       async mounted() {
+        //testing
+        const colors = colorService.colorService;
+        console.log('OUTPUTTING COLOR STORE');
+        console.log(JSON.stringify(colors));
+
         if (typeof Module == 'undefined') {
           const script = document.createElement('script');
           script.src = './scheduler.js';

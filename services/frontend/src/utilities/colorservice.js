@@ -1,4 +1,12 @@
-class Color {
+/*
+SCROLL DOWN TO class Colors for the main colorservice class. Colors is responsible for storing the color palette as
+attribute "palette" and computed functions, including gradientSampled and gradientFull.
+
+To initialize this class for use, create a ColorPalette class and fill in necessary colors with 
+class Color(hue, saturation, lightness, alpha).
+*/
+
+export class Color {
     constructor(hue, saturation, lightness, alpha) {
         this.hue = hue;
         this.saturation = saturation;
@@ -7,8 +15,8 @@ class Color {
     }
 
     interpolate(otherColor, factor, longerLoop=false) {
-        clockwiseDistance = (otherColor.hue - this.hue + 360) %  360;
-        counterclockwiseDistance = (this.hue - otherColor.hue + 360) % 360;
+        let clockwiseDistance = (otherColor.hue - this.hue + 360) %  360;
+        let counterclockwiseDistance = (this.hue - otherColor.hue + 360) % 360;
         console.log(`clockwise distance between ${this.hue} and ${otherColor.hue}: ${clockwiseDistance}`);
         console.log(`counterclockwise distance between ${this.hue} and ${otherColor.hue}: ${counterclockwiseDistance}`);
 
@@ -33,7 +41,7 @@ class Color {
     }
 }
 
-class ColorPalette {
+export class ColorPalette {
     constructor(main, highlight, layerouter, layermid, layerinner, iconmain, iconsub, iconsmall) {
         this.main = main;
         this.highlight = highlight;
@@ -78,11 +86,11 @@ export class Colors {
             color2 = new Color(359, 10, 50, 1);
         }
 
-        newColor = color1.interpolate(color2, factor, longerLoop);
+        let newColor = color1.interpolate(color2, factor, longerLoop);
         return newColor
     }
 
-    gradientSpectrum(factor, color1 = null, color2 = null, smallerLoop = true, numIndex) {
+    gradientFull(factor, color1 = null, color2 = null, smallerLoop = true, numIndex) {
         /* samples numIndex amount evenly from gradient */
         let colors = [];
         for (let i = 0; i < numIndex; ++i) {
