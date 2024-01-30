@@ -55,8 +55,10 @@
   }
 
   .large{
-    width: 230px;
-    height: 60px;
+    width: 8vw;
+    min-width: 80px;
+    height: 6vh;
+    min-height: 40px;
     border: 2px solid #ccc;
     display: flex;
     justify-content: center;

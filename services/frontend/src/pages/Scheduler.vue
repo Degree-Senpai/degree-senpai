@@ -1,13 +1,22 @@
 <template>
-    <Header></Header>
-        <button class="toggle-calendar-button" @click="toggleComponent">
-                {{ isEnabled ? 'Disable' : 'Enable' }} Full Calendar
+    <div>
+        <Header></Header>
+        <div class="landing">
+            <LandingComponent/>
+        </div>
+        <button class="toggle-calendar-button" @click="toggleComponent" >
+            {{ isEnabled ? 'Disable' : 'Enable' }} Full Calendar
         </button>
-        <div class="mini-calendar" ref="miniCalContainer" v-if="!isEnabled">
+        <div class="mini-calendar" ref="miniCalContainer" v-show="!isEnabled">
+            miniCalendar
             <MiniCalendar @custom-event="toggleSidebar" @custom-event2="changeDayandHour(day, hour)"></MiniCalendar>
         </div>
-        <div class="full-calendar" v-if="isEnabled">
-            <FullCalendar @custom-event="toggleSidebar" @custom-event2="changeDayandHour(day, hour)" ></FullCalendar>
+        <div class="full-calendar-container" v-show="isEnabled">
+            <div class="full-calendar">
+                <FullCalendar/>
+                below is code from Akeyl Scrapper
+                <FullCalendar @custom-event="toggleSidebar" @custom-event2="changeDayandHour(day, hour)" ></FullCalendar>
+            </div>
         </div>
         <SideBar v-if="showSidebar" day=dayInput hour=hourInput></SideBar>
         
@@ -18,18 +27,20 @@
     import MiniCalendar from "@/components/MiniCalendar.vue";
     import FullCalendar from "@/components/FullCalendar.vue";
     import SideBar from "@/components/SideBar.vue";
+    import LandingComponent from "@/components/LandingComponent.vue";
     export default {
         name: 'HomePage',
         components: {
-    MiniCalendar,
-    Header: HeaderComponent,
-    FullCalendar,
-    SideBar,
-},
+            MiniCalendar,
+            Header: HeaderComponent,
+            FullCalendar,
+            SideBar,
+            LandingComponent
+        },
         data() {
             return {
                 data: 'test',
-                isEnabled: false,
+                isEnabled: true,
                 showSidebar: false,
                 dayInput: 'test',
                 hourInput: 'test',
@@ -53,17 +64,43 @@
     }
 </script>
   
-<style>
+<style scoped>
+    .landing {
+        position: absolute;
+        width: 42vw;
+        height: 90vh;
+        margin: 4px;
+        padding: 4px;
+    }
+    .full-calendar-container{
+        position: absolute;
+        width: 55vw;
+        height:90vh;
+        margin: 4px;
+        padding: 4px;
+        margin-top: 10px;
+        right: 10px;
+        border: 2px solid #262628;
+        border-radius: 2px;
+    }
     .full-calendar{
-        position: fixed;
-        top: 52%;
-        right: 5px; 
-        transform: translate(0, -50%);
+        position: absolute;
+        border-radius: 2px;
+        left: 48px;
+        right: 4px;
+        top: 4px;
+        bottom: 4px;
     }
     .toggle-calendar-button{
-        padding: 6px;
-        padding-left: 12px;
-        padding-right: 12px;
+        position: fixed;
+        z-index: 9999;
+        top: 16px;
+        right: 255px;
+        background-color: #535556;
+        color: white;
+        padding: 4px;
+        font-size: 1em;
+        border: none;
         border-radius: 4px;
         border: none;
         font-size: 16px;

@@ -1,4 +1,5 @@
 src/_*
+.idea/
 *.pyc
 **/*__pycache__*
 **/__pycache__/
@@ -12,3 +13,5 @@ node_modules/
 courses20.xml
 .coverage
 services/backend/src/super_duper_secret_password.txt
+*.out
+build/

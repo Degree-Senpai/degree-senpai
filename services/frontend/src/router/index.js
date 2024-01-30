@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Scheduler from '../pages/Scheduler.vue'
 import DegreePlanner from '../pages/DegreePlanner.vue'
+import ShashankTest from '../components/ShashankTest.vue'
 
 const routes = [
   {
@@ -17,6 +18,11 @@ const routes = [
     path: '/degreeplanner',
     name: 'DegreePlanner',
     component: DegreePlanner
+  },
+  {
+    path: '/landing',
+    name: 'Landing',
+    component: ShashankTest
   }
 ]
 

@@ -1,0 +1,33 @@
+# Set the minimum required version of cmake for this project
+cmake_minimum_required(VERSION 3.15)
+
+# Set the project name and version
+project(Scheduler)
+
+# Set C++17 as the standard for the project
+set(CMAKE_CXX_STANDARD 17)
+
+# Add the directory where the nlohmann/json.hpp header is located to the include path
+include_directories("/mnt/c/Users/eggyr/ERULN/C/json/include")
+
+# Add all the source files
+# If you have many source files, consider using file(GLOB ...) to automatically include them
+set(SOURCE_FILES
+    scheduler/scheduler.cpp
+    scheduler/schedule.cpp
+    common/course.cpp
+    utilities/utilities.cpp
+    schedulerAPI.cpp
+)
+
+# Add the executable to be built from the specified source files
+add_executable(scheduler ${SOURCE_FILES})
+
+# Include the Emscripten-specific toolchain file
+# This is necessary for CMake to use emcc/em++ for building
+set(CMAKE_TOOLCHAIN_FILE "/mnt/c/Users/eggyr/ERULN/C/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake")
+
+# Use emscripten's linking flags
+set_target_properties(scheduler PROPERTIES
+    LINK_FLAGS "--bind -O3 -Wall -s EXPORTED_RUNTIME_METHODS='[\"cwrap\", \"getValue\", \"setValue\"]'"
+)
