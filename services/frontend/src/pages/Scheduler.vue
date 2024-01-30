@@ -14,11 +14,10 @@
         <div class="full-calendar-container" v-show="isEnabled">
             <div class="full-calendar">
                 <FullCalendar/>
-                below is code from Akeyl Scrapper
-                <FullCalendar @custom-event="toggleSidebar" @custom-event2="changeDayandHour(day, hour)" ></FullCalendar>
             </div>
         </div>
         <SideBar v-if="showSidebar" day=dayInput hour=hourInput></SideBar>
+    </div>
         
 </template>
   
