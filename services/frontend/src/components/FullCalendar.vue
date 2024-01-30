@@ -1,5 +1,30 @@
 <template>
+
+    Beginning of Akeyl scrapper code
     <div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="hour in hours" :key="hour">
+            <td>{{ hour }}</td>
+            <td v-for="day in days" :key="day">
+              <CalendarCell @custom-event="toggleSidebar" @custom-event2="changeDayandHour(day, hour)" @click="$emit('custom-event', 'custom-event2')" size="large" cellDay=day.name cellHour=hour.name></CalendarCell>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+     End of Akeyl Scrapper code
+     
+     
       <div class="top-row">
         <button class="schedule-toggle-button" @click="decrementSchedule()">
         Previous
@@ -46,6 +71,7 @@
   export default {
       data() {
           return {
+            akeylScrapperDays: ['M', 'T', 'W', 'Th', 'F'],
             furina1: furina1,
             beginHour: 8,
             endHour: 20,

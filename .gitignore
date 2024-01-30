@@ -12,5 +12,6 @@ node_modules/
 *.ipynb*
 courses20.xml
 .coverage
+services/backend/src/super_duper_secret_password.txt
 *.out
 build/

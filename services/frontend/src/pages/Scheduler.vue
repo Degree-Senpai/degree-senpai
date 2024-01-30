@@ -9,20 +9,24 @@
         </button>
         <div class="mini-calendar" ref="miniCalContainer" v-show="!isEnabled">
             miniCalendar
-            <MiniCalendar/>
+            <MiniCalendar @custom-event="toggleSidebar" @custom-event2="changeDayandHour(day, hour)"></MiniCalendar>
         </div>
         <div class="full-calendar-container" v-show="isEnabled">
             <div class="full-calendar">
                 <FullCalendar/>
+                below is code from Akeyl Scrapper
+                <FullCalendar @custom-event="toggleSidebar" @custom-event2="changeDayandHour(day, hour)" ></FullCalendar>
             </div>
         </div>
-    </div>
+        <SideBar v-if="showSidebar" day=dayInput hour=hourInput></SideBar>
+        
 </template>
   
 <script>
     import HeaderComponent from "@/components/PageHeader";
     import MiniCalendar from "@/components/MiniCalendar.vue";
     import FullCalendar from "@/components/FullCalendar.vue";
+    import SideBar from "@/components/SideBar.vue";
     import LandingComponent from "@/components/LandingComponent.vue";
     export default {
         name: 'HomePage',
@@ -30,18 +34,29 @@
             MiniCalendar,
             Header: HeaderComponent,
             FullCalendar,
+            SideBar,
             LandingComponent
         },
         data() {
             return {
                 data: 'test',
                 isEnabled: true,
+                showSidebar: false,
+                dayInput: 'test',
+                hourInput: 'test',
             };
         },
         methods: {
             toggleComponent(){
                 this.isEnabled = !this.isEnabled;
             },
+            toggleSidebar() {
+                this.showSidebar = !this.showSidebar;
+            },
+            changeDayandHour(day, hour){
+                this.dayInput = day;
+                this.hourInput = hour;
+            }
         },
         async created() {
             document.title = 'Degree Senpai - Scheduler';
@@ -87,9 +102,10 @@
         font-size: 1em;
         border: none;
         border-radius: 4px;
-        cursor: pointer;
-        width: 200px;
-        text-align: center;
+        border: none;
+        font-size: 16px;
+        color:#b6bec4;
+        background-color: #1b1d1d;
     }
     .mini-calendar{
         position: fixed;
