@@ -2,22 +2,22 @@ import 'bootstrap/dist/css/bootstrap.css';
 import axios from 'axios';
 
 import { createApp } from 'vue'
+import { createPinia } from 'pinia';
 import App from './App.vue'
 import router from './router'
-import { createPinia } from 'pinia';
 
-import { Colors, ColorPalette, Color } from './utilities/colorservice.js'
-
+const pinia = createPinia()
 const app = createApp(App)
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = 'http://localhost:5000/';
 
 app.use(router);
-app.use(createPinia());
+app.use(pinia);
 app.mount('#app');
-
+/*
 import {colorStore} from './utilities/store.js'
+import { Colors, ColorPalette, Color } from './utilities/colorservice.js'
 const colorstore = colorStore();
 
 const colors = Colors(ColorPalette(
@@ -31,4 +31,4 @@ const colors = Colors(ColorPalette(
     Color(100, 40, 50, 1) // iconsmall
 ));
 
-colorstore.colorService = colors;
+colorstore.colorService = colors;*/

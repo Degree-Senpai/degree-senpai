@@ -34,16 +34,19 @@
   //import {CalendarBlockElement, CourseInstance, formatGeneratedSchedules} from '@/scheduler/calendarformat.js';
   //import {formatSelectedCourses} from '@/scheduler/scheduleformat.js';
   import {modifyHSLA} from '@/utilities/colorutils.js';
+  // eslint-disable-next-line no-unused-vars
+  import furina1 from '@/assets/furina18.jpg';
 
-  import {colorStore} from '@/utilities/store.js';
-  import {schedulerStore} from '@/utilities/store.js';
+  //////////// import {colorStore} from '@/utilities/store.js';
+  //////////// import {schedulerStore} from '@/utilities/store.js';
   // eslint-disable-next-line no-unused-vars
-  const colorService = colorStore();
+  //////////// const colorService = colorStore();
   // eslint-disable-next-line no-unused-vars
-  const schedulerData = schedulerStore();
+  //////////// const schedulerData = schedulerStore();
   export default {
       data() {
           return {
+            furina1: furina1,
             beginHour: 8,
             endHour: 20,
             hours: 12,
@@ -62,9 +65,9 @@
 
       async mounted() {
         //testing
-        const colors = colorService.colorService;
-        console.log('OUTPUTTING COLOR STORE');
-        console.log(JSON.stringify(colors));
+        //////////// const colors = colorService.colorService;
+        //////////// console.log('OUTPUTTING COLOR STORE');
+        //////////// console.log(JSON.stringify(colors));
 
         if (typeof Module == 'undefined') {
           const script = document.createElement('script');
@@ -385,6 +388,10 @@
       border-radius: 4px;
       background-color: rgba(46, 47, 49, 0.8);
       justify-items: center;
+    }
+    .calendar-background {
+      background-size: cover;
+      background-position: center;
     }
     .block {
       color: #000001;
