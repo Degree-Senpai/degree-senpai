@@ -90,13 +90,19 @@ for row in tables[5].find_all('tr'):
                 dates = convert_date(d)
             this_timeslot.append(dates)
 
-    this_course['Timeslots'].append(this_timeslot)
+
+    # This handles when a class has multiple meeting times (e.g. for lectures, labs, tests)
+    # if (this_course['Select'] == ''):
+    #     temp_i = i
+    #     while (this_course[temp_i] == ''):
+    #         temp_i -= 1; 
+    #     this_course['Timeslots'].append(this_timeslot)
+    if (this_course['Select'] != ''):
+        this_course['Timeslots'].append(this_timeslot)
         
 
-        
 
-
-    # Add this course dictionary to the courses list (for rows 3+)
+    # Add this course dictionary to the courses list (for rows 3 and over)
     courses_list.append(this_course)
 
 
