@@ -91,14 +91,14 @@ for row in tables[5].find_all('tr'):
             this_timeslot.append(dates)
 
 
-    # This handles when a class has multiple meeting times (e.g. for lectures, labs, tests)
-    if (this_course['CRN'] == "" and counter >= 4):
-        temp_counter = counter-3
-        # print(temp_counter)
+    # This handles when a class has multiple meeting times (e.g. for lectures, labs, exams)
+    # Add the extra meeting blocks to the timeslot of the original class
+    if (counter >= 3 and this_course['CRN'] == ""):
+        temp_counter = counter-2
         while (courses_list[temp_counter]['CRN'] == ""):
             temp_counter -= 1; 
         courses_list[temp_counter]['Timeslots'].append(this_timeslot)
-        # counter += 1
+
     else:
         this_course['Timeslots'].append(this_timeslot)
         
@@ -108,7 +108,10 @@ for row in tables[5].find_all('tr'):
     courses_list.append(this_course)
 
 
+# Remove any extra course lists (from extra meeting blocks like labs and exams)
 for c in courses_list:
-    print(c)
-    print()
-
+    if (type(c) != str and c['CRN'] == ""):
+            courses_list.remove(c)
+    else:
+        print(c)
+        print()
