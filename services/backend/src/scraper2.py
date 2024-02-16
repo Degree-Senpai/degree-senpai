@@ -92,12 +92,14 @@ for row in tables[5].find_all('tr'):
 
 
     # This handles when a class has multiple meeting times (e.g. for lectures, labs, tests)
-    # if (this_course['Select'] == ''):
-    #     temp_i = i
-    #     while (this_course[temp_i] == ''):
-    #         temp_i -= 1; 
-    #     this_course['Timeslots'].append(this_timeslot)
-    if (this_course['Select'] != ''):
+    if (this_course['CRN'] == "" and counter >= 4):
+        temp_counter = counter-3
+        # print(temp_counter)
+        while (courses_list[temp_counter]['CRN'] == ""):
+            temp_counter -= 1; 
+        courses_list[temp_counter]['Timeslots'].append(this_timeslot)
+        # counter += 1
+    else:
         this_course['Timeslots'].append(this_timeslot)
         
 
