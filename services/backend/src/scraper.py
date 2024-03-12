@@ -3,17 +3,22 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 import json
 import time
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Provide the URL of the webpage you want to access
 url = "https://sis.rpi.edu"
 
-f = open("super_duper_secret_password.txt", "r")
 # Provide your username and password
-username = "graya4"
-password = f.read()
+username = os.environ["username"]
+password = os.environ['password']
 
 # Initialize the WebDriver (assuming you have chromedriver installed, you might need to change the path)
-driver = webdriver.Firefox()
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(options=options)
+#driver = webdriver.Firefox()
 
 # Open the webpage
 driver.get(url)
@@ -123,6 +128,8 @@ while True:
     except Exception as e:
         print("Exception occurred during execution:", e)
 
+# beginning of main scraper part with catalog, needs rewrite
+
 subjectCount = 0
 dictOfSubjects = {}
 while True:
@@ -164,7 +171,7 @@ while True:
             rc += 1
         #print(extracted_links)
         #print(forbidden_numbers)
-    
+        
         rowindex = 0
         linkindex = -2
         for row in rows[2:]:
@@ -225,3 +232,4 @@ SubjectDict:
 }
 
 """
+'''
