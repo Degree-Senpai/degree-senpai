@@ -1,5 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import axios from 'axios';
+import { defineStore } from 'pinia'
+
+export const useCounterStore = defineStore('counter', {
+    actions: {
+      increment() {
+        this.count++
+      },
+    },
+  })
 
 import { createApp } from 'vue'
 // import { createPinia } from 'pinia';

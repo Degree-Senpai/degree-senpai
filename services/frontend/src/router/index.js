@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Scheduler from '../pages/Scheduler.vue'
-import DegreePlanner from '../pages/DegreePlanner.vue'
+import DegreePlanner from '../pages/DegreePlannerNew.vue'
 import ShashankTest from '../components/ShashankTest.vue'
 
 const routes = [
