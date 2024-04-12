@@ -79,7 +79,7 @@
 
               <div class="schedule-button-container" v-for="(course, course_index) in semester" :key="`${semester_index}-${course_index}`">
                 <button class="course-buttons" type="button" @click="goToCoursePage(course)" draggable="true" @dragstart="schedulerDrag($event, course, semester_index)">
-                  <span :style="[arrayToHSLStyle(subjectColors[course.substring(0, 4)], 'color', [0, 15, 1], 100), {fontWeight: 700}]">{{ course.substring(0, 10) }}</span> <span style="color: #c7cfd0;">{{ course.substring(10) }}</span>
+                  <span style="color:#ffc680;">{{ course.substring(0, 10) }}</span> <span style="color: #c7cfd0;">{{ course.substring(10) }}</span>
                 </button>
                 <button class="course-remove-button" type="button" @click="remove(semester_index, course, true, true)">
                   <span style="color:#b05f6e">&#10008;</span>
