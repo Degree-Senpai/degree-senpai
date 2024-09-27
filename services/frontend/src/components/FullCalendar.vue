@@ -90,7 +90,7 @@
           this.selectedCourses.push(crn);
         },
 
-        timeblockDay(time) {
+        timeblockDayOfWeek(time) {
           return Math.floor(time / 1440);
         },
 
@@ -98,32 +98,38 @@
           return time % 1440;
         },
 
-        genArray(dims) {
+        newArray(dims) {
+          // generate an array of a specific shape
           let array = Array(dims[0]);
           if (dims.length == 1) {
             return array;
           }
           let new_dims = dims.slice(1);
           for (let i = 0; i < array.length; ++i) {
-            array[i] = this.genArray(new_dims);
+            array[i] = this.newArray(new_dims);
           }
           return array;
         },
 
         parseSchedule(schedule) {
-          let parsed = this.genArray([5,1,0]);
+          let parsed = this.newArray([5,0,0]); // shape: (day of week, row, course)
+          // a new row is created if a course does not collide with any previous row,
+          // otherwise it will be grouped with all collisions
+
           //console.log(`parsing schedule ${JSON.stringify(schedule)}`);
           for (const crn of schedule) {
             const course = this.allCourses[crn];
             for (const timeblock of course.timeblocks) {
-              let i = 0;
-              while (i < parsed[timeblock.day].length && this.overlapsAny(parsed[timeblock.day][i], crn)) {
-                i++;
+              let added = false;
+              for (let i = 0; i < parsed[timeblock.day].length; i++) {
+                if (this.overlapsAny(parsed[timeblock.day][i], crn)) {
+                  parsed[timeblock.day][i].push(crn);
+                  added = true;
+                  break;
+                }
               }
-              if (i == parsed[timeblock.day].length) {
+              if (!added) {
                 parsed[timeblock.day].push([crn]);
-              } else {
-                parsed[timeblock.day][i].push(crn);
               }
             }
           }
@@ -174,16 +180,16 @@
           this.blocks = [];
           // something's wrong with what I'm feeding into generated schedules
           for (let day = 0; day < schedule.length; day++) {
-            const columns = schedule[day].length;
-            for (let column = 0; column < columns; column++) {
-              for (const crn of schedule[day][column]) {
+            for (let row = 0; row < schedule[day].length; row++) {
+              for (let place = 0; place < schedule[day][row].length; place++) {
+                const crn = schedule[day][row][place];
                 const course = this.allCourses[crn];
                 for (let timeblock of course.timeblocks) {
                   if (timeblock.day != day) {
                     continue;
                   }
-                  const color = `hsla(${(course.crn / 3.795) % 360}, 14%, 69%, 0.7)`;
-                  this.blocks.push(new CalendarBlockElement(course.crn, timeblock.day, timeblock.begin, timeblock.length, column, columns, color, 0.02, 0, 0.1));
+                  const color = `hsla(${(crn / 3.795) % 360}, 14%, 69%, 0.7)`;
+                  this.blocks.push(new CalendarBlockElement(crn, timeblock.day, timeblock.begin, timeblock.length, place, schedule[day][row].length, color, 0.02, 0, 0.1));
                 }
               }
             }
