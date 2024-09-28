@@ -15,6 +15,7 @@ class Schedule {
 
         std::vector<CourseInstance*> courseInstances;
         int collisions;
+        std::vector<CourseInstance*> collisionTracker;
 };
 
 #endif

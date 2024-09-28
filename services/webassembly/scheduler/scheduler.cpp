@@ -127,21 +127,17 @@ std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<i
         for (auto& scheduleBin : schedules) {
             for (auto& schedule : scheduleBin) {
                 // iterate through all schedules - it doesn't matter which bin it is in, we just go through all of them!
-
-                for (const auto& courseInstanceCRN : courseGroup) {
+                for (const auto& newCourseInstanceCRN : courseGroup) {
                     // this loop expands the size of schedule exponentially by multiplying its size by the # of sections of each course!
-                    CourseInstance* courseInstance = this->allCourseInstances[courseInstanceCRN];
-                    bool collides = collidesWithSchedule(schedule, courseInstance);
+                    CourseInstance* courseInstance = this->allCourseInstances[newCourseInstanceCRN];
+                    Schedule scheduleCopy = schedule;
+                    addToSchedule(scheduleCopy, courseInstance);
 
                     // decide if to keep going with this schedule
-                    if (schedule.collisions == max_collisions && collides) {
+                    if (scheduleCopy.collisions > max_collisions) {
                         continue;
                     }
 
-                    Schedule scheduleCopy = schedule;
-                    if (collides) {
-                        ++scheduleCopy.collisions;
-                    }
                     scheduleCopy.courseInstances.push_back(courseInstance); // Add the course instance to the schedule
                     newSchedules[scheduleCopy.collisions].push_back(scheduleCopy);
                 }
@@ -160,9 +156,27 @@ std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<i
 
 // HELPERS FOR POPULATE
 
+void Scheduler::addToSchedule(Schedule schedule, CourseInstance* courseInstance) {
+    bool added = false;
+    for (auto& column: schedule.collisionTracker) {
+        if (!collides(column, courseInstance)) {
+            column.push_back(courseInstance);
+            break;
+        }
+    }
+    if (!added) {
+        schedule.collisionTracker.push_back({courseInstance});
+    }
+    schedule.collisions = schedule.collisionTracker.size() - 1;
+}
+
 /* returns true if the course has any collision with any of the courses with the schedule */
 bool Scheduler::collidesWithSchedule(Schedule schedule, CourseInstance* courseInstance) {
-    for (const auto& existingCourseInstance : schedule.courseInstances) {
+    return collides(schedule.courseInstances, courseInstance);
+}
+
+bool Scheduler::collides(std::vector<CourseInstance*> courseInstances, CourseInstance* courseInstance) {
+    for (const auto& existingCourseInstance : courseInstances) {
         if (collides(existingCourseInstance, courseInstance)) {
             return true;
         }
