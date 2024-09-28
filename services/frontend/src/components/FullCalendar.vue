@@ -112,7 +112,7 @@
         },
 
         parseSchedule(schedule) {
-          let parsed = this.newArray([5,0,0]); // shape: (day of week, row, course)
+          let parsed = this.newArray([5,0,0,0]); // shape: (day of week, row, column, course)
           // a new row is created if a course does not collide with any previous row,
           // otherwise it will be grouped with all collisions
 
@@ -120,19 +120,35 @@
           for (const crn of schedule) {
             const course = this.allCourses[crn];
             for (const timeblock of course.timeblocks) {
-              let added = false;
-              for (let i = 0; i < parsed[timeblock.day].length; i++) {
-                if (this.overlapsAny(parsed[timeblock.day][i], crn)) {
-                  parsed[timeblock.day][i].push(crn);
-                  added = true;
+              let overlaps = false;
+              for (let row = 0; row < parsed[timeblock.day].length; row++) {
+                for (let column = 0; column < parsed[timeblock.day][row].length; column++) {
+                  if (this.overlapsAny(parsed[timeblock.day][row][column], crn)) {
+                    overlaps = true;
+                    break;
+                  }
+                }
+                if (overlaps) {
+                  let added = false;
+                  for (let column = 0; column < parsed[timeblock.day][row].length; column++) {
+                    if (!this.overlapsAny(parsed[timeblock.day][row][column], crn)) {
+                      parsed[timeblock.day][row][column].push(crn);
+                      added = true;
+                      break;
+                    }
+                  }
+                  if (!added) {
+                    parsed[timeblock.day][row].push([crn]);
+                  }
                   break;
                 }
               }
-              if (!added) {
-                parsed[timeblock.day].push([crn]);
+              if (!overlaps) {
+                parsed[timeblock.day].push([[crn]]);
               }
             }
           }
+          console.log("parsed: " + parsed);
           //console.log(`parsed ${JSON.stringify(parsed)}`);
           return parsed;
         },
@@ -181,15 +197,17 @@
           // something's wrong with what I'm feeding into generated schedules
           for (let day = 0; day < schedule.length; day++) {
             for (let row = 0; row < schedule[day].length; row++) {
-              for (let place = 0; place < schedule[day][row].length; place++) {
-                const crn = schedule[day][row][place];
-                const course = this.allCourses[crn];
-                for (let timeblock of course.timeblocks) {
-                  if (timeblock.day != day) {
-                    continue;
+              const columns = schedule[day][row].length;
+              for (let column = 0; column < columns; column++) {
+                for (const crn of schedule[day][row][column]) {
+                  const course = this.allCourses[crn];
+                  for (let timeblock of course.timeblocks) {
+                    if (timeblock.day != day) {
+                      continue;
+                    }
+                    const color = `hsla(${(crn / 3.795) % 360}, 14%, 69%, 0.7)`;
+                    this.blocks.push(new CalendarBlockElement(crn, timeblock.day, timeblock.begin, timeblock.length, column, columns, color, 0.02, 0, 0.1));
                   }
-                  const color = `hsla(${(crn / 3.795) % 360}, 14%, 69%, 0.7)`;
-                  this.blocks.push(new CalendarBlockElement(crn, timeblock.day, timeblock.begin, timeblock.length, place, schedule[day][row].length, color, 0.02, 0, 0.1));
                 }
               }
             }
@@ -294,7 +312,8 @@
           {name: "introduction to ecse", crn: "50001", timeBlocks: "840, 950, 5160, 5270"},
           {name: "introduction to ecse", crn: "50002", timeBlocks: "960, 1070, 5280, 5390"},
           {name: "introduction to ecse", crn: "50003", timeBlocks: "2280, 2390, 6600, 6710"},
-          {name: "introduction to ecse", crn: "50004", timeBlocks: "2340, 2450, 6660, 6770"}]];
+          {name: "introduction to ecse", crn: "50004", timeBlocks: "2340, 2450, 6660, 6770"},
+          {name: "introduction to ecse", crn: "50005", timeBlocks: "2220, 2330, 6540, 6650"}]];
           /*
           [{name: "introduction to electronics", crn: "51000", timeBlocks: "540, 590, 4800, 4910"},
           {name: "introduction to electronics", crn: "51001", timeBlocks: "900, 950, 5220, 5270"},
@@ -329,6 +348,7 @@
           this.allCourses['50002'] = new CourseInstance('50002', 'ECSE 1010 introduction to ecse', 'shashank', 'DCC 308', null, [960, 1070, 5280, 5390]);
           this.allCourses['50003'] = new CourseInstance('50003', 'ECSE 1010 introduction to ecse', 'shashank', 'DCC 308', null, [2280, 2390, 6600, 6710]);
           this.allCourses['50004'] = new CourseInstance('50004', 'ECSE 1010 introduction to ecse', 'shashank', 'DCC 308', null, [2340, 2450, 6660, 6770]);
+          this.allCourses['50005'] = new CourseInstance('50005', 'ECSE 1010 introduction to ecse', 'shashank', 'DCC 308', null, [2220, 2330, 6540, 6650]);
 
           data1 = JSON.stringify(data1);
           data2 = JSON.stringify(data2);
