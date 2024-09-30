@@ -8,6 +8,7 @@
           Next
         </button>
         Displaying schedule {{ this.selectedSchedule + 1 }} / {{ this.generatedSchedules.length }}
+        ( Collisions: {{ this.generatedSchedules && this.generatedSchedules[this.selectedSchedule] ? this.generatedSchedules[this.selectedSchedule].collisions : null }} )
       </div>
       <div style="width: 100%; top: 32px; bottom: 0px; position:absolute">
         <div :style="getCalendarBackgroundStyle(hours, days)"></div>
@@ -36,6 +37,7 @@
   import {modifyHSLA} from '@/utilities/colorutils.js';
   // eslint-disable-next-line no-unused-vars
   import furina1 from '@/assets/furina18.jpg';
+  import { Schedule } from '../scheduler/schedule.js'
 
   //////////// import {colorStore} from '@/utilities/store.js';
   //////////// import {schedulerStore} from '@/utilities/store.js';
@@ -54,9 +56,9 @@
 
             // NOTE: SAMPLE DATA INPUTTED
 
-            allCourses: {},
-            selectedCourses: [],
-            generatedSchedules: [], // shape: (schedule, days of week, columns of day, CRNs)
+            allCourses: {}, // dictionary of CRN: CourseInstance objects
+            selectedCourses: [], // list of CRN representing user selected courses
+            generatedSchedules: [], // list of list of CRNs
             blocks: [], // 2D array: day of week -> calendar blocks
             selectedSchedule: 0,
           };
@@ -90,110 +92,10 @@
           this.selectedCourses.push(crn);
         },
 
-        timeblockDayOfWeek(time) {
-          return Math.floor(time / 1440);
-        },
-
-        timeblockMinuteOfDay(time) {
-          return time % 1440;
-        },
-
-        newArray(dims) {
-          // generate an array of a specific shape
-          let array = Array(dims[0]);
-          if (dims.length == 1) {
-            return array;
-          }
-          let new_dims = dims.slice(1);
-          for (let i = 0; i < array.length; ++i) {
-            array[i] = this.newArray(new_dims);
-          }
-          return array;
-        },
-
-        parseSchedule(schedule) {
-          let parsed = this.newArray([5,0,0,0]); // shape: (day of week, row, column, course)
-          // a new row is created if a course does not collide with any previous row,
-          // otherwise it will be grouped with all collisions
-
-          //console.log(`parsing schedule ${JSON.stringify(schedule)}`);
-          for (const crn of schedule) {
-            const course = this.allCourses[crn];
-            for (const timeblock of course.timeblocks) {
-              let overlaps = false;
-              for (let row = 0; row < parsed[timeblock.day].length; row++) {
-                for (let column = 0; column < parsed[timeblock.day][row].length; column++) {
-                  if (this.overlapsAny(parsed[timeblock.day][row][column], crn)) {
-                    overlaps = true;
-                    break;
-                  }
-                }
-                if (overlaps) {
-                  let added = false;
-                  for (let column = 0; column < parsed[timeblock.day][row].length; column++) {
-                    if (!this.overlapsAny(parsed[timeblock.day][row][column], crn)) {
-                      parsed[timeblock.day][row][column].push(crn);
-                      added = true;
-                      break;
-                    }
-                  }
-                  if (!added) {
-                    parsed[timeblock.day][row].push([crn]);
-                  }
-                  break;
-                }
-              }
-              if (!overlaps) {
-                parsed[timeblock.day].push([[crn]]);
-              }
-            }
-          }
-          console.log("parsed: " + parsed);
-          //console.log(`parsed ${JSON.stringify(parsed)}`);
-          return parsed;
-        },
-
-        overlapsAny(coursesCRN, courseCRN) {
-          if (coursesCRN.length == 0) {
-            return false;
-          }
-          for (const courseEntryCRN of coursesCRN) {
-            if (this.overlaps(courseEntryCRN, courseCRN)) {
-              return true;
-            }
-          }
-          return false;
-        },
-
-        overlaps(courseCRN1, courseCRN2) {
-          let i = 0;
-          let j = 0;
-          while (i != this.allCourses[courseCRN1].lineartimeblocks.length && j != this.allCourses[courseCRN2].lineartimeblocks.length) {
-              if (this.allCourses[courseCRN1].lineartimeblocks[i] < this.allCourses[courseCRN2].lineartimeblocks[j]) {
-                  ++i;
-                  if (j & 1) {
-                      return true;
-                  }
-              } else if (this.allCourses[courseCRN1].lineartimeblocks[i] == this.allCourses[courseCRN2].lineartimeblocks[j]) {
-                  ++i;
-                  ++j;
-                  if ((i & 1) == (j & 1)) {
-                      return true;
-                  }
-              } else {
-                  ++j;
-                  if (i & 1) {
-                      return true;
-                  }
-              }
-          }
-          return false;
-        },
-
         displaySchedule(schedule_index) {
-          const schedule_raw = this.generatedSchedules[schedule_index];
-          const schedule = this.parseSchedule(schedule_raw);
+          const schedule = this.generatedSchedules[schedule_index].renderStructure;
           this.blocks = [];
+          console.log("schedule: " + schedule)
           // something's wrong with what I'm feeding into generated schedules
           for (let day = 0; day < schedule.length; day++) {
             for (let row = 0; row < schedule[day].length; row++) {
@@ -279,19 +181,38 @@
           }
         },
 
-        populateGeneratedSchedules(schedules) {
+        timeblockDayOfWeek(time) {
+          return Math.floor(time / 1440);
+        },
+
+        timeblockMinuteOfDay(time) {
+          return time % 1440;
+        },
+
+        populateGeneratedSchedules(schedules, lowestN=1) {
           // schedules' first dimension are the number of collisions. 
 
           // the below loop finds the lowest number of collisions possible and renders all combinations.
           // this is why we terminate upon finding the first non-empty array within schedules.
+          this.generatedSchedules = [];
+          let collisions = 0;
           for (const scheduleList of schedules) {
             if (scheduleList.length > 0) {
-              this.generatedSchedules = scheduleList;
-              this.displaySchedule(this.selectedSchedule);
-              console.log(`generatedSchedules: ${this.generatedSchedules}`)
-              return;
+              for (const scheduleInstance of scheduleList) {
+                let schedule = new Schedule(this.allCourses, scheduleInstance);
+                schedule.collisions = collisions;
+                this.generatedSchedules.push(schedule);
+              }
+              //console.log(`generatedSchedules: ${this.generatedSchedules}`)
+              lowestN--;
+              if (lowestN < 1) {
+                break;
+              }
             }
+
+            collisions++;
           }
+          this.displaySchedule(this.selectedSchedule);
         },
 
         testData() {
@@ -352,19 +273,15 @@
 
           data1 = JSON.stringify(data1);
           data2 = JSON.stringify(data2);
+          console.log("data2: " + data2); // prevent unused var complaining
           try {
             console.log('test large 1');
             let result = Module.populate(data1, 10, false);
             result = JSON.parse(result);
-            console.log(`RESULT LENGTH: ${result.length}`);
-            this.populateGeneratedSchedules(result);
-            console.log(`populated generated schedules ${JSON.stringify(this.generatedSchedules)}`)
-            console.log(result);
+            this.populateGeneratedSchedules(result, 2);
           } catch (e) {
             console.error(e);
           }
-
-          console.log(data2.length);
 
           /*try {
             console.log('test large 2');

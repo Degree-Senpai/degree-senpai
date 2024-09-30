@@ -131,17 +131,15 @@ std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<i
                 for (const auto& courseInstanceCRN : courseGroup) {
                     // this loop expands the size of schedule exponentially by multiplying its size by the # of sections of each course!
                     CourseInstance* courseInstance = this->allCourseInstances[courseInstanceCRN];
-                    bool collides = collidesWithSchedule(schedule, courseInstance);
+                    int collisions = collisionsWithSchedule(schedule, courseInstance);
 
                     // decide if to keep going with this schedule
-                    if (schedule.collisions == max_collisions && collides) {
+                    if (schedule.collisions + collisions > max_collisions) {
                         continue;
                     }
 
                     Schedule scheduleCopy = schedule;
-                    if (collides) {
-                        ++scheduleCopy.collisions;
-                    }
+                    scheduleCopy.collisions += collisions;
                     scheduleCopy.courseInstances.push_back(courseInstance); // Add the course instance to the schedule
                     newSchedules[scheduleCopy.collisions].push_back(scheduleCopy);
                 }
@@ -161,13 +159,14 @@ std::vector<std::vector<Schedule>> Scheduler::populate(std::vector<std::vector<i
 // HELPERS FOR POPULATE
 
 /* returns true if the course has any collision with any of the courses with the schedule */
-bool Scheduler::collidesWithSchedule(Schedule schedule, CourseInstance* courseInstance) {
+bool Scheduler::collisionsWithSchedule(Schedule schedule, CourseInstance* courseInstance) {
+    int collisions = 0;
     for (const auto& existingCourseInstance : schedule.courseInstances) {
         if (collides(existingCourseInstance, courseInstance)) {
-            return true;
+            collisions++;
         }
     }
-    return false;
+    return collisions;
 }
 
 /* returns whether two courses have any conflict. Runs in O(N + M) time where N and M are the number of timeblocks for each course, respectively */

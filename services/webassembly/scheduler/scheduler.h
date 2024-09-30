@@ -24,7 +24,7 @@ class Scheduler {
         std::vector<std::vector<Schedule>> populate(std::vector<std::vector<int>>, int);
 
         // helper functions
-        bool collidesWithSchedule(Schedule, CourseInstance*);
+        bool collisionsWithSchedule(Schedule, CourseInstance*);
         bool collides(CourseInstance*, CourseInstance*);
 
         int getCRN(std::unordered_map<std::string, std::string>);
