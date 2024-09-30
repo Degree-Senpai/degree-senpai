@@ -36,7 +36,6 @@
   //import {formatSelectedCourses} from '@/scheduler/scheduleformat.js';
   import {modifyHSLA} from '@/utilities/colorutils.js';
   // eslint-disable-next-line no-unused-vars
-  import furina1 from '@/assets/furina18.jpg';
   import { Schedule } from '../scheduler/schedule.js'
 
   //////////// import {colorStore} from '@/utilities/store.js';
@@ -48,7 +47,6 @@
   export default {
       data() {
           return {
-            furina1: furina1,
             beginHour: 8,
             endHour: 20,
             hours: 12,
@@ -59,7 +57,7 @@
             allCourses: {}, // dictionary of CRN: CourseInstance objects
             selectedCourses: [], // list of CRN representing user selected courses
             generatedSchedules: [], // list of list of CRNs
-            blocks: [], // 2D array: day of week -> calendar blocks
+            blocks: [], // list of CalenderBlockElement objects
             selectedSchedule: 0,
           };
       },
