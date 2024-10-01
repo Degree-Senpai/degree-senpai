@@ -19,8 +19,6 @@ export class CalendarBlockElement {
         this.height *= (1 - blockMargin);
         this.width *= (1 - blockMargin);
 
-        //console.log("day: " + day + " x: " + this.x + " y: " + this.y);
-
         this.color = color;
         this.clashing = (columns > 1);
     }
@@ -63,7 +61,7 @@ export class CourseInstance {
             this.timeblocks = [];
             for (let i = 0; i < lineartimeblocks.length; i = i + 2) {
                 this.timeblocks.push(new TimeBlock(Math.floor(lineartimeblocks[i] / 1440), lineartimeblocks[i] % 1440, lineartimeblocks[i + 1] % 1440));
-                console.log(`generated timeblock ${JSON.stringify(this.timeblocks)}`)
+                //console.log(`generated timeblock ${JSON.stringify(this.timeblocks)}`)
             }
         }
         if (lineartimeblocks == null) {
@@ -74,38 +72,4 @@ export class CourseInstance {
             }
         }
     }
-}
-
-
-export function formatGeneratedSchedules(generatedSchedules) {
-    // converts generated schedules (3D array of CRN) into 4D formatted for rendering
-    console.log(`generatedSchedules: ${JSON.stringify(generatedSchedules)}`)
-    let formattedSchedules = [];
-    for (let schedule of generatedSchedules) {
-        let timeBlockByDay = Array(this.days);
-        for (let i = 0; i < timeBlockByDay.length; ++i) {
-            timeBlockByDay[i] = Array(0);
-        }
-        for (let course of schedule.courseInstances) {
-            for (let timeblock of course.timeblocks) {
-                timeBlockByDay[timeblock.day].push(timeblock);
-                console.log(`adding timeblock ${JSON.stringify(timeblock)} of course ${course.name}, new array ${JSON.stringify(timeBlockByDay)}`)
-            }
-        }
-        console.log(`$TIMEBLOCKBYDAY: ${JSON.stringify(timeBlockByDay)}`);
-        // add code for separating collisions into different columns
-
-        // placeholder that just overlaps them
-        let columns = Array(this.days);
-        for (let i = 0; i < this.days; ++i) {
-            columns[i] = Array(1);
-            columns[i][0] = Array(0);
-            for (let timeblock of timeBlockByDay[i]) {
-                columns[i][0].push(timeblock.crn);
-            }
-        }
-        formattedSchedules.push(columns);
-    }
-    console.log(`formattedSchedules: ${formattedSchedules}`)
-    return formattedSchedules
 }

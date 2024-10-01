@@ -6,10 +6,10 @@ export class Schedule {
         this.selectedCourses = selectedCourses;
         this.collisions = 0;
         this.renderStructure = [];
-        this.parseSchedule(this.selectedCourses);
+        this.formatForCalendar(this.selectedCourses);
     }
 
-    parseSchedule(schedule) {
+    formatForCalendar(schedule) {
         let parsed = newArray([5,0,0,0]); // shape: (day of week, row, column, course)
         // a new row is created if a course does not collide with any previous row,
         // otherwise it will be grouped with all collisions
@@ -85,4 +85,34 @@ export class Schedule {
         }
         return false;
     }
+}
+
+export function formatSelectedCoursesAsDictionary(allCourses, selectedCourses) {
+    let groupedCourses = {};
+    for (const CRN of selectedCourses) {
+        const course = allCourses[CRN];
+        if (course == null) {
+            continue;
+        }
+        if (groupedCourses[course.name] != null) {
+            groupedCourses[course.name].push(courseInstanceToJson(course));
+        }
+        else {
+            groupedCourses[course.name] = [courseInstanceToJson(course)];
+        }
+    }
+    return groupedCourses;
+}
+
+export function formatSelectedCoursesAsList(allCourses, selectedCourses) {
+    let formatted = [];
+    const groupedDict = formatSelectedCoursesAsDictionary(allCourses, selectedCourses);
+    for(let key in groupedDict) {
+        formatted.push(groupedDict[key]);
+    }
+    return formatted;
+}
+
+function courseInstanceToJson(courseInstance) {
+    return {name: courseInstance.name, crn: courseInstance.crn.toString(), timeBlocks: courseInstance.lineartimeblocks.join(', ')};
 }

@@ -301,7 +301,6 @@ export default {
       const response = await axios.get('/api/dp/coursedetails');
       let course_data = await response.data;
       this.courseData = course_data;
-      console.log(JSON.stringify(this.courseData));
     },
 
     async fetchSearchFilterGroups() {
@@ -319,8 +318,8 @@ export default {
       }
       this.$emit('setSubjectColors', this.searchFilterColors);
       this.$emit('setSubjectGroupColors', this.searchFilterGroupColors);
-      console.log(`subjectColors ${JSON.stringify(this.searchFilterColors)}`);
-      console.log(`searchFilterGroupColors ${JSON.stringify(this.searchFilterGroupColors)}`);
+      //console.log(`subjectColors ${JSON.stringify(this.searchFilterColors)}`);
+      //console.log(`searchFilterGroupColors ${JSON.stringify(this.searchFilterGroupColors)}`);
     }
   },
   async created() {
