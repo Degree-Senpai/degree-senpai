@@ -23,7 +23,7 @@ export const userPlannerComputed = defineStore('userPlannerComputed', () => {
   return { fulfillments, possibilities }
 })
 
-export const classData = defineStore('classData', () => {
+export const schoolData = defineStore('schoolData', () => {
   const allCourses = ref({}) // dictionary of CRN: CourseInstance object
 
   return { allCourses }

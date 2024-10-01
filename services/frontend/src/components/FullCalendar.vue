@@ -32,44 +32,34 @@
     /* global Module */
     import { ref } from 'vue';
     import { storeToRefs } from 'pinia';
+
+    import { Schedule } from '../scheduler/schedule.js'
     import { CalendarBlockElement, CourseInstance } from '@/scheduler/calendar';
     import { formatSelectedCoursesAsList } from '../scheduler/schedule.js';
     import {modifyHSLA} from '@/utilities/colorutils.js';
 
-    import { Schedule } from '../scheduler/schedule.js'
     import { userScheduleData } from '@/stores/userStores.js';
     import { userScheduleComputed } from '@/stores/userStores.js';
-    import { classData } from '@/stores/userStores.js';
-
-    //////////// import {colorStore} from '@/utilities/store.js';
-    //////////// import {schedulerStore} from '@/utilities/store.js';
-    // eslint-disable-next-line no-unused-vars
-    //////////// const colorService = colorStore();
-    // eslint-disable-next-line no-unused-vars
-    //////////// const schedulerData = schedulerStore();
+    import { schoolData } from '@/stores/userStores.js';
 
     const hours = 12;
     const days = 5;
 
-    // NOTE: SAMPLE DATA INPUTTED
+    // STORES
+    const scheduleDataStore = userScheduleData();
+    const scheduleCompStore = userScheduleComputed();
+    const schoolDataStore = schoolData();
 
-    const SDStore = userScheduleData();
-    const SCStore = userScheduleComputed();
-    const CDStore = classData();
-
-    const {allCourses} = storeToRefs(CDStore);
-    const {selectedCourses, activeSemester} = storeToRefs(SDStore);
-    const {generatedSchedules} = storeToRefs(SCStore);
+    // REACTIVE VARIABLES
+    const {allCourses} = storeToRefs(schoolDataStore);
+    const {selectedCourses, activeSemester} = storeToRefs(scheduleDataStore);
+    const {generatedSchedules} = storeToRefs(scheduleCompStore);
     
-    var blocks = ref([]); // list of CalenderBlockElement objects
-    const selectedSchedule = ref(0);
+    var blocks = ref([]); // list of CalenderBlockElement objects to render
+    const selectedSchedule = ref(0); // position of active schedule within generatedSchedules
 
+    
     async function init() {
-      //testing
-      //////////// const colors = colorService.colorService;
-      //////////// console.log('OUTPUTTING COLOR STORE');
-      //////////// console.log(JSON.stringify(colors));
-
       if (typeof Module == 'undefined') {
         const script = document.createElement('script');
         script.src = './scheduler.js';
@@ -87,32 +77,9 @@
       testData();
     }
 
-    function displaySchedule(schedule_index) {
-      const schedule = generatedSchedules.value[activeSemester.value][schedule_index].renderStructure;
-      blocks.value = [];
-      // something's wrong with what I'm feeding into generated schedules
-      for (let day = 0; day < schedule.length; day++) {
-        for (let row = 0; row < schedule[day].length; row++) {
-          const columns = schedule[day][row].length;
-          for (let column = 0; column < columns; column++) {
-            for (const crn of schedule[day][row][column]) {
-              const course = allCourses.value[crn];
-              for (let timeblock of course.timeblocks) {
-                if (timeblock.day != day) {
-                  continue;
-                }
-                const color = `hsla(${(crn / 3.795) % 360}, 14%, 69%, 0.7)`;
-                blocks.value.push(new CalendarBlockElement(crn, timeblock.day, timeblock.begin, timeblock.length, column, columns, color, 0.02, 0, 0.1));
-              }
-            }
-          }
-        }
-      }
-    }
-
     function incrementSchedule() {
       selectedSchedule.value = (selectedSchedule.value + 1) % generatedSchedules.value[activeSemester.value].length;
-      displaySchedule(selectedSchedule.value);
+      generateBlocks(selectedSchedule.value);
     }
 
     function decrementSchedule() {
@@ -120,7 +87,7 @@
       if (selectedSchedule.value < 0) {
         selectedSchedule.value = generatedSchedules.value[activeSemester.value].length - 1;
       }
-      displaySchedule(selectedSchedule.value);
+      generateBlocks(selectedSchedule.value);
     }
 
 
@@ -166,15 +133,15 @@
     }
 
     function generateSchedules(lowestNBins=1, maxBins=5, reimport=false) {
-      // extracts data from the schedules binned by collisions from WASM module and puts it in a neat list in generatedSchedules
-      // lowestNBins represents the leftmost N populated bins to put into generatedSchedules (empty bins don't count)
       if (!selectedCourses.value || !selectedCourses.value[activeSemester]) {
         return;
       }
 
+      // formats selected courses for WASM processing
       let data = formatSelectedCoursesAsList(allCourses.value, selectedCourses.value[activeSemester]);
       data = JSON.stringify(data);
 
+      // WASM processing
       try {
         var schedules = Module.populate(data, maxBins, reimport);
         schedules = JSON.parse(schedules);
@@ -182,6 +149,8 @@
         console.error(`Encountered error running scheduler WASM code: ${e}`);
       }
 
+      // extracts WASM results (schedules binned by # of collisions) and put it in generatedSchedules as list
+      // lowestNBins represents the lowest N populated bins to put into generatedSchedules (empty bins don't count)
       generatedSchedules.value[activeSemester.value] = [];
 
       for (let bin = 0; bin < schedules.length; bin++) {
@@ -202,50 +171,37 @@
           break;
         }
       }
-      displaySchedule(selectedSchedule.value);
+      generateBlocks(selectedSchedule.value);
+    }
+
+    function generateBlocks(schedule_index) {
+      const schedule = generatedSchedules.value[activeSemester.value][schedule_index].renderStructure;
+      blocks.value = [];
+      for (let day = 0; day < schedule.length; day++) {
+        for (let row = 0; row < schedule[day].length; row++) {
+          const columns = schedule[day][row].length;
+          for (let column = 0; column < columns; column++) {
+            for (const crn of schedule[day][row][column]) {
+              const course = allCourses.value[crn];
+              for (let timeblock of course.timeblocks) {
+                if (timeblock.day != day) {
+                  continue;
+                }
+                const color = `hsla(${(crn / 3.795) % 360}, 14%, 69%, 0.7)`;
+                blocks.value.push(new CalendarBlockElement(crn, timeblock.day, timeblock.begin, timeblock.length, column, columns, color, 0.02, 0, 0.1));
+              }
+            }
+          }
+        }
+      }
     }
 
     function testData() {
       console.log('BEGIN TESTING OF SCHEDULER WEBASSEMBLY');
 
       selectedCourses.value[activeSemester] = [20001, 10001, 10002, 41001, 41002, 41003, 41004, 42000, 42001, 42002, 42003, 42004, 50000, 50001, 50002, 50003, 50004, 50005];
-
-      /*
-      let data1 = [[{name: "data structures", crn: "20001", timeBlocks: "2280, 2390, 6600, 6710"}],
-      [{name: "computer science I", crn: "10001", timeBlocks: "840, 950, 5160, 5270"},
-      {name: "computer science I", crn: "10002", timeBlocks: "2280, 2390, 6600, 6710"}],
-      [{name: "3d animation", crn: "41001", timeBlocks: "840, 950, 5160, 5270"},
-      {name: "3d animation", crn: "41002", timeBlocks: "960, 1070, 5280, 5390"},
-      {name: "3d animation", crn: "41003", timeBlocks: "2280, 2390, 6600, 6710"},
-      {name: "3d animation", crn: "41004", timeBlocks: "2340, 2450, 6660, 6770"}],
-      [{name: "graphics storytelling", crn: "42000", timeBlocks: "480, 590, 4800, 4910"},
-      {name: "graphics storytelling", crn: "42001", timeBlocks: "840, 950, 5160, 5270"},
-      {name: "graphics storytelling", crn: "42002", timeBlocks: "960, 1070, 5280, 5390"},
-      {name: "graphics storytelling", crn: "42003", timeBlocks: "2280, 2390, 6600, 6710"},
-      {name: "graphics storytelling", crn: "42004", timeBlocks: "2340, 2450, 6660, 6770"}],
-      [{name: "introduction to ecse", crn: "50000", timeBlocks: "480, 590, 4800, 4910"},
-      {name: "introduction to ecse", crn: "50001", timeBlocks: "840, 950, 5160, 5270"},
-      {name: "introduction to ecse", crn: "50002", timeBlocks: "960, 1070, 5280, 5390"},
-      {name: "introduction to ecse", crn: "50003", timeBlocks: "2280, 2390, 6600, 6710"},
-      {name: "introduction to ecse", crn: "50004", timeBlocks: "2340, 2450, 6660, 6770"},
-      {name: "introduction to ecse", crn: "50005", timeBlocks: "2220, 2330, 6540, 6650"}]];
-
-      [{name: "introduction to electronics", crn: "51000", timeBlocks: "540, 590, 4800, 4910"},
-      {name: "introduction to electronics", crn: "51001", timeBlocks: "900, 950, 5220, 5270"},
-      {name: "introduction to electronics", crn: "51002", timeBlocks: "1020, 1070, 5340, 5390"},
-      {name: "introduction to electronics", crn: "51003", timeBlocks: "2340, 2390, 6660, 6710"},
-      {name: "introduction to electronics", crn: "51004", timeBlocks: "2400, 2390, 6720, 6770"}],
-      [{name: "data science", crn: "22000", timeBlocks: "4800, 5030"},
-      {name: "data science", crn: "22001", timeBlocks: "5220, 5390"},
-      {name: "data science", crn: "22002", timeBlocks: "5340, 5510"},
-      {name: "data science", crn: "22003", timeBlocks: "6660, 6830"},
-      {name: "data science", crn: "22004", timeBlocks: "6720, 6890"}],
-      [{name: "data mining", crn: "23001", timeBlocks: "6660, 6830"},
-      {name: "data mining", crn: "23002", timeBlocks: "6720, 6890"}]];
-
-      let data2 = [[{name: "data structures", crn: "20001", timeBlocks: "2280, 2390, 6600, 6710"}],
-      [{name: "computer science I", crn: "10001", timeBlocks: "2290, 2390, 6610, 6710"}]];
-      */
+      // selectedCourses.value[activeSemester] = [51000, 51001, 51002, 51003, 51004, 22000, 22001, 22002, 22003, 22004, 23001, 23002];
+      // selectedCourses.value[activeSemester] = [20001, 10001];
 
       allCourses.value['20001'] = new CourseInstance('20001', 'CSCI 1200 data structures', 'akeyl', 'DCC 308', null, [2280, 2390, 6600, 6710]);
       allCourses.value['10001'] = new CourseInstance('10001', 'CSCI 1100 computer science I', 'akeyl', 'DCC 308', null, [840, 950, 5160, 5270]);
@@ -266,41 +222,7 @@
       allCourses.value['50004'] = new CourseInstance('50004', 'ECSE 1010 introduction to ecse', 'shashank', 'DCC 308', null, [2340, 2450, 6660, 6770]);
       allCourses.value['50005'] = new CourseInstance('50005', 'ECSE 1010 introduction to ecse', 'shashank', 'DCC 308', null, [2220, 2330, 6540, 6650]);
 
-
       generateSchedules();
-
-
-      /*try {
-        console.log('test large 2');
-        let result = Module.populate(data1, 10, false);
-        console.log(result);
-      } catch (e) {
-        console.error(e);
-      }
-
-      try {
-        console.log('test large 3');
-        let result = Module.populate(data1, 3, false);
-        console.log(result);
-      } catch (e) {
-        console.error(e);
-      }
-
-      try {
-        console.log('test persistence 1: if persistent, we should see CS1 occurring Monday');
-        let result = Module.populate(data2, 10, false);
-        console.log(result);
-      } catch (e) {
-        console.error(e);
-      }
-
-      try {
-        console.log('test persistence 2: we updated original: CS1 occurs Tuesday');
-        let result = Module.populate(data2, 10, true);
-        console.log(result);
-      } catch (e) {
-        console.error(e);
-      }*/
     }
 
     init();
