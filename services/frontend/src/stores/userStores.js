@@ -28,3 +28,9 @@ export const schoolData = defineStore('schoolData', () => {
 
   return { allCourses }
 })
+
+export const colors = defineStore('colors', () => {
+  const colorPalettes = ref([])
+
+  return {colorPalettes}
+})

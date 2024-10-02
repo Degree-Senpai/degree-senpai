@@ -79,23 +79,40 @@ export class Colors {
         we just end up with an entirely red gradient, since start and end are next
         to each other.
          */
+        let bothNull = 0;
         if (color1 == null) {
             color1 = new Color(0, 10, 50, 1);
+            bothNull++;
         }
         if (color2 == null) {
             color2 = new Color(359, 10, 50, 1);
+            bothNull++;
+        }
+        if (bothNull == 2) {
+            longerLoop = true;
         }
 
         let newColor = color1.interpolate(color2, factor, longerLoop);
         return newColor
     }
 
-    gradientFull(factor, color1 = null, color2 = null, smallerLoop = true, numIndex) {
+    gradient(num, color1 = null, color2 = null, longerLoop = false) {
         /* samples numIndex amount evenly from gradient */
         let colors = [];
-        for (let i = 0; i < numIndex; ++i) {
-            colors.push(this.gradientSampled(factor, color1, color2, smallerLoop));
+        for (let i = 0; i < num; ++i) {
+            colors.push(this.gradientSampled(i, color1, color2, longerLoop));
         }
         return colors
     }
+}
+
+export function modifyHSLA(hsla, h, s, l, a) {
+    let values = hsla.split('(')[1];
+    values = values.split(')')[0];
+    values = values.split(',');
+    h = h + Number(values[0]);
+    s = s + Number(values[1].split('%')[0]);
+    l = l + Number(values[2].split('%')[0]);
+    a = a + Number(values[3]);
+    return `hsla(${h % 360}, ${s}%, ${l}%, ${a})`;
 }

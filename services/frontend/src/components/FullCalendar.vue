@@ -36,7 +36,7 @@
     import { Schedule } from '../scheduler/schedule.js'
     import { CalendarBlockElement, CourseInstance } from '@/scheduler/calendar';
     import { formatSelectedCoursesAsList } from '../scheduler/schedule.js';
-    import {modifyHSLA} from '@/utilities/colorutils.js';
+    import { modifyHSLA } from '@/utilities/colorservice.js';
 
     import { userScheduleData } from '@/stores/userStores.js';
     import { userScheduleComputed } from '@/stores/userStores.js';
@@ -58,7 +58,7 @@
     var blocks = ref([]); // list of CalenderBlockElement objects to render
     const selectedSchedule = ref(0); // position of active schedule within generatedSchedules
 
-    
+
     async function init() {
       if (typeof Module == 'undefined') {
         const script = document.createElement('script');
