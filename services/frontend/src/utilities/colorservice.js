@@ -66,9 +66,10 @@ export class Colors {
         if (this.palette == null) {
             this.palette = new ColorPalette();
         }
+        this.randomColors = {}; // keep track of randomly assigned colors
     }
 
-    gradientSampled(factor, color1 = null, color2 = null, longerLoop = false) {
+    gradientSampled(factor, color1 = null, color2 = null, longerLoop = false, random = false) {
         /* factor dictates the location within the gradient to sample and return.
 
         color1 and color2 is the two colors to sample between. If they're null,
@@ -78,6 +79,9 @@ export class Colors {
         For example, to get the full rainbow we need it to be true since otherwise
         we just end up with an entirely red gradient, since start and end are next
         to each other.
+
+        if random is used, then factor becomes an ID where giving the same factor always
+        returns the same random color as long as this class is maintained.
          */
         let bothNull = 0;
         if (color1 == null) {
@@ -90,6 +94,17 @@ export class Colors {
         }
         if (bothNull == 2) {
             longerLoop = true;
+        }
+
+        if (random) {
+            if (this.randomColors[factor] != null) {
+                factor = this.randomColors[factor];
+            }
+            else {
+                let randomFactor = Math.random() * 360;
+                this.randomColors[factor] = randomFactor;
+                factor = randomFactor;
+            }
         }
 
         let newColor = color1.interpolate(color2, factor, longerLoop);
