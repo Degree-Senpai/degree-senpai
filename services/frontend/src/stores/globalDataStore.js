@@ -17,3 +17,8 @@ export const schoolData = defineStore('schoolData', () => {
   })
   
   export const colorStore = defineStore('colors', () => {
+    const colorPalettes = ref({}) // name: palette object
+    const colorServices = ref({}) // name: service (usually there should only be one colorService here)
+  
+    return {colorPalettes, colorServices}
+  })
