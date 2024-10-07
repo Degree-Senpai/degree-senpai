@@ -43,292 +43,215 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import debounce from 'lodash/debounce';
 import axios from 'axios';
 
-export default {
-  data() {
-    return {
-      /* -------- PARAMETERS -------- */
-      searchDisplayContext: 0,
-      searchContextSize: 50,
-      closeModalOnSelection: false,
 
-      /* -------- SEARCH ELEMENTS -------- */
-      allElements: [],
-      elementSearchPool: [],
-      elementType: {}, // course can be (1) core, (2) useful
-      elementSelectionOccurrences: {},
-      courseData: [],
+  /* -------- PARAMETERS -------- */
+  searchDisplayContext = 0;
+  searchContextSize= 50;
+  closeModalOnSelection= false;
 
-      /* -------- SEARCH FILTERS -------- */
-      searchFilterGroups: [],
-      searchFilterColors: {},
-      searchFilterGroupColors: {},
-      filterSubjectBy: '',
+  /* -------- SEARCH ELEMENTS -------- */
+  allElements= [];
+  elementSearchPool= [];
+  elementType= {}; // course can be (1) core; (2) useful
+  elementSelectionOccurrences= {};
+  courseData= [];
 
-      /* -------- FLAGS AND INPUTS -------- */
-      showSelf: false,
-      bannerText: -1,
-      searchInput: '',
-      searchMatches: [],
-    };
-  },
+  /* -------- SEARCH FILTERS -------- */
+  searchFilterGroups= [];
+  searchFilterColors= {};
+  searchFilterGroupColors= {};
+  filterSubjectBy= '';
 
-  methods: {
-    elementDragStart(event, element) {
-      event.dataTransfer.effectAllowed = "move";
-      this.$emit('elementDragStart', element);
-    },
+  /* -------- FLAGS AND INPUTS -------- */
+  showSelf= false;
+  bannerText= -1;
+  searchInput= '';
+  searchMatches= [];
 
-    incrementSearchPage() {
-      //this.$refs.searchMatchList.scrollTop = 0;
-      if ((this.searchDisplayContext + 1) * this.searchContextSize < this.searchMatches.length) {
-        this.searchDisplayContext++;
-      }
-    },
-    decrementSearchPage() {
-      if (this.searchDisplayContext > 0) {
-        this.searchDisplayContext--;
-      }
-    },
-    getElementOccurrences(element) {
-      if (!(element in this.elementSelectionOccurrences)) {
-        return
-      }
-      return this.elementSelectionOccurrences[element].join(', ')
-    },
-    sumAsciiValues(word) {
-      let sum = 0;
-      for (let i = 0; i < word.length; i++) {
-        sum += word.charCodeAt(i); // Get ASCII value of character and add to sum
-      }
-      return sum;
-    },
-    getElementColorFront(element){
-      const type = this.elementType[element];
-      if (type == "core" || element.startsWith("csci 1200")) {
-        return this.makeHSLColor(20, 85, 70)
-      } 
-      else if (type == "useful" || element.startsWith("csci 4220")) {
-        return this.makeHSLColor(90, 75, 65)
-      }
-      return this.makeHSLColor(40, 55, 70)
-    },
-    getElementColorRear(element){
-      if (element in this.elementSelectionOccurrences) {
-        return this.makeHSLColor(90, 55, 75)
-      }
-      return this.makeHSLColor(40, 40, 80)
-    },
-    getFilterColor(filter) {
-      const colors = this.searchFilterColors[filter];
-      if (this.filterSubjectBy == filter) {
-        return this.makeHSLBackground(colors[0] + 10, colors[1] + 30, colors[2] + 30)
-      }
-      
-      return this.arrayToHSLBackground(colors)
-    },
-    getSubjectTitle(subject) {
-      let color = this.searchFilterGroupColors[subject.toLowerCase()];
-      if (color == null) {
-        return
-      }
-      return this.makeHSLColor(color[0], color[1] + 10, color[2] + 50, color[3] + 0.4);
-    },
-
-    extractColorHSL(element) {
-      if (element.includes("#")) {
-        return element.split("#")[1].split(",")
-      }
-      return []
-    },
-
-    extractTitle(element) {
-      return element.split('#')[0]
-    },
-
-
-    arrayToHSLBackground(array) {
-      if (array == null) {
-        return
-      }
-      if (array.length == 4) {
-        return {
-          backgroundColor: `hsla(${array[0]}, ${array[1]}%, ${array[2]}%, ${array[3]})`
-        };
-      }
-      return {
-        backgroundColor: `hsl(${array[0]}, ${array[1]}%, ${array[2]}%)`
-      };
-    },
-
-    makeHSLColor(hue, saturation, lightness, alpha=-1) {
-      if (alpha != -1) {
-        return {
-          color: `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`
-        };
-      }
-      return {
-        color: `hsl(${hue}, ${saturation}%, ${lightness}%)`
-      };
-    },
-
-    makeHSLBackground(hue, saturation, lightness, alpha = -1) {
-      if (alpha != -1) {
-        return {
-          backgroundColor: `hsla(${hue}, ${saturation}%, ${lightness}%, ${alpha})`
-        };
-      }
-      return {
-        backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)`
-      };
-    },
-
-    generateElementColor(element, hue_offset = 0, saturation_offset = 0, lightness_offset = 0, alpha = 1, index = -1) {
-      let colors = this.extractColorHSL(element);
-      if (colors.length == 3) {
-        return [(colors[0] + hue_offset) % 360, (colors[1] + saturation_offset), (colors[2] + lightness_offset), alpha]
-      }
-      if (index != -1) {
-        return [(index * 360 + hue_offset) % 360, saturation_offset, lightness_offset, alpha]
-      }
-      else {
-        return [hue_offset % 360, saturation_offset, lightness_offset, alpha]
-      }
-    },
-
-    randColorText(text, offset, multiple = 1, saturation = 33, lightness = 70) {
-      return {
-        backgroundColor: `hsl(${((this.sumAsciiValues(text) + offset) % 360) * multiple}, ${saturation}, ${lightness})`
-      };
-    },
-
-    outputResult(val) {
-      // Increment the value and emit an event to notify the parent
-      this.$emit('result', val);
-    },
-
-    onOpen(bannerText) {
-      this.$nextTick(() => {
-        this.$refs.searchBar.focus();
-      });
-      this.bannerText = bannerText;
-    },
-
-    onClose() {
-      this.searchInput = '';
-      this.searchDisplayContext = 0;
-      this.searchMatches = this.elementSearchPool;
-    },
-
-    inputHandler() {
-      this.debouncedsearch();
-    },
-
-    debouncedsearch: debounce(function () {
-      this.searchDisplayContext = 0;
-      this.search();
-    }, 400),
-
-    readData(coursename, attribute) {
-      if (this.courseData == null) {
-        return ''
-      }
-      const data = this.courseData[coursename];
-      if (data == null || data[attribute] == null) {
-        return '';
-      }
-      return data[attribute][0]
-    },
-
-    search(count = -1) {
-      let input = this.searchInput;
-      input = input.toLowerCase();
-      if (count == -1) {
-        this.searchMatches = this.elementSearchPool.filter(element => element.search_name.includes(input));
-      } else {
-        this.searchMatches = [];
-        for (let i = 0; i < this.elementSearchPool.length && this.searchMatches.length < count; ++i) {
-          if (this.elementSearchPool[i].search_name.includes(input)) {
-            this.searchMatches.push(this.elementSearchPool[i]);
-          }
-        }
-      }
-    },
-
-    selectEnter() {
-      this.search(1);
-      this.selectMatch(0);
-      this.searchInput = '';
-      this.search();
-    },
-
-    selectMatch(position) {
-      position = (this.searchContextSize * this.searchDisplayContext) + position;
-    if (this.searchMatches.length > 0 && position < this.searchMatches.length) {
-        this.outputResult(this.searchMatches[position].display_name);
-      }
-    },
-
-    filterElement(subject) {
-      this.elementSearchPool = [];
-      this.searchDisplayContext = 0;
-      if (subject == '' || this.filterSubjectBy == subject) {
-        this.filterSubjectBy = '';
-        this.elementSearchPool = this.allElements;
-      }
-      else {
-        this.filterSubjectBy = subject;
-        subject = subject.toLowerCase();
-        this.elementSearchPool = this.allElements.filter(course => course.search_name.startsWith(subject));
-      }
-      this.search();
-    },
-
-    async fetchElements() {
-      const response = await axios.get('/api/dp/courses/false');
-      let course_list = await response.data;
-      for (let i = 0; i < course_list.length; ++i) {
-        this.allElements.push({display_name: course_list[i], search_name: course_list[i].toLowerCase()});
-        this.elementSearchPool.push({display_name: course_list[i], search_name: course_list[i].toLowerCase()});
-      }
-      this.searchMatches = this.elementSearchPool;
-    },
-
-    async fetchData() {
-      const response = await axios.get('/api/dp/coursedetails');
-      let course_data = await response.data;
-      this.courseData = course_data;
-    },
-
-    async fetchSearchFilterGroups() {
-      const response = await axios.get('/api/dp/subjectgroups');
-      this.searchFilterGroups = await response.data;
-    },
-
-    computeSearchFilterColors() {
-      for (let i = 0; i < this.searchFilterGroups.length; ++i) {
-        let group = this.searchFilterGroups[i];
-        this.searchFilterGroupColors[group.title.toLowerCase()] = this.generateElementColor(group.title, 0, 12, 70, 0.3, i / this.searchFilterGroups.length);
-        for (let j = 0; j < group.elements.length; ++j) {
-          this.searchFilterColors[group.elements[j]] = this.generateElementColor(group.title, j, 10 - j * 0.25, 70 - 5 + j * 0.2, 0.9, i / this.searchFilterGroups.length);
-        }
-      }
-      this.$emit('setSubjectColors', this.searchFilterColors);
-      this.$emit('setSubjectGroupColors', this.searchFilterGroupColors);
-      //console.log(`subjectColors ${JSON.stringify(this.searchFilterColors)}`);
-      //console.log(`searchFilterGroupColors ${JSON.stringify(this.searchFilterGroupColors)}`);
-    }
-  },
-  async created() {
+  async function init() {
     await this.fetchElements();
     await this.fetchSearchFilterGroups();
     await this.fetchData();
     this.computeSearchFilterColors();
-  },  
-};
+  }
+
+  function elementDragStart(event, element) {
+    event.dataTransfer.effectAllowed = "move";
+    this.$emit('elementDragStart', element);
+  }
+
+  function incrementSearchPage() {
+    //this.$refs.searchMatchList.scrollTop = 0;
+    if ((this.searchDisplayContext + 1) * this.searchContextSize < this.searchMatches.length) {
+      this.searchDisplayContext++;
+    }
+  }
+  function decrementSearchPage() {
+    if (this.searchDisplayContext > 0) {
+      this.searchDisplayContext--;
+    }
+  }
+  function getElementOccurrences(element) {
+    if (!(element in this.elementSelectionOccurrences)) {
+      return
+    }
+    return this.elementSelectionOccurrences[element].join(', ')
+  }
+
+  function getElementColorFront(element){
+    const type = this.elementType[element];
+    if (type == "core" || element.startsWith("csci 1200")) {
+      return this.makeHSLColor(20, 85, 70)
+    } 
+    else if (type == "useful" || element.startsWith("csci 4220")) {
+      return this.makeHSLColor(90, 75, 65)
+    }
+    return this.makeHSLColor(40, 55, 70)
+  }
+  function getElementColorRear(element){
+    if (element in this.elementSelectionOccurrences) {
+      return this.makeHSLColor(90, 55, 75)
+    }
+    return this.makeHSLColor(40, 40, 80)
+  }
+  function getFilterColor(filter) {
+    const colors = this.searchFilterColors[filter];
+    if (this.filterSubjectBy == filter) {
+      return this.makeHSLBackground(colors[0] + 10, colors[1] + 30, colors[2] + 30)
+    }
+    
+    return this.arrayToHSLBackground(colors)
+  }
+  function getSubjectTitle(subject) {
+    let color = this.searchFilterGroupColors[subject.toLowerCase()];
+    if (color == null) {
+      return
+    }
+    return this.makeHSLColor(color[0], color[1] + 10, color[2] + 50, color[3] + 0.4);
+  }
+
+
+  function extractTitle(element) {
+    return element.split('#')[0]
+  }
+
+
+  function arrayToHSLBackground(array) {
+    if (array == null) {
+      return
+    }
+    if (array.length == 4) {
+      return {
+        backgroundColor: `hsla(${array[0]}, ${array[1]}%, ${array[2]}%, ${array[3]})`
+      };
+    }
+    return {
+      backgroundColor: `hsl(${array[0]}, ${array[1]}%, ${array[2]}%)`
+    };
+  }
+
+  export function outputResult(val) {
+    // Increment the value and emit an event to notify the parent
+    this.$emit('result', val);
+  }
+
+  export function onOpen(bannerText) {
+    this.$nextTick(() => {
+      this.$refs.searchBar.focus();
+    });
+    this.bannerText = bannerText;
+  }
+
+  export function onClose() {
+    this.searchInput = '';
+    this.searchDisplayContext = 0;
+    this.searchMatches = this.elementSearchPool;
+  }
+
+  function inputHandler() {
+    this.debouncedsearch();
+  }
+
+  debouncedsearch: debounce(function () {
+    this.searchDisplayContext = 0;
+    this.search();
+  }, 400)
+
+  function readData(coursename, attribute) {
+    if (this.courseData == null) {
+      return ''
+    }
+    const data = this.courseData[coursename];
+    if (data == null || data[attribute] == null) {
+      return '';
+    }
+    return data[attribute][0]
+  }
+
+  export function search(count = -1) {
+    let input = this.searchInput;
+    input = input.toLowerCase();
+    if (count == -1) {
+      this.searchMatches = this.elementSearchPool.filter(element => element.search_name.includes(input));
+    } else {
+      this.searchMatches = [];
+      for (let i = 0; i < this.elementSearchPool.length && this.searchMatches.length < count; ++i) {
+        if (this.elementSearchPool[i].search_name.includes(input)) {
+          this.searchMatches.push(this.elementSearchPool[i]);
+        }
+      }
+    }
+  }
+
+  function selectEnter() {
+    this.search(1);
+    this.selectMatch(0);
+    this.searchInput = '';
+    this.search();
+  }
+
+  function selectMatch(position) {
+    position = (this.searchContextSize * this.searchDisplayContext) + position;
+  if (this.searchMatches.length > 0 && position < this.searchMatches.length) {
+      this.outputResult(this.searchMatches[position].display_name);
+    }
+  }
+
+  function filterElement(subject) {
+    this.elementSearchPool = [];
+    this.searchDisplayContext = 0;
+    if (subject == '' || this.filterSubjectBy == subject) {
+      this.filterSubjectBy = '';
+      this.elementSearchPool = this.allElements;
+    }
+    else {
+      this.filterSubjectBy = subject;
+      subject = subject.toLowerCase();
+      this.elementSearchPool = this.allElements.filter(course => course.search_name.startsWith(subject));
+    }
+    this.search();
+  }
+
+  function computeSearchFilterColors() {
+    for (let i = 0; i < this.searchFilterGroups.length; ++i) {
+      let group = this.searchFilterGroups[i];
+      this.searchFilterGroupColors[group.title.toLowerCase()] = this.generateElementColor(group.title, 0, 12, 70, 0.3, i / this.searchFilterGroups.length);
+      for (let j = 0; j < group.elements.length; ++j) {
+        this.searchFilterColors[group.elements[j]] = this.generateElementColor(group.title, j, 10 - j * 0.25, 70 - 5 + j * 0.2, 0.9, i / this.searchFilterGroups.length);
+      }
+    }
+    this.$emit('setSubjectColors', this.searchFilterColors);
+    this.$emit('setSubjectGroupColors', this.searchFilterGroupColors);
+    //console.log(`subjectColors ${JSON.stringify(this.searchFilterColors)}`);
+    //console.log(`searchFilterGroupColors ${JSON.stringify(this.searchFilterGroupColors)}`);
+  }
+
+  await init();
+
 </script>
 
 <style scoped>

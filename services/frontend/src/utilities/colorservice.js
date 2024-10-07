@@ -42,15 +42,13 @@ export class Color {
 }
 
 export class ColorPalette {
-    constructor(main, highlight, layerouter, layermid, layerinner, iconmain, iconsub, iconsmall) {
+    constructor(main, highlight, block1, block2, icon1, icon2) {
         this.main = main;
         this.highlight = highlight;
-        this.layerouter = layerouter;
-        this.layermid = layermid;
-        this.layerinner = layerinner;
-        this.iconmain = iconmain;
-        this.iconsub = iconsub;
-        this.iconsmall = iconsmall;
+        this.block1 = block1;
+        this.block2 = block2;
+        this.icon1 = icon1;
+        this.icon2 = icon2;
     }
 }
 
@@ -61,12 +59,30 @@ export class Colors {
 
         it also contains functions to compute colors.
     */
-    constructor(colorPalette = null) {
+    constructor(colorPalette = null, customColors = null) {
         this.palette = colorPalette;
+        this.customColors = customColors;
         if (this.palette == null) {
             this.palette = new ColorPalette();
         }
+        if (this.customColors == null) {
+            this.customColors = {};
+        }
         this.randomColors = {}; // keep track of randomly assigned colors
+    }
+
+    addCustomColor(id, color) {
+        this.customColors[id] = color;
+    }
+
+    removeCustomColor(id) {
+        if (this.customColors[id] != null) {
+            delete this.customColors.id;
+        }
+    }
+
+    getCustomColor(id) {
+        return this.customColors[id];
     }
 
     gradientSampled(factor, color1 = null, color2 = null, longerLoop = false, random = false) {
@@ -101,7 +117,7 @@ export class Colors {
                 factor = this.randomColors[factor];
             }
             else {
-                let randomFactor = Math.random() * 360;
+                let randomFactor = Math.random();
                 this.randomColors[factor] = randomFactor;
                 factor = randomFactor;
             }

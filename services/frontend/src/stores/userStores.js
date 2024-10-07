@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export const userScheduleData = defineStore('userScheduleData', () => {
+export const userData = defineStore('userData', () => {
   const selectedCourses = ref({}) // dictionary (by year) of list of CRN representing user selected courses
   const presentSemesters = ref([]) // list of semesters to render
   const activeSemester = ref(60) // represented by semesters since fall 2000
@@ -10,27 +10,10 @@ export const userScheduleData = defineStore('userScheduleData', () => {
   return { selectedCourses, presentSemesters, activeSemester, selectedMajor }
 })
 
-export const userScheduleComputed = defineStore('userScheduleComputed', () => {
+export const userComputed = defineStore('userComputed', () => {
   const generatedSchedules = ref({}) // dictionary (by year) of 2D list of CRNs (shape: (schedule, classes))
-
-  return { generatedSchedules }
-})
-
-export const userPlannerComputed = defineStore('userPlannerComputed', () => {
   const fulfillments = ref({})
   const possibilities = ref({})
 
-  return { fulfillments, possibilities }
-})
-
-export const schoolData = defineStore('schoolData', () => {
-  const allCourses = ref({}) // dictionary of CRN: CourseInstance object
-
-  return { allCourses }
-})
-
-export const colors = defineStore('colors', () => {
-  const colorPalettes = ref([])
-
-  return {colorPalettes}
+  return { generatedSchedules, fulfillments, possibilities }
 })
