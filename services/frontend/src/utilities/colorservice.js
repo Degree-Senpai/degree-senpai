@@ -1,3 +1,5 @@
+import {Color as ColorLib} from 'color'
+
 /*
 SCROLL DOWN TO class Colors for the main colorservice class. Colors is responsible for storing the color palette as
 attribute "palette" and computed functions, including gradientSampled and gradientFull.
@@ -7,11 +9,17 @@ class Color(hue, saturation, lightness, alpha).
 */
 
 export class Color {
-    constructor(hue, saturation, lightness, alpha) {
+    constructor(hue=0, saturation=0, lightness=0, alpha=1, hex=-1) {
         this.hue = hue;
         this.saturation = saturation;
         this.lightness = lightness;
         this.alpha = alpha;
+        if (hex != -1) {
+            const hsl = ColorLib(hex).hsl().object();
+            this.hue = hsl.h;
+            this.saturation = hsl.s;
+            this.lightness = hsl.l;
+        }
     }
 
     interpolate(otherColor, factor, longerLoop=false) {

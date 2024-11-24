@@ -64,7 +64,7 @@
 
     /* DEMO COLOR SERVICE USAGE */
     import { colorStore } from '@/stores/globalDataStore.js';
-    import { Colors, ColorPalette, Color } from './utilities/colorservice.js'
+    import { Colors, ColorPalette, Color } from './utilities/colorservice.js';
     const { colorPalettes, colorServices } = storeToRefs(colorStore);
 
     const palette = ColorPalette(
